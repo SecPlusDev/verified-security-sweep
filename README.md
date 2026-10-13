@@ -317,7 +317,9 @@ python3 -m pytest tests/ -q
 ```
 
 Security issues go through the process in [`SECURITY.md`](SECURITY.md), never through a public
-pull request.
+pull request. The repository has no issue tracker: questions, bug reports and feedback come as a
+pull request (a change, or a note added under `docs/`), or by email to the address in
+[`SECURITY.md`](SECURITY.md).
 
 ## License
 
