@@ -310,5 +310,5 @@ Testing
 - [x] Tested with Haiku, Sonnet and Opus (Haiku measured and documented as not recommended).
 - [x] Tested with real usage scenarios (the install test on a clean copy; the origin project's
       sweeps, not published).
-- [ ] Team feedback incorporated: none yet; the first external users' feedback goes to the
-      issue tracker and the v1.4+ list.
+- [ ] Team feedback incorporated: none yet. The repository has no issue tracker; feedback
+      arrives as a pull request or at the address in `SECURITY.md`, and goes to the v1.4+ list.
