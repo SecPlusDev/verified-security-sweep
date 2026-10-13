@@ -1,0 +1,22 @@
+{
+  "A": {
+    "model": "claude-sonnet-5-5",
+    "skill": "with_skill",
+    "report": "<sonnet-workspace>/eval1/with_skill/outputs/docs-audits/2026-10-09-access-control.md"
+  },
+  "B": {
+    "model": "claude-opus-5-5",
+    "skill": "with_skill",
+    "report": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/with_skill/outputs/docs-audits/2026-10-09-access-control.md"
+  },
+  "C": {
+    "model": "claude-opus-5-5",
+    "skill": "without_skill",
+    "report": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md"
+  },
+  "D": {
+    "model": "claude-sonnet-5-5",
+    "skill": "without_skill",
+    "report": "<sonnet-workspace>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md"
+  }
+}

@@ -1,0 +1,28 @@
+{
+ "note": "Orchestrator adjustments applied on top of the grader files, under the rule 'if a reading is ambiguous, apply the stricter reading and record the ambiguity'. Grader files are left unchanged.",
+ "adjustments": [
+  {
+   "file": "assertions-eval4.json",
+   "run": "eval4-with_skill-1",
+   "assertion": "A2 (8a)",
+   "grader_grade": "PASS",
+   "final_grade": "FAIL",
+   "reason": "The grader graded the over-restriction part on its own (response.md:26) and recorded that it names the path by description (viewing without a threshold, the menu, an empty threshold) and names neither the route string nor test/e2e/integration/allocations_spec.js; it left the call to the orchestrator. Round v1.2.2 graded 8a with the rule 'the over-restriction part must name the e2e spec by path' (round-v1.2.2.md, Strict readings), and counted a 'what it breaks' paragraph before the callers as part of the over-restriction part. Here the 'what it breaks' paragraph (response.md:5-7) names app/views/layout.html:56 and the route `/allocations/{{userId}}`, and response.md:26 names the menu, but neither names the e2e spec. The spec is named only in the unverified-callers part (response.md:23, `test/e2e/integration/allocations_spec.js:21`, `:27`, `:34`). Stricter reading applied: FAIL. Under the reading that accepts the response as a whole, 8a is PASS.",
+   "evidence": "<round>/runs/eval4-with_skill-1/outputs/response.md:5-7, :21-23, :26; reference <round>/base/nodegoat/app/views/layout.html:56, <round>/base/nodegoat/test/e2e/integration/allocations_spec.js:21, :27, :34"
+  },
+  {
+   "file": "lists-eval5.json, quality-per-run.json",
+   "run": "eval5-with_skill-1 (letter B)",
+   "item": "B-4",
+   "extraction_status": "unconfirmed",
+   "final_status": "confirmed (strict reading), reported next to the extraction's call",
+   "reason": "The extractor's rule was 'confirmed if it is in their list of confirmed or verified defects'. L1 (B-4, the v1/v2 API docs omit uuid from the read-only field list) is a row of the report's Verification table with verdict 'LOW, recorded', claimed Low, verified Low (R:55), and is described again in the section 'Low (not in the headline count)' (R:160-166); it is not under 'Confirmed defects' and its verdict is not one of the skill's four verdicts. The extractor recorded the call as borderline and marked it unconfirmed. Stricter reading applied: a claim the report verified and recorded as a defect counts as confirmed. The blind grader graded B-4 NOT REAL (documentation only, the code behaves correctly), and recorded that it would be REAL, outside GT, if documentation errors count as defects. Under the strict status and the grader's verdict, eval5-with_skill-1 has 4 confirmed claims, 3 REAL, 1 NOT REAL, precision 0.75, and B2 fails for this run. Under the extraction's status, or under the reading that counts a documentation error as a defect, B2 passes.",
+   "evidence": "<round>/runs/eval5-with_skill-1/outputs/docs-audits/2026-10-12-api-key-access.md:55, :160-166; extraction-notes-eval5.json B-4; quality-eval5.json B-4 and notes"
+  }
+ ],
+ "not_adjusted": [
+  "assertions-eval1.json, eval1-with_skill-1, A2 and B3: the location app/routes/allocations.js:18 is described in the chain (R:53) as 'reads the id from `req.params`', with the full statement given as lines 16-18. No token quoted for line 18 sits on another line, so it is not flagged, following the v1.2.3 rule (flag a line when a token quoted by the claim sits on another line). Under a reading that also requires 'the id' on line 18, the location would be flagged and eval1-with_skill-1 would fail B3; A2 is FAIL for this run either way.",
+  "assertions-eval1.json, eval1-with_skill-1, A7: test/security/helpers/http-session.js is a helper inside a test directory; the assertion's operative clause is path based ('no other file outside those paths'), so the grader's PASS is kept.",
+  "assertions-eval5.json, eval5-with_skill-2, A3: chain lines hc/api/views.py:529 and :416-419, :433 hold the calls that produce the fields the report names; they are not lines of a multi-line statement whose cited element is elsewhere, so the grader's PASS is kept."
+ ]
+}

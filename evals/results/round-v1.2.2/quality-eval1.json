@@ -1,0 +1,936 @@
+{
+ "eval": 1,
+ "items": [
+  {
+   "id": "A-1",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "Handler destructures userId from req.params (app/routes/allocations.js:16-18) and passes it to getByUserIdAndThreshold at :23 with no comparison to req.session.userId; route gated only by isLoggedIn (app/routes/index.js:59).",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-1",
+   "planted_prior": null
+  },
+  {
+   "id": "A-2",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Memos have no owner (app/data/memos-dao.js:18-21) and getAllMemos reads the whole collection (:28), but this is a shared message board by design: no memo belongs to a user, so no per-user ownership boundary is crossed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "A-3",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Both /benefits routes are mounted with isLoggedIn and isAdmin (app/routes/index.js:55-56); isAdminUserMiddleware reads the role from the DB and redirects non-admins (app/routes/session.js:25-29).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "A-4",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "True that /tutorial is mounted with no middleware (app/routes/index.js:75; app/routes/tutorial.js:8,31), but it serves static training pages that are public by design and expose no user data; not a defect.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "A-5",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The callback ignores err, but on error user is undefined so `user && user.isAdmin` is falsy and it redirects to /login (app/routes/session.js:28): it fails closed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "A-6",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "threshold is interpolated into a $where string at app/data/allocations-dao.js:78 (e.g. 1'; return 1 == '1), which overrides the this.userId clause and returns all users' allocations.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-1",
+   "planted_prior": null
+  },
+  {
+   "id": "A-7",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleContributionsUpdate calls eval on req.body.preTax/afterTax/roth (app/routes/contributions.js:32-34), route reachable by any signed-in user (app/routes/index.js:52).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-8",
+   "planted_prior": null
+  },
+  {
+   "id": "A-8",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/research.js:15 builds url = req.query.url + req.query.symbol and :16 fetches it with needle.get, with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-7",
+   "planted_prior": null
+  },
+  {
+   "id": "A-9",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/index.js:68 does res.redirect(req.query.url) with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-6",
+   "planted_prior": null
+  },
+  {
+   "id": "A-10",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "swig autoescape is off (server.js:135-142) and memos are output raw via {{ marked(doc.memo) }} (app/views/memos.html:31) with marked 0.3.5, whose sanitize option has known bypasses; the cited line memos-dao.js:18 is only the insert, not the sink.",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-5",
+   "planted_prior": null
+  },
+  {
+   "id": "A-11",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleLoginRequest sets req.session.userId = user._id (app/routes/session.js:116) without req.session.regenerate (only signup regenerates, :234), and saveUninitialized: true (server.js:84) issues ids to anonymous visitors.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-2",
+   "planted_prior": null
+  },
+  {
+   "id": "A-12",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "csurf is commented out (server.js:104-113, app.use(csrf()) at :107) and no cookie options/sameSite are set (server.js:78-102, express-session 1.15.6), so a cross-site POST /benefits from an admin's browser is accepted.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-2",
+   "planted_prior": null
+  },
+  {
+   "id": "B-1",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "Handler destructures userId from req.params (app/routes/allocations.js:16-18) and passes it to getByUserIdAndThreshold at :23 with no comparison to req.session.userId; route gated only by isLoggedIn (app/routes/index.js:59).",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-1",
+   "planted_prior": null
+  },
+  {
+   "id": "B-2",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "threshold is interpolated into a $where string at app/data/allocations-dao.js:78 (e.g. 1'; return 1 == '1), which overrides the this.userId clause and returns all users' allocations.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-1",
+   "planted_prior": null
+  },
+  {
+   "id": "B-3",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Express routing is case-insensitive and non-strict by default, so /Benefits and /benefits/ hit the same route with the same isLoggedIn+isAdmin chain (app/routes/index.js:55-56); HEAD uses the GET route chain; the role is re-read from the DB on every request (app/routes/session.js:27), so a stale session gives no bypass.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-4",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Memos have no owner (app/data/memos-dao.js:18-21) and getAllMemos reads the whole collection (:28), but this is a shared message board by design: no memo belongs to a user, so no per-user ownership boundary is crossed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-5",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The callback ignores err, but on error user is undefined so `user && user.isAdmin` is falsy and it redirects to /login (app/routes/session.js:28): it fails closed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-6",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "addUser builds the document field by field with no isAdmin (app/data/user-dao.js:20-31), signup destructures named fields only (app/routes/session.js:191-198), and updateUser sets only listed fields (app/data/profile-dao.js:45-66).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-7",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "bodyParser.json (server.js:71) allows an operator in userName (app/data/user-dao.js:91-93), but the password is then checked with strict === against the selected user's stored password (app/data/user-dao.js:61,75), so one cannot log in as another user without that user's password.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-8",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "/profile and /contributions take userId only from req.session (app/routes/profile.js:14-16, :78-80; app/routes/contributions.js:13-15, :42-44); /dashboard uses session too (app/routes/session.js:264).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-9",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The cookie only carries a signed random session id; userId lives server-side in the session store (app/routes/session.js:116). Knowing the secret (config/env/all.js:8) lets one sign an id, but not obtain or guess another user's session id, so it does not by itself allow acting as another user.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-10",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "benefitsDAO.updateBenefits updates any _id (app/data/benefits-dao.js:24-26), but only admins reach it (app/routes/index.js:56) and editing benefits from req.body.userId is the intended admin function; no privilege boundary is crossed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-11",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "isAdminUserMiddleware redirects to /login instead of 403 (app/routes/session.js:28, :32); behaviour exists but is informational only (route list is public), as the prior audit's AC-2 found.",
+   "in_zone": "yes",
+   "location_holds_defect": "no",
+   "gt": "outside GT",
+   "planted_prior": "AC-2"
+  },
+  {
+   "id": "B-12",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleContributionsUpdate calls eval on req.body.preTax/afterTax/roth (app/routes/contributions.js:32-34), route reachable by any signed-in user (app/routes/index.js:52).",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-8",
+   "planted_prior": null
+  },
+  {
+   "id": "B-13",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "threshold is interpolated into $where at app/data/allocations-dao.js:78, so arbitrary JS such as 0';while(true){}' runs in MongoDB (see the comment at :67).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-1",
+   "planted_prior": null
+  },
+  {
+   "id": "B-14",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "findOne({userName: userName}) at app/data/user-dao.js:91-93 receives the parsed JSON body (server.js:71) unchecked, so {\"$ne\":null} or {\"$regex\":...} selects the user document; impact is limited (password still compared with ===) but the operator injection exists.",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "outside GT",
+   "planted_prior": null
+  },
+  {
+   "id": "B-15",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/research.js:15 builds url = req.query.url + req.query.symbol and :16 fetches it with needle.get, with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-7",
+   "planted_prior": null
+  },
+  {
+   "id": "B-16",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/index.js:68 does res.redirect(req.query.url) with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-6",
+   "planted_prior": null
+  },
+  {
+   "id": "B-17",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleLoginRequest sets req.session.userId = user._id (app/routes/session.js:116) without req.session.regenerate (only signup regenerates, :234), and saveUninitialized: true (server.js:84) issues ids to anonymous visitors.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-2",
+   "planted_prior": null
+  },
+  {
+   "id": "B-18",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "No cookie options are set (server.js:78-102; the block at :92-100 is a comment), so express-session 1.15.6 defaults apply, and that default is httpOnly: true; only secure is missing, so the claim is wrong as stated.",
+   "in_zone": "no",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "B-19",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "cookieSecret is hard-coded as \"session_cookie_secret_key_here\" (config/env/all.js:8) and used as the session secret (server.js:82).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-3",
+   "planted_prior": null
+  },
+  {
+   "id": "B-20",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "The csurf middleware is commented out (server.js:104-113) and no other token check exists for POST /profile, /contributions, /memos, /benefits.",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-2",
+   "planted_prior": null
+  },
+  {
+   "id": "B-21",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "addUser stores the raw password (app/data/user-dao.js:25) and comparePassword uses === (:61); bcrypt fix is commented out.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-9",
+   "planted_prior": null
+  },
+  {
+   "id": "B-22",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "Unknown user renders \"Invalid username\" (app/routes/session.js:85) and wrong password \"Invalid password\" (:94).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-9",
+   "planted_prior": null
+  },
+  {
+   "id": "B-23",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "swig.setDefaults({autoescape: false}) at server.js:135-142.",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-5",
+   "planted_prior": null
+  },
+  {
+   "id": "C-1",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "Handler destructures userId from req.params (app/routes/allocations.js:16-18) and passes it to getByUserIdAndThreshold at :23 with no comparison to req.session.userId; route gated only by isLoggedIn (app/routes/index.js:59). Line 17 is part of the req.params destructuring.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-1",
+   "planted_prior": null
+  },
+  {
+   "id": "C-2",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Both /benefits routes are mounted with isLoggedIn and isAdmin (app/routes/index.js:55-56); isAdminUserMiddleware reads the role from the DB and redirects non-admins (app/routes/session.js:25-29).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "C-3",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The callback ignores err, but on error user is undefined so `user && user.isAdmin` is falsy and it redirects to /login (app/routes/session.js:28): it fails closed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "C-4",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Memos have no owner (app/data/memos-dao.js:18-21) and getAllMemos reads the whole collection (:28), but this is a shared message board by design: no memo belongs to a user, so no per-user ownership boundary is crossed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "C-5",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "True that /tutorial is mounted with no middleware (app/routes/index.js:75; app/routes/tutorial.js:8,31), but it serves static training pages that are public by design and expose no user data; not a defect.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "C-6",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "/profile and /contributions take userId only from req.session (app/routes/profile.js:14-16, :78-80; app/routes/contributions.js:13-15, :42-44); /dashboard uses session too (app/routes/session.js:264). Memo posting stores no user id at all (app/routes/memos.js:13).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "C-7",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Every non-public route is mounted behind isLoggedIn (app/routes/index.js:44-72), which redirects when req.session.userId is absent (app/routes/session.js:36-42); / checks the session in the handler (:259-262).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "C-8",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "isAdminUserMiddleware redirects an authenticated non-admin to /login instead of 403 (app/routes/session.js:28); informational only, matching the prior AC-2.",
+   "in_zone": "yes",
+   "location_holds_defect": "no",
+   "gt": "outside GT",
+   "planted_prior": "AC-2"
+  },
+  {
+   "id": "C-9",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "threshold is interpolated into a $where string at app/data/allocations-dao.js:78 (e.g. 1'; return 1 == '1), which overrides the this.userId clause and returns all users' allocations.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-1",
+   "planted_prior": null
+  },
+  {
+   "id": "C-10",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleContributionsUpdate calls eval on req.body.preTax/afterTax/roth (app/routes/contributions.js:32-34), route reachable by any signed-in user (app/routes/index.js:52).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-8",
+   "planted_prior": null
+  },
+  {
+   "id": "C-11",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/research.js:15 builds url = req.query.url + req.query.symbol and :16 fetches it with needle.get, with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-7",
+   "planted_prior": null
+  },
+  {
+   "id": "C-12",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/index.js:68 does res.redirect(req.query.url) with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-6",
+   "planted_prior": null
+  },
+  {
+   "id": "C-13",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleLoginRequest sets req.session.userId = user._id (app/routes/session.js:116) without req.session.regenerate (only signup regenerates, :234), and saveUninitialized: true (server.js:84) issues ids to anonymous visitors.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-2",
+   "planted_prior": null
+  },
+  {
+   "id": "C-14",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "addUser stores the password as received (app/data/user-dao.js:25); bcrypt hashing is commented out (:26-30).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-9",
+   "planted_prior": null
+  },
+  {
+   "id": "D-1",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "Handler destructures userId from req.params (app/routes/allocations.js:16-18) and passes it to getByUserIdAndThreshold at :23 with no comparison to req.session.userId; route gated only by isLoggedIn (app/routes/index.js:59).",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-1",
+   "planted_prior": null
+  },
+  {
+   "id": "D-2",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Memos have no owner (app/data/memos-dao.js:18-21) and getAllMemos reads the whole collection (:28), but this is a shared message board by design: no memo belongs to a user, so no per-user ownership boundary is crossed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "D-3",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "/profile and /contributions take userId only from req.session (app/routes/profile.js:14-16, :78-80; app/routes/contributions.js:13-15, :42-44); /dashboard uses session too (app/routes/session.js:264).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "D-4",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "addUser builds the document field by field with no isAdmin (app/data/user-dao.js:20-31), signup destructures named fields only (app/routes/session.js:191-198), and updateUser sets only listed fields (app/data/profile-dao.js:45-66).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "D-5",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The callback ignores err, but on error user is undefined so `user && user.isAdmin` is falsy and it redirects to /login (app/routes/session.js:28): it fails closed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "D-6",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "/ is mounted without isLoggedIn (app/routes/index.js:30) but displayWelcomePage itself redirects when there is no session (app/routes/session.js:259-262) and uses only the session userId (:264).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "D-7",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "True that /tutorial is mounted with no middleware (app/routes/index.js:75; app/routes/tutorial.js:8,31), but it serves static training pages that are public by design and expose no user data; not a defect.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "D-8",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Both /benefits routes are mounted with isLoggedIn and isAdmin (app/routes/index.js:55-56); isAdminUserMiddleware reads the role from the DB and redirects non-admins (app/routes/session.js:25-29).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "D-9",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "isAdminUserMiddleware redirects to /login instead of 403 (app/routes/session.js:28, :32); behaviour exists but is informational only (route list is public), as the prior audit's AC-2 found.",
+   "in_zone": "yes",
+   "location_holds_defect": "no",
+   "gt": "outside GT",
+   "planted_prior": "AC-2"
+  },
+  {
+   "id": "D-10",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "threshold is interpolated into a $where string at app/data/allocations-dao.js:78 (e.g. 1'; return 1 == '1), which overrides the this.userId clause and returns all users' allocations. It does not depend on the URL id, so it survives a GT-1 fix, and the string is evaluated as JS.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-1",
+   "planted_prior": null
+  },
+  {
+   "id": "D-11",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleContributionsUpdate calls eval on req.body.preTax/afterTax/roth (app/routes/contributions.js:32-34), route reachable by any signed-in user (app/routes/index.js:52).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-8",
+   "planted_prior": null
+  },
+  {
+   "id": "D-12",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/research.js:15 builds url = req.query.url + req.query.symbol and :16 fetches it with needle.get, with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-7",
+   "planted_prior": null
+  },
+  {
+   "id": "D-13",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/index.js:68 does res.redirect(req.query.url) with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-6",
+   "planted_prior": null
+  },
+  {
+   "id": "D-14",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "csurf is commented out (server.js:104-113, app.use(csrf()) at :107) and no cookie options/sameSite are set (server.js:78-102, express-session 1.15.6), so a cross-site POST /benefits from an admin's browser is accepted.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-2",
+   "planted_prior": null
+  },
+  {
+   "id": "D-15",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleLoginRequest sets req.session.userId = user._id (app/routes/session.js:116) without req.session.regenerate (only signup regenerates, :234), and saveUninitialized: true (server.js:84) issues ids to anonymous visitors.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-2",
+   "planted_prior": null
+  },
+  {
+   "id": "D-16",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "cookieSecret is hard-coded as \"session_cookie_secret_key_here\" (config/env/all.js:8) and used as the session secret (server.js:82).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-3",
+   "planted_prior": null
+  },
+  {
+   "id": "E-1",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "Handler destructures userId from req.params (app/routes/allocations.js:16-18) and passes it to getByUserIdAndThreshold at :23 with no comparison to req.session.userId; route gated only by isLoggedIn (app/routes/index.js:59).",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-1",
+   "planted_prior": null
+  },
+  {
+   "id": "E-2",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Both /benefits routes are mounted with isLoggedIn and isAdmin (app/routes/index.js:55-56); isAdminUserMiddleware reads the role from the DB and redirects non-admins (app/routes/session.js:25-29).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "E-3",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Memos have no owner (app/data/memos-dao.js:18-21) and getAllMemos reads the whole collection (:28), but this is a shared message board by design: no memo belongs to a user, so no per-user ownership boundary is crossed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "E-4",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The callback ignores err, but on error user is undefined so `user && user.isAdmin` is falsy and it redirects to /login (app/routes/session.js:28): it fails closed. The cited line session.js:109 is a comment in the login handler.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "E-5",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "True that /tutorial is mounted with no middleware (app/routes/index.js:75; app/routes/tutorial.js:8,31), but it serves static training pages that are public by design and expose no user data; not a defect.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "E-6",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "/profile and /contributions take userId only from req.session (app/routes/profile.js:14-16, :78-80; app/routes/contributions.js:13-15, :42-44); /dashboard uses session too (app/routes/session.js:264).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "E-7",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "addUser builds the document field by field with no isAdmin (app/data/user-dao.js:20-31), signup destructures named fields only (app/routes/session.js:191-198), and updateUser sets only listed fields (app/data/profile-dao.js:45-66). The cited profile-dao.js:168-189 does not exist (file has 113 lines).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "E-8",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "threshold is interpolated into a $where string at app/data/allocations-dao.js:78 (e.g. 1'; return 1 == '1), which overrides the this.userId clause and returns all users' allocations.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-1",
+   "planted_prior": null
+  },
+  {
+   "id": "E-9",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleContributionsUpdate calls eval on req.body.preTax/afterTax/roth (app/routes/contributions.js:32-34), route reachable by any signed-in user (app/routes/index.js:52).",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-8",
+   "planted_prior": null
+  },
+  {
+   "id": "E-10",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/index.js:68 does res.redirect(req.query.url) with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-6",
+   "planted_prior": null
+  },
+  {
+   "id": "E-11",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/research.js:15 builds url = req.query.url + req.query.symbol and :16 fetches it with needle.get, with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-7",
+   "planted_prior": null
+  },
+  {
+   "id": "E-12",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleLoginRequest sets req.session.userId = user._id (app/routes/session.js:116) without req.session.regenerate (only signup regenerates, :234), and saveUninitialized: true (server.js:84) issues ids to anonymous visitors. The cited line session.js:197 is in handleSignup's destructuring, not the defect.",
+   "in_zone": "yes",
+   "location_holds_defect": "no",
+   "gt": "GT-2",
+   "planted_prior": null
+  },
+  {
+   "id": "E-13",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "comparePassword returns fromDB === fromUser (app/data/user-dao.js:61) against the plaintext stored at :25.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-9",
+   "planted_prior": null
+  },
+  {
+   "id": "E-14",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "cookieSecret is hard-coded as \"session_cookie_secret_key_here\" (config/env/all.js:8) and used as the session secret (server.js:82).",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-3",
+   "planted_prior": null
+  },
+  {
+   "id": "E-15",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "swig autoescape is false (server.js:135-142) and memos are emitted via {{ marked(doc.memo) }} (app/views/memos.html:31); location gives no line.",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-5",
+   "planted_prior": null
+  },
+  {
+   "id": "F-1",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "Handler destructures userId from req.params (app/routes/allocations.js:16-18) and passes it to getByUserIdAndThreshold at :23 with no comparison to req.session.userId; route gated only by isLoggedIn (app/routes/index.js:59).",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-1",
+   "planted_prior": null
+  },
+  {
+   "id": "F-2",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Memos have no owner (app/data/memos-dao.js:18-21) and getAllMemos reads the whole collection (:28), but this is a shared message board by design: no memo belongs to a user, so no per-user ownership boundary is crossed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "F-3",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The callback ignores err, but on error user is undefined so `user && user.isAdmin` is falsy and it redirects to /login (app/routes/session.js:28): it fails closed.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "F-4",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The only admin functionality is /benefits (app/routes/index.js:55-56, the only routes using isAdmin; benefits handler sets isAdmin view flag at app/routes/benefits.js:22); no other handler exposes admin functions.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "F-5",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "addUser builds the document field by field with no isAdmin (app/data/user-dao.js:20-31), signup destructures named fields only (app/routes/session.js:191-198), and updateUser sets only listed fields (app/data/profile-dao.js:45-66).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "F-6",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "/profile and /contributions take userId only from req.session (app/routes/profile.js:14-16, :78-80; app/routes/contributions.js:13-15, :42-44); /dashboard uses session too (app/routes/session.js:264).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "F-7",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Both /benefits routes are mounted with isLoggedIn and isAdmin (app/routes/index.js:55-56); isAdminUserMiddleware reads the role from the DB and redirects non-admins (app/routes/session.js:25-29).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "gt": null,
+   "planted_prior": null
+  },
+  {
+   "id": "F-8",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "threshold is interpolated into a $where string at app/data/allocations-dao.js:78 (e.g. 1'; return 1 == '1), which overrides the this.userId clause and returns all users' allocations.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-1",
+   "planted_prior": null
+  },
+  {
+   "id": "F-9",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleContributionsUpdate calls eval on req.body.preTax/afterTax/roth (app/routes/contributions.js:32-34), route reachable by any signed-in user (app/routes/index.js:52).",
+   "in_zone": "no",
+   "location_holds_defect": "no",
+   "gt": "ADJ-8",
+   "planted_prior": null
+  },
+  {
+   "id": "F-10",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/research.js:15 builds url = req.query.url + req.query.symbol and :16 fetches it with needle.get, with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-7",
+   "planted_prior": null
+  },
+  {
+   "id": "F-11",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "app/routes/index.js:68 does res.redirect(req.query.url) with no validation.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-6",
+   "planted_prior": null
+  },
+  {
+   "id": "F-12",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "handleLoginRequest sets req.session.userId = user._id (app/routes/session.js:116) without req.session.regenerate (only signup regenerates, :234), and saveUninitialized: true (server.js:84) issues ids to anonymous visitors.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "gt": "GT-2",
+   "planted_prior": null
+  },
+  {
+   "id": "F-13",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "comparePassword returns fromDB === fromUser (app/data/user-dao.js:61) against the plaintext stored at :25.",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "gt": "ADJ-9",
+   "planted_prior": null
+  }
+ ],
+ "undecided_count": 0
+}

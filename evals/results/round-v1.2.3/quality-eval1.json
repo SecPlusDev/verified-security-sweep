@@ -1,0 +1,608 @@
+{
+  "eval": 1,
+  "items": [
+    {
+      "id": "A-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "allocations.js:16-18 takes userId from req.params, passed unchecked to the DAO at allocations.js:23; route mounted with isLoggedIn only (index.js:59); DAO filters by that id (allocations-dao.js:58,81-83); ids sequential (user-dao.js:38-44).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-1"
+    },
+    {
+      "id": "A-2",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Both /benefits routes are mounted with isLoggedIn, isAdmin (index.js:55-56); isAdminUserMiddleware loads the user from the DB on each request and calls next() only if user.isAdmin (session.js:25-29). No defect stated or present.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-3",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "The redirect exists (session.js:28, :32), but the route list is public and nothing is disclosed; ground truth AC-2 closes it as over-rated/informational, not a security defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "memos-dao.js:18-21 inserts without owner and getAllMemos uses find({}) (memos-dao.js:28), so all signed-in users see all memos, but this is a shared board by design with no per-user data (ground truth: candidate examined and not included).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "tutorial router (tutorial.js:8-37) mounted without middleware at index.js:75, but it serves static training pages, public by design; no protected data.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "No stale flag: the admin flag is read from the DB on every request via getUserById(req.session.userId) (session.js:27-28), not from the session.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "addUser builds the document field by field from named parameters (user-dao.js:20-31); handleSignup destructures only listed fields (session.js:191-198); isAdmin cannot be set.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-8",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "/profile and /contributions take userId only from req.session (profile.js:14-16, :78-80; contributions.js:13-15, :42-44); /dashboard uses session id (session.js:264); no user-controlled id.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-9",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "POST /benefits does take userId from the body (benefits.js:30-35), but the route is restricted to admins by isAdmin (index.js:56); changing other users' benefits is the intended admin function (AC-1 closed).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-10",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Admins can view any user's allocations only because every signed-in user can (GT-1, allocations.js:16-23); admin access to it is not a defect in itself, and the claim leaves the question open instead of stating a defect. The real defect is covered by A-1.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-11",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "swig autoescape: false (server.js:135-142); memos rendered with {{ marked(doc.memo) }} (app/views/memos.html:31) using marked 0.3.5 (package.json:17), whose sanitize option has known bypasses; memo content is inserted unfiltered (memos.js:13).",
+      "in_zone": "no",
+      "location_holds_defect": "no location",
+      "gt": "ADJ-5"
+    },
+    {
+      "id": "A-12",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "index.js:68 res.redirect(req.query.url) with no validation; route requires isLoggedIn (index.js:66), so the victim must be signed in (\"any caller\" is slightly overstated).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-6"
+    },
+    {
+      "id": "A-13",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "eval(req.body.preTax/afterTax/roth) at contributions.js:32-34; route reachable by any signed-in user (index.js:52).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-8"
+    },
+    {
+      "id": "A-14",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "threshold concatenated into $where at allocations-dao.js:77-79 (line 78), e.g. 1'; return 1 == '1 makes the expression true for all docs, bypassing this.userId filter.",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-1"
+    },
+    {
+      "id": "A-15",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "session.js:116 sets req.session.userId on the existing session with no req.session.regenerate (contrast signup at session.js:234); saveUninitialized: true at server.js:84.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-2"
+    },
+    {
+      "id": "A-16",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "addUser stores password as received (user-dao.js:25; bcrypt fix commented at :26-30); comparePassword is plain === (user-dao.js:61).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-9"
+    },
+    {
+      "id": "A-17",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "session() at server.js:78-102 sets no cookie options: no secure, no maxAge, default name, HTTP server only (server.js:145). The httpOnly part is wrong: express-session ^1.13.0 (package.json:14) defaults httpOnly: true, so scripts cannot read it (ground truth correction). Graded REAL on the secure/maxAge part (ADJ-3).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-3"
+    },
+    {
+      "id": "A-18",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "csurf require and app.use(csrf()) are commented out (server.js:7, :104-113); POST /profile, /contributions, /memos, /benefits carry no token check (index.js:48,52,56,63).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-2"
+    },
+    {
+      "id": "B-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "allocations.js:16-18 takes userId from req.params, passed unchecked to the DAO at allocations.js:23; route mounted with isLoggedIn only (index.js:59); DAO filters by that id (allocations-dao.js:58,81-83); ids sequential (user-dao.js:38-44).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-1"
+    },
+    {
+      "id": "B-2",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "session.js:116 sets req.session.userId on the existing session with no req.session.regenerate (contrast signup at session.js:234); saveUninitialized: true at server.js:84. Admin login also attaches to the fixed session (session.js:117).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-2"
+    },
+    {
+      "id": "B-3",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "On a DB error getUserById leaves user undefined, so `user && user.isAdmin` is false and the middleware redirects (session.js:27-28): fails closed.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Both /benefits routes are mounted with isLoggedIn, isAdmin (index.js:55-56); isAdminUserMiddleware loads the user from the DB on each request and calls next() only if user.isAdmin (session.js:25-29). No defect stated or present.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "The redirect exists (session.js:28, :32), but the route list is public and nothing is disclosed; ground truth AC-2 closes it as over-rated/informational, not a security defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "addUser builds the document field by field from named parameters (user-dao.js:20-31); handleSignup destructures only listed fields (session.js:191-198); isAdmin cannot be set.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "handleProfileUpdate destructures only named fields (profile.js:42-50) and updateUser $sets only listed fields (profile-dao.js:45-66, :78-82); no isAdmin can be written.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-8",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "memos-dao.js:18-21 inserts without owner and getAllMemos uses find({}) (memos-dao.js:28), so all signed-in users see all memos, but this is a shared board by design with no per-user data (ground truth: candidate examined and not included).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-9",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "GET / has no middleware (index.js:30), but displayWelcomePage redirects to /login when there is no session userId (session.js:259-262).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-10",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "tutorial router (tutorial.js:8-37) mounted without middleware at index.js:75, but it serves static training pages, public by design; no protected data.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-11",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "eval(req.body.preTax/afterTax/roth) at contributions.js:32-34; route reachable by any signed-in user (index.js:52).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-8"
+    },
+    {
+      "id": "B-12",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "threshold concatenated into $where at allocations-dao.js:77-79 (line 78), e.g. 1'; return 1 == '1 makes the expression true for all docs, bypassing this.userId filter.",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-1"
+    },
+    {
+      "id": "B-13",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "research.js:15-16 builds url = req.query.url + req.query.symbol and fetches it with needle.get; /research requires only isLoggedIn (index.js:72).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-7"
+    },
+    {
+      "id": "B-14",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "index.js:68 res.redirect(req.query.url) with no validation; route requires isLoggedIn (index.js:66), so the victim must be signed in (\"any caller\" is slightly overstated).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-6"
+    },
+    {
+      "id": "B-15",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "addUser stores password as received (user-dao.js:25; bcrypt fix commented at :26-30); comparePassword is plain === (user-dao.js:61).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-9"
+    },
+    {
+      "id": "B-16",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "csurf require and app.use(csrf()) are commented out (server.js:7, :104-113); POST /profile, /contributions, /memos, /benefits carry no token check (index.js:48,52,56,63).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-2"
+    },
+    {
+      "id": "B-17",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "Distinct messages 'Invalid username' (session.js:60, rendered at :85) vs 'Invalid password' (session.js:61, :94) reveal which usernames exist.",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-9"
+    },
+    {
+      "id": "C-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "allocations.js:16-18 takes userId from req.params, passed unchecked to the DAO at allocations.js:23; route mounted with isLoggedIn only (index.js:59); DAO filters by that id (allocations-dao.js:58,81-83); ids sequential (user-dao.js:38-44).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-1"
+    },
+    {
+      "id": "C-2",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Both /benefits routes are mounted with isLoggedIn, isAdmin (index.js:55-56); isAdminUserMiddleware loads the user from the DB on each request and calls next() only if user.isAdmin (session.js:25-29). No defect stated or present.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-3",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "memos-dao.js:18-21 inserts without owner and getAllMemos uses find({}) (memos-dao.js:28), so all signed-in users see all memos, but this is a shared board by design with no per-user data (ground truth: candidate examined and not included).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "tutorial router (tutorial.js:8-37) mounted without middleware at index.js:75, but it serves static training pages, public by design; no protected data.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "On a DB error getUserById leaves user undefined, so `user && user.isAdmin` is false and the middleware redirects (session.js:27-28): fails closed.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "addUser builds the document field by field from named parameters (user-dao.js:20-31); handleSignup destructures only listed fields (session.js:191-198); isAdmin cannot be set.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "/profile and /contributions take userId only from req.session (profile.js:14-16, :78-80; contributions.js:13-15, :42-44); /dashboard uses session id (session.js:264); no user-controlled id.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-8",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "The redirect exists (session.js:28, :32), but the route list is public and nothing is disclosed; ground truth AC-2 closes it as over-rated/informational, not a security defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-9",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "eval(req.body.preTax/afterTax/roth) at contributions.js:32-34; route reachable by any signed-in user (index.js:52).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-8"
+    },
+    {
+      "id": "C-10",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "threshold concatenated into $where at allocations-dao.js:77-79 (line 78), e.g. 1'; return 1 == '1 makes the expression true for all docs, bypassing this.userId filter.",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-1"
+    },
+    {
+      "id": "C-11",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "research.js:15-16 builds url = req.query.url + req.query.symbol and fetches it with needle.get; /research requires only isLoggedIn (index.js:72).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-7"
+    },
+    {
+      "id": "C-12",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "index.js:68 res.redirect(req.query.url) with no validation; route requires isLoggedIn (index.js:66), so the victim must be signed in (\"any caller\" is slightly overstated).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-6"
+    },
+    {
+      "id": "C-13",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "swig autoescape: false (server.js:135-142); memos rendered with {{ marked(doc.memo) }} (app/views/memos.html:31) using marked 0.3.5 (package.json:17), whose sanitize option has known bypasses; memo content is inserted unfiltered (memos.js:13). server.js:137 is the autoescape: false line.",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-5"
+    },
+    {
+      "id": "C-14",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "addUser stores password as received (user-dao.js:25; bcrypt fix commented at :26-30); comparePassword is plain === (user-dao.js:61). Plaintext comparison at :61 implies plaintext storage (:25); the causal wording is loose.",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-9"
+    },
+    {
+      "id": "C-15",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "session.js:116 sets req.session.userId on the existing session with no req.session.regenerate (contrast signup at session.js:234); saveUninitialized: true at server.js:84.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-2"
+    },
+    {
+      "id": "C-16",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "session() at server.js:78-102 sets no cookie options: no secure, no maxAge, default name, HTTP server only (server.js:145). The httpOnly part is wrong: express-session ^1.13.0 (package.json:14) defaults httpOnly: true, so scripts cannot read it (ground truth correction). Graded REAL on the secure/maxAge part (ADJ-3).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-3"
+    },
+    {
+      "id": "D-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "allocations.js:16-18 takes userId from req.params, passed unchecked to the DAO at allocations.js:23; route mounted with isLoggedIn only (index.js:59); DAO filters by that id (allocations-dao.js:58,81-83); ids sequential (user-dao.js:38-44).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-1"
+    },
+    {
+      "id": "D-2",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Both /benefits routes are mounted with isLoggedIn, isAdmin (index.js:55-56); isAdminUserMiddleware loads the user from the DB on each request and calls next() only if user.isAdmin (session.js:25-29). No defect stated or present. The flag is read from the DB, not the session (session.js:27).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-3",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "The redirect exists (session.js:28, :32), but the route list is public and nothing is disclosed; ground truth AC-2 closes it as over-rated/informational, not a security defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "memos-dao.js:18-21 inserts without owner and getAllMemos uses find({}) (memos-dao.js:28), so all signed-in users see all memos, but this is a shared board by design with no per-user data (ground truth: candidate examined and not included).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "addUser builds the document field by field from named parameters (user-dao.js:20-31); handleSignup destructures only listed fields (session.js:191-198); isAdmin cannot be set.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "tutorial router (tutorial.js:8-37) mounted without middleware at index.js:75, but it serves static training pages, public by design; no protected data. tutorial.js:15 is the pages array.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "/profile and /contributions take userId only from req.session (profile.js:14-16, :78-80; contributions.js:13-15, :42-44); /dashboard uses session id (session.js:264); no user-controlled id.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-8",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Claim states a mitigation: / has no middleware (index.js:30) but displayWelcomePage checks req.session.userId (session.js:259-262); /dashboard also has isLoggedIn (index.js:44).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-9",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "index.js:68 res.redirect(req.query.url) with no validation; route requires isLoggedIn (index.js:66), so the victim must be signed in (\"any caller\" is slightly overstated).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-6"
+    },
+    {
+      "id": "D-10",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "eval(req.body.preTax/afterTax/roth) at contributions.js:32-34; route reachable by any signed-in user (index.js:52).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-8"
+    },
+    {
+      "id": "D-11",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "research.js:15-16 builds url = req.query.url + req.query.symbol and fetches it with needle.get; /research requires only isLoggedIn (index.js:72).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-7"
+    },
+    {
+      "id": "D-12",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "threshold concatenated into $where at allocations-dao.js:77-79 (line 78), e.g. 1'; return 1 == '1 makes the expression true for all docs, bypassing this.userId filter.",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-1"
+    },
+    {
+      "id": "D-13",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "session.js:116 sets req.session.userId on the existing session with no req.session.regenerate (contrast signup at session.js:234); saveUninitialized: true at server.js:84.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "GT-2"
+    },
+    {
+      "id": "D-14",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "addUser stores password as received (user-dao.js:25; bcrypt fix commented at :26-30); comparePassword is plain === (user-dao.js:61).",
+      "in_zone": "no",
+      "location_holds_defect": "yes",
+      "gt": "ADJ-9"
+    },
+    {
+      "id": "D-15",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "csurf require and app.use(csrf()) are commented out (server.js:7, :104-113); POST /profile, /contributions, /memos, /benefits carry no token check (index.js:48,52,56,63). The location server.js:7 is only the commented-out require; the missing middleware is at server.js:104-113.",
+      "in_zone": "no",
+      "location_holds_defect": "no",
+      "gt": "ADJ-2"
+    }
+  ],
+  "undecided": 0,
+  "notes": [
+    "AC-2 claims (A-3, B-5, C-8, D-3): the redirect exists, but they are graded NOT REAL because the ground truth closes AC-2 as informational, not a defect.",
+    "Memo-without-owner (A-4, B-8, C-3, D-4) and public /tutorial (A-5, B-10, C-4, D-6) are graded NOT REAL: by design, per the ground truth's 'examined and not included'.",
+    "Cookie claims A-17 and C-16: graded REAL against ADJ-3 for the missing secure and maxAge, but the httpOnly part is false (express-session defaults httpOnly: true, per the ground truth correction).",
+    "A-10 is graded NOT REAL: it describes an admin side effect of GT-1, not a defect, and the confirmed GT-1 claim is A-1.",
+    "A-12/B-14/C-12/D-9 open redirect: /learn requires isLoggedIn (index.js:66), so 'any caller' is overstated; still REAL.",
+    "Adjacent entries (ADJ-n) are graded in_zone 'no', following the ground truth's split between the zone and adjacent entries."
+  ]
+}

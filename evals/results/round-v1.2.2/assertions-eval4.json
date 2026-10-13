@@ -1,0 +1,207 @@
+{
+  "eval": 4,
+  "expected_diff": "Cloned <opus-round>/base/nodegoat into grading-v1.2.2/tmp-eval4/ng, git checkout 9e832da, git apply --index repo/evals/fixtures/patches/nodegoat/verify-fix.patch, git diff --cached > tmp-eval4/expected.diff; sha256 e5987b88ba67a87110b2e96ebd93fc4391e993cb15d84e2a62e3d08c37e33a9d. All six staged diffs match it byte for byte (cmp), and so do the six live working copies.",
+  "runs": [
+    {
+      "run": "opus/eval4-with_skill-1",
+      "model": "claude-opus-5-5",
+      "config": "with_skill",
+      "staged_identical_to_patch": true,
+      "unstaged_empty": true,
+      "head": "9e832da61b323e1e234bbc69501bf5e175b009b6",
+      "committed": false,
+      "files_changed_outside_staged_fix": [],
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "FAIL",
+          "evidence": "<opus-round>/runs/eval4-with_skill-1/outputs/response.md:1 'Verdict: BROKEN.' is correct, and callers (:18), guard coverage (:20) and proposed guard (:24) exist, but the over-restriction section (the 'what it breaks' heading (Romanian), :3-10) comes before the callers (:18), and a section of direct observations (Romanian heading) (:12) sits between them; the format asks for verdict, then callers, then over-restriction (plugin/skills/defensive-audit-sweep/references/verify-fix.md:103-111)."
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval4-with_skill-1/outputs/response.md:5 the page no longer opens without a threshold; :8 menu link app/views/layout.html:56 href=\"/allocations/{{userId}}\" (confirmed in base app/views/layout.html:56); :10 test/e2e/integration/allocations_spec.js 'Should be an input' visits /allocations/1 without threshold (base allocations_spec.js:25-29)."
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "Test file (not response text): <opus-round>/scratchpad-artifacts-val3/guard/test/unit/allocations-threshold-guard.js:22 it('blocks the attack path: injected or out-of-range thresholds...') asserting err and no $where; :30 it('lets the legitimate path through: no threshold lists the user's allocations') asserting no error and query {userId:1}. Response describes it at <opus-round>/runs/eval4-with_skill-1/outputs/response.md:24-29."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval4-with_skill-1/outputs/staged.diff is byte-identical to expected.diff (cmp, no header differences); <opus-round>/runs/eval4-with_skill-1/outputs/unstaged.diff is 0 bytes; <opus-round>/runs/eval4-with_skill-1/outputs/head.txt:1 = 9e832da; live working copy also re-checked: HEAD 9e832da61b323e1e234bbc69501bf5e175b009b6, git diff --cached cmp-identical, git diff empty."
+        }
+      ],
+      "notes": "A1 strictness: the assertion lists the parts as a sequence ('then unverified callers, over-restriction, guard coverage and the proposed guard') and references/verify-fix.md:103 says 'in this order', so order is graded; Romanian headings are accepted as the sections (the answer is required in Romanian), so the 'what it breaks' headings (Romanian) counts as the over-restriction section for A1 and A2 in every run. response.md:24 cites a /tmp scratchpad path that no longer exists; the guard was graded from the orchestrator-moved copy as instructed. git-status.txt lists only the two staged files."
+    },
+    {
+      "run": "opus/eval4-with_skill-2",
+      "model": "claude-opus-5-5",
+      "config": "with_skill",
+      "staged_identical_to_patch": true,
+      "unstaged_empty": true,
+      "head": "9e832da61b323e1e234bbc69501bf5e175b009b6",
+      "committed": false,
+      "files_changed_outside_staged_fix": [],
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "FAIL",
+          "evidence": "<opus-round>/runs/eval4-with_skill-2/outputs/response.md:1 'Verdict: BROKEN.' is correct; callers (the callers heading (Romanian), :27), guard coverage (:29) and proposed guard (:33-102) exist, but the over-restriction (the 'what it breaks' heading (Romanian), :3-20) comes before the callers, with a section of what still works (Romanian heading) (:22) between them; wrong order against references/verify-fix.md:103-111."
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval4-with_skill-2/outputs/response.md:14 menu link app/views/layout.html:56 to /allocations/{{userId}} with no query string leads to the error page; :16 test/e2e/integration/allocations_spec.js 'Should be an input' (26-29) and 'Should redirect the user' (31-46) open /allocations/1 without a threshold (base allocations_spec.js:25-29, :31-34)."
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "Response text: <opus-round>/runs/eval4-with_skill-2/outputs/response.md:56 it('lets the legitimate path through: no threshold lists all allocations') asserting no error and 2 rows; :69 it(`blocks the attack path: ...`) asserting err and no $where; e2e variant also at :90 and :96."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval4-with_skill-2/outputs/staged.diff is byte-identical to expected.diff (cmp, no header differences); <opus-round>/runs/eval4-with_skill-2/outputs/unstaged.diff is 0 bytes; <opus-round>/runs/eval4-with_skill-2/outputs/head.txt:1 = 9e832da; live working copy also re-checked: HEAD 9e832da61b323e1e234bbc69501bf5e175b009b6, git diff --cached cmp-identical, git diff empty."
+        }
+      ],
+      "notes": "A1 strictness: the assertion lists the parts as a sequence ('then unverified callers, over-restriction, guard coverage and the proposed guard') and references/verify-fix.md:103 says 'in this order', so order is graded; Romanian headings are accepted as the sections (the answer is required in Romanian), so the 'what it breaks' headings (Romanian) counts as the over-restriction section for A1 and A2 in every run. files/ is empty; the guard tests live only in the response text."
+    },
+    {
+      "run": "sonnet/eval4-with_skill-1",
+      "model": "claude-sonnet-5-5",
+      "config": "with_skill",
+      "staged_identical_to_patch": true,
+      "unstaged_empty": true,
+      "head": "9e832da61b323e1e234bbc69501bf5e175b009b6",
+      "committed": false,
+      "files_changed_outside_staged_fix": [],
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval4-with_skill-1/outputs/response.md:1 'Verdict: BROKEN.'; labelled parts in the required order: :21 the unverified-callers heading (Romanian), :22 'Over-restriction', :23 a guard-coverage line (Romanian heading) stating zero coverage, :30 the proposed-guard heading (Romanian) with the code at :32-64."
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval4-with_skill-1/outputs/response.md:22 over-restriction: GET without a threshold or with an empty one; in its section the 'what breaks' heading (Romanian) :5 menu link /allocations/{{userId}} (app/views/layout.html:56) and :6 test/e2e/integration/allocations_spec.js:20-23 visitPage('/allocations/1') without threshold (base allocations_spec.js:19-23 holds that code)."
+        },
+        {
+          "id": "A3",
+          "grade": "FAIL",
+          "evidence": "Response text: <sonnet-round>/runs/eval4-with_skill-1/outputs/response.md:42 test(...) with subtests :43 t.test('blocks the attack path') and :54 t.test('lets the legitimate path through') asserting {userId:1} for undefined and ''. Both halves are present, but there is no it(...): it is one node:test test() with t.test() subtests, and the assertion's text asks for one it(...) per half."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval4-with_skill-1/outputs/staged.diff is byte-identical to expected.diff (cmp, no header differences); <sonnet-round>/runs/eval4-with_skill-1/outputs/unstaged.diff is 0 bytes; <sonnet-round>/runs/eval4-with_skill-1/outputs/head.txt:1 = 9e832da; live working copy also re-checked: HEAD 9e832da61b323e1e234bbc69501bf5e175b009b6, git diff --cached cmp-identical, git diff empty."
+        }
+      ],
+      "notes": "A1 strictness: the assertion lists the parts as a sequence ('then unverified callers, over-restriction, guard coverage and the proposed guard') and references/verify-fix.md:103 says 'in this order', so order is graded; Romanian headings are accepted as the sections (the answer is required in Romanian), so the 'what it breaks' headings (Romanian) counts as the over-restriction section for A1 and A2 in every run. A1 passes because the five labelled parts appear in order (:1, :21-23, :30); extra sections (the 'what breaks' heading (Romanian), the evidence heading (Romanian), the minor-notes heading (Romanian)) sit before the labelled summary, but the assertion does not forbid them. A3 strict reading: 'it(...)' is read literally; a node:test test()/t.test() pair does not meet it. A lenient reading (any test-case block per half) would give PASS. Temp probe only in eval4-with_skill-1.tmp/probe.js, outside the repo."
+    },
+    {
+      "run": "sonnet/eval4-with_skill-2",
+      "model": "claude-sonnet-5-5",
+      "config": "with_skill",
+      "staged_identical_to_patch": true,
+      "unstaged_empty": true,
+      "head": "9e832da61b323e1e234bbc69501bf5e175b009b6",
+      "committed": false,
+      "files_changed_outside_staged_fix": [],
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "FAIL",
+          "evidence": "<sonnet-round>/runs/eval4-with_skill-2/outputs/response.md:1 'Verdict: BROKEN.'; :17 the unverified-callers heading (Romanian), :19 'Guard coverage', :21 'Proposed guard' exist, but there is no over-restriction part after the callers: the content is only in the 'what you break' heading (Romanian) (:3-11), which comes before the callers, with a section of what still works (Romanian heading) (:13) between them; wrong order against references/verify-fix.md:103-111."
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval4-with_skill-2/outputs/response.md:5 /allocations/:id without ?threshold= reaches the error handler; :7 menu link app/views/layout.html:56; :8 test/e2e/integration/allocations_spec.js:15-34 visitPage('/allocations/1') expecting the threshold input (base allocations_spec.js:15-34)."
+        },
+        {
+          "id": "A3",
+          "grade": "FAIL",
+          "evidence": "Test file (cited at <sonnet-round>/runs/eval4-with_skill-2/outputs/response.md:21): <sonnet-round>/runs/eval4-with_skill-2.tmp/guard.test.js:12 test('blocks injection') and :17 test('legit: no threshold (menu link /allocations/:id) lists all'). Both halves are present as separate tests, but they use node:test test(...), not it(...)."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval4-with_skill-2/outputs/staged.diff is byte-identical to expected.diff (cmp, no header differences); <sonnet-round>/runs/eval4-with_skill-2/outputs/unstaged.diff is 0 bytes; <sonnet-round>/runs/eval4-with_skill-2/outputs/head.txt:1 = 9e832da; live working copy also re-checked: HEAD 9e832da61b323e1e234bbc69501bf5e175b009b6, git diff --cached cmp-identical, git diff empty."
+        }
+      ],
+      "notes": "A1 strictness: the assertion lists the parts as a sequence ('then unverified callers, over-restriction, guard coverage and the proposed guard') and references/verify-fix.md:103 says 'in this order', so order is graded; Romanian headings are accepted as the sections (the answer is required in Romanian), so the 'what it breaks' headings (Romanian) counts as the over-restriction section for A1 and A2 in every run. A3 strict reading: 'it(...)' is read literally; node:test test() blocks do not meet it, although both halves are there. A lenient reading would give PASS. Guard and bcrypt stub live in the sibling .tmp dir, outside the repo."
+    },
+    {
+      "run": "opus/eval4-without_skill-baseline",
+      "model": "claude-opus-5-5",
+      "config": "without_skill",
+      "staged_identical_to_patch": true,
+      "unstaged_empty": true,
+      "head": "9e832da61b323e1e234bbc69501bf5e175b009b6",
+      "committed": false,
+      "files_changed_outside_staged_fix": [
+        "test/unit/allocations_threshold_guard_test.js"
+      ],
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "FAIL",
+          "evidence": "<opus-workspace>/iteration-1/eval-4-nodegoat-verify-fix/without_skill/outputs/response.md:1 is a title (a preamble), :3 a verdict line that says, in Romanian, not to commit it as is has no verdict word from CLEAN/RISK/BROKEN; there are no unverified-callers or guard-coverage sections."
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<opus-workspace>/iteration-1/eval-4-nodegoat-verify-fix/without_skill/outputs/response.md:20 GET /allocations/:userId without a query string gives a 500, and the menu link app/views/layout.html:56 goes exactly there; :30 test/e2e/integration/allocations_spec.js 'Should be an input' and 'Should redirect the user' open /allocations/1 without a threshold."
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "Test file written in the repo (untracked): <opus-workspace>/iteration-1/eval-4-nodegoat-verify-fix/without_skill/outputs/repo-files/test/unit/allocations_threshold_guard_test.js:67 it(`payload ... never reaches the database as code`) (attack half, under describe 'attack path is blocked' :53); :78 it('no threshold (menu link /allocations/:id) lists the user's allocations'); identical to repo/test/unit/allocations_threshold_guard_test.js. Response describes it at response.md:47-50."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<opus-workspace>/iteration-1/eval-4-nodegoat-verify-fix/without_skill/outputs/cached.diff is byte-identical to expected.diff (cmp, no header differences); <opus-workspace>/iteration-1/eval-4-nodegoat-verify-fix/without_skill/outputs/unstaged.diff is 0 bytes; <opus-workspace>/iteration-1/eval-4-nodegoat-verify-fix/without_skill/outputs/head.txt:1 = 9e832da; live working copy also re-checked: HEAD 9e832da61b323e1e234bbc69501bf5e175b009b6, git diff --cached cmp-identical, git diff empty. git-status.txt also shows '?? test/unit/allocations_threshold_guard_test.js': an untracked guard file, not staged, so the staged fix itself is unchanged."
+        }
+      ],
+      "notes": "A1 strictness: the assertion lists the parts as a sequence ('then unverified callers, over-restriction, guard coverage and the proposed guard') and references/verify-fix.md:103 says 'in this order', so order is graded; Romanian headings are accepted as the sections (the answer is required in Romanian), so the 'what it breaks' headings (Romanian) counts as the over-restriction section for A1 and A2 in every run. Older layout: staged diff in cached.diff. The run wrote its guard test into the repo as an untracked file; that is outside the staged fix and does not affect A4, which grades only the staged fix and commits."
+    },
+    {
+      "run": "sonnet/eval4-without_skill-baseline",
+      "model": "claude-sonnet-5-5",
+      "config": "without_skill",
+      "staged_identical_to_patch": true,
+      "unstaged_empty": true,
+      "head": "9e832da61b323e1e234bbc69501bf5e175b009b6",
+      "committed": false,
+      "files_changed_outside_staged_fix": [],
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "FAIL",
+          "evidence": "<sonnet-archive>/eval4/without_skill/outputs/response.md:1 a title line that says, in Romanian, that the fix closes the injection but breaks the Allocations page (regression) has no verdict word from CLEAN/RISK/BROKEN; there are no unverified-callers or guard-coverage sections."
+        },
+        {
+          "id": "A2",
+          "grade": "FAIL",
+          "evidence": "<sonnet-archive>/eval4/without_skill/outputs/response.md:6 names the menu link (layout.html:56) and a Romanian phrase naming the Cypress test visitPage(\"/allocations/1\"), and :11 says a Romanian phrase naming the existing Cypress spec by its test title (\"Should be accesible for a logged user\") will fail, but the over-restriction section (the 'what you break' heading (Romanian), :3-11) never names test/e2e/integration/allocations_spec.js; that path appears only at :42, in a suggestion inside the guard section."
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "Test file outside the repo: <sonnet-archive>/eval4/without_skill/outputs/allocations-dao-threshold-test.js:22 an it(...) whose Romanian title says the payload is rejected without a database query for the injection payloads; :36 an it(...) whose Romanian title says that without a threshold the user's allocations are returned for undefined and ''. Response cites it at response.md:32-36 (the /tmp path there is stale; graded the copy in outputs/)."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<sonnet-archive>/eval4/without_skill/outputs/cached.diff is byte-identical to expected.diff (cmp, no header differences); <sonnet-archive>/eval4/without_skill/outputs/unstaged.diff is 0 bytes; <sonnet-archive>/eval4/without_skill/outputs/head.txt:1 = 9e832da; live working copy also re-checked: HEAD 9e832da61b323e1e234bbc69501bf5e175b009b6, git diff --cached cmp-identical, git diff empty. head.txt holds the short sha 9e832da; the live repo resolves to the full sha."
+        }
+      ],
+      "notes": "A1 strictness: the assertion lists the parts as a sequence ('then unverified callers, over-restriction, guard coverage and the proposed guard') and references/verify-fix.md:103 says 'in this order', so order is graded; Romanian headings are accepted as the sections (the answer is required in Romanian), so the 'what it breaks' headings (Romanian) counts as the over-restriction section for A1 and A2 in every run. A2 strict reading: the e2e spec has to be identified as in the assertion (test/e2e/integration/allocations_spec.js) inside the over-restriction part; naming it only as 'the Cypress test/spec' there does not count, even though the path appears later at :42. A lenient reading would give PASS."
+    }
+  ],
+  "note_translation": "Romanian headings and phrases quoted by the grader from the eval 4 responses are paraphrased in English in this copy; the graded responses are in Romanian because the eval 4 prompt is."
+}

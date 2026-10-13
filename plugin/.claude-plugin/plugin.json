@@ -1,0 +1,24 @@
+{
+  "name": "verified-security-sweep",
+  "displayName": "Verified Security Sweep",
+  "description": "Repeatable security and correctness reviews of a codebase, with a record: pick a zone, delegate the reading, verify every finding on the cited lines, reproduce it with a failing test, keep a registry of what was reviewed and found. Finds and verifies; does not ship fixes.",
+  "version": "1.4.0",
+  "author": {
+    "name": "SecPlusDev",
+    "url": "https://github.com/SecPlusDev"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/SecPlusDev/verified-security-sweep",
+  "repository": "https://github.com/SecPlusDev/verified-security-sweep",
+  "keywords": [
+    "security",
+    "security-review",
+    "audit",
+    "code-review",
+    "verify-fix",
+    "reproduction"
+  ],
+  "documentationUrl": "https://github.com/SecPlusDev/verified-security-sweep/blob/main/README.md",
+  "supportUrl": "https://github.com/SecPlusDev/verified-security-sweep/blob/main/SECURITY.md",
+  "privacyPolicyUrl": "https://github.com/SecPlusDev/verified-security-sweep/blob/main/PRIVACY.md"
+}

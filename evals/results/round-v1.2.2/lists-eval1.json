@@ -1,0 +1,575 @@
+{
+  "eval": 1,
+  "reviews": {
+    "A": [
+      {
+        "id": "A-1",
+        "claim": "Any signed-in user can read any other user's allocations and full name via GET /allocations/:userId because the handler takes the user id from the URL instead of the session.",
+        "location": "app/routes/allocations.js:18",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-2",
+        "claim": "Every signed-in user can read every other user's memos on /memos because memos are stored without an owner and fetched as a whole collection.",
+        "location": "app/data/memos-dao.js:28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-3",
+        "claim": "A non-admin user can reach GET or POST /benefits and change another user's benefit date.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-4",
+        "claim": "The /tutorial/* pages are mounted without the isLoggedIn check and are reachable anonymously.",
+        "location": "app/routes/tutorial.js:8",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-5",
+        "claim": "isAdminUserMiddleware ignores the error from getUserById, which could let a request through the admin gate on a database error.",
+        "location": "app/routes/session.js:28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-6",
+        "claim": "The threshold query parameter on /allocations is concatenated into a $where expression, letting a signed-in user retrieve every user's allocations.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-7",
+        "claim": "Any signed-up user can execute server-side code through eval of req.body.preTax (and the following fields) on POST /contributions.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-8",
+        "claim": "GET /research fetches req.query.url server-side, allowing server-side request forgery.",
+        "location": "app/routes/research.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-9",
+        "claim": "GET /learn redirects to req.query.url without validation (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-10",
+        "claim": "Memo content is rendered unescaped (autoescape off plus marked) to every viewer including the admin, enabling stored script injection.",
+        "location": "app/data/memos-dao.js:18",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-11",
+        "claim": "The session id is not regenerated at login (session fixation).",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-12",
+        "claim": "CSRF protection is commented out and the session cookie has no sameSite, so an attacker page can make an admin's browser submit POST /benefits.",
+        "location": "server.js:107",
+        "status": "unconfirmed"
+      }
+    ],
+    "B": [
+      {
+        "id": "B-1",
+        "claim": "Any signed-in user can read any other user's allocations and name via GET /allocations/:userId because the user id is taken from req.params with no ownership check.",
+        "location": "app/routes/allocations.js:18",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-2",
+        "claim": "A crafted threshold value on /allocations, interpolated into a $where string alongside the ownership clause, returns every user's allocations to any signed-in user.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-3",
+        "claim": "The admin-only gate on /benefits can be bypassed (e.g. by case or trailing-slash URL variants, HEAD requests or stale admin sessions).",
+        "location": "app/routes/index.js:55-56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-4",
+        "claim": "Every signed-in user can read every memo on /memos because memos have no owner field and getAllMemos returns the whole collection.",
+        "location": "app/data/memos-dao.js:28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-5",
+        "claim": "isAdminUserMiddleware ignores the DAO error, which could let a request through the admin gate.",
+        "location": "app/routes/session.js:27-28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-6",
+        "claim": "A user can make themselves admin by mass-assigning isAdmin on signup or profile update.",
+        "location": "app/data/user-dao.js:20-31",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-7",
+        "claim": "A user can log in as another user by sending JSON query operators in the userName or password fields of POST /login.",
+        "location": "app/data/user-dao.js:91-93",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-8",
+        "claim": "A signed-in user can read or change another user's data through /profile, /contributions or /dashboard.",
+        "location": "app/routes/profile.js:14-16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-9",
+        "claim": "A forged session cookie made with the default cookieSecret lets an attacker act as another user.",
+        "location": "config/env/all.js:8",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-10",
+        "claim": "An admin can edit another admin's benefit start date through /benefits.",
+        "location": "app/data/benefits-dao.js:24-26",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-11",
+        "claim": "Access denials redirect to /login instead of answering 403.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-12",
+        "claim": "Any signed-in user can execute server-side code through eval of preTax, afterTax and roth on POST /contributions.",
+        "location": "app/routes/contributions.js:32-34",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-13",
+        "claim": "The $where sink in the allocations DAO accepts arbitrary server-side JavaScript, including payloads that exhaust database CPU.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-14",
+        "claim": "A query operator in userName on POST /login selects which user document is loaded (enabled by the JSON body parser).",
+        "location": "app/data/user-dao.js:91-93",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-15",
+        "claim": "GET /research makes an outbound request built from user-supplied url and symbol parameters (server-side request forgery).",
+        "location": "app/routes/research.js:15-16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-16",
+        "claim": "GET /learn performs an open redirect to a user-supplied URL.",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-17",
+        "claim": "The session id is not regenerated on login (session fixation).",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-18",
+        "claim": "The session cookie is set without httpOnly and secure flags.",
+        "location": "server.js:92-100",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-19",
+        "claim": "The session cookie secret is a hard-coded default value.",
+        "location": "config/env/all.js:8",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-20",
+        "claim": "CSRF protection is disabled for state-changing requests.",
+        "location": "server.js:104-113",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-21",
+        "claim": "Passwords are stored and compared in plaintext.",
+        "location": "app/data/user-dao.js:25",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-22",
+        "claim": "Login returns distinct errors for an unknown user and a wrong password, allowing user enumeration.",
+        "location": "app/routes/session.js:85",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-23",
+        "claim": "Template autoescaping is disabled application-wide.",
+        "location": "server.js:135-142",
+        "status": "unconfirmed"
+      }
+    ],
+    "C": [
+      {
+        "id": "C-1",
+        "claim": "Any signed-in user can read any other user's allocations and name via GET /allocations/:userId because the handler reads the user id from the URL instead of the session.",
+        "location": "app/routes/allocations.js:17",
+        "status": "confirmed"
+      },
+      {
+        "id": "C-2",
+        "claim": "A non-admin user can reach the /benefits routes.",
+        "location": "app/routes/index.js:55",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-3",
+        "claim": "isAdminUserMiddleware ignores the database error argument, which could let a request through the admin gate.",
+        "location": "app/routes/session.js:25-:34",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-4",
+        "claim": "Every signed-in user can see every other user's memos on /memos.",
+        "location": "app/data/memos-dao.js:19",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-5",
+        "claim": "The /tutorial/* routes have no isLoggedIn gate and are reachable anonymously.",
+        "location": "app/routes/tutorial.js:8-:37",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-6",
+        "claim": "A signed-in user can read or write another user's data through /profile, /contributions, memo posting or /dashboard by supplying an id in the request.",
+        "location": "app/routes/profile.js:16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-7",
+        "claim": "Gated routes can be reached directly without a session.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-8",
+        "claim": "The admin and login middlewares redirect an authenticated non-admin to /login instead of answering 403.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-9",
+        "claim": "The threshold query parameter is used to build a $where expression in the allocations DAO (NoSQL/JavaScript injection).",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-10",
+        "claim": "Any signed-in user can execute server-side code through eval of preTax and the next two fields on POST /contributions.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-11",
+        "claim": "GET /research makes an outbound request to a URL taken from the query (server-side request forgery).",
+        "location": "app/routes/research.js:16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-12",
+        "claim": "GET /learn redirects to req.query.url (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-13",
+        "claim": "Login does not regenerate the session id (session fixation).",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-14",
+        "claim": "Passwords are stored in clear text.",
+        "location": "app/data/user-dao.js:25",
+        "status": "unconfirmed"
+      }
+    ],
+    "D": [
+      {
+        "id": "D-1",
+        "claim": "Any signed-in user can read any other user's allocations and name via GET /allocations/:userId because the user id is taken from req.params with no ownership comparison.",
+        "location": "app/routes/allocations.js:18",
+        "status": "confirmed"
+      },
+      {
+        "id": "D-2",
+        "claim": "Every signed-in user can read every other user's memos on /memos because memos are stored without an author and the whole collection is returned.",
+        "location": "app/data/memos-dao.js:18-21",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-3",
+        "claim": "A signed-in user can read or write another user's record through /profile or /contributions.",
+        "location": "app/routes/profile.js:79",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-4",
+        "claim": "A user can escalate to admin by sending isAdmin in the signup or profile update request.",
+        "location": "app/routes/session.js:191",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-5",
+        "claim": "isAdminUserMiddleware ignores the database error, which could let a request through the admin gate.",
+        "location": "app/routes/session.js:28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-6",
+        "claim": "The / route is mounted without isLoggedIn.",
+        "location": "app/routes/session.js:259",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-7",
+        "claim": "The /tutorial/* routes are mounted without any gate.",
+        "location": "app/routes/tutorial.js:31",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-8",
+        "claim": "A non-admin user can reach GET or POST /benefits.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-9",
+        "claim": "Access denials redirect to /login instead of answering 403.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-10",
+        "claim": "The threshold query parameter is built into a $where JavaScript string, letting a signed-in user retrieve every user's allocations even after the URL-id fix, and evaluate server-side JavaScript.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-11",
+        "claim": "Any signed-in user can execute code in the server process through eval of body fields on POST /contributions.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-12",
+        "claim": "GET /research makes an outbound request to a URL built from req.query.url (server-side request forgery).",
+        "location": "app/routes/research.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-13",
+        "claim": "GET /learn redirects to req.query.url (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-14",
+        "claim": "No POST request has CSRF protection and the session cookie lacks sameSite, so a page visited by the admin can trigger the admin-only POST /benefits.",
+        "location": "server.js:107",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-15",
+        "claim": "Login does not regenerate the session id (session fixation).",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-16",
+        "claim": "The session cookie secret is a fixed value in configuration.",
+        "location": "config/env/all.js:8",
+        "status": "unconfirmed"
+      }
+    ],
+    "E": [
+      {
+        "id": "E-1",
+        "claim": "Any signed-in user can read any other user's allocations and name via GET /allocations/:userId because the id is taken from req.params with no comparison to the session user.",
+        "location": "app/routes/allocations.js:18",
+        "status": "confirmed"
+      },
+      {
+        "id": "E-2",
+        "claim": "The earlier admin-only fix on /benefits does not hold, so a non-admin can still reach it.",
+        "location": "app/routes/index.js:55-56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-3",
+        "claim": "Every signed-in user can read and post on /memos and see every other user's memos, which carry no author.",
+        "location": "app/data/memos-dao.js:18-21,28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-4",
+        "claim": "isAdminUserMiddleware lets a request through the admin gate on a database error.",
+        "location": "app/routes/session.js:109",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-5",
+        "claim": "The /tutorial/* pages are reachable without login.",
+        "location": "app/routes/tutorial.js:8-37",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-6",
+        "claim": "A signed-in user can access another user's record through /profile, /contributions or /dashboard by supplying an id.",
+        "location": "profile.js:14-16,78-80",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-7",
+        "claim": "A user can set isAdmin on themselves by mass assignment through the profile update.",
+        "location": "profile-dao.js:168-189",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-8",
+        "claim": "The threshold parameter is built into a $where expression in the allocations DAO (NoSQL injection), letting an injected clause escape the per-user filter.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-9",
+        "claim": "Request fields on POST /contributions are passed to eval.",
+        "location": "app/routes/contributions.js:32-34",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-10",
+        "claim": "GET /learn performs an open redirect via req.query.url.",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-11",
+        "claim": "GET /research makes an outbound request to a user-supplied URL.",
+        "location": "app/routes/research.js:16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-12",
+        "claim": "The session id is not regenerated on login.",
+        "location": "app/routes/session.js:197",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-13",
+        "claim": "Passwords are compared in plaintext.",
+        "location": "app/data/user-dao.js:61",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-14",
+        "claim": "The session cookie secret is hard-coded.",
+        "location": "config/env/all.js",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-15",
+        "claim": "Stored memo content is rendered with autoescaping off.",
+        "location": "app/routes/memos.js",
+        "status": "unconfirmed"
+      }
+    ],
+    "F": [
+      {
+        "id": "F-1",
+        "claim": "Any signed-in user can read any other user's allocations and name via GET /allocations/:userId because the id is taken from req.params with no ownership check.",
+        "location": "app/routes/allocations.js:18",
+        "status": "confirmed"
+      },
+      {
+        "id": "F-2",
+        "claim": "Every signed-in user can see every other user's memos on /memos, which have no owner field.",
+        "location": "app/data/memos-dao.js:18-21",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-3",
+        "claim": "isAdminUserMiddleware ignores the error in the database callback, which could let a request through the admin gate.",
+        "location": "app/routes/session.js:28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-4",
+        "claim": "A non-admin can reach admin functionality through handlers other than /benefits.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-5",
+        "claim": "A user can obtain the admin role by posting isAdmin on signup.",
+        "location": "user-dao.js:20-26",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-6",
+        "claim": "/profile and /contributions act on a client-supplied user id, letting a user touch another user's record.",
+        "location": "profile.js:15,79",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-7",
+        "claim": "A non-admin user can reach /benefits.",
+        "location": "index.js:55-56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-8",
+        "claim": "The threshold parameter is concatenated into a $where JavaScript string, enabling injection that can widen the query past the per-user clause.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-9",
+        "claim": "Request body fields on POST /contributions are passed to eval.",
+        "location": "app/routes/contributions.js:32-34",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-10",
+        "claim": "GET /research makes an outbound request to a client-supplied URL.",
+        "location": "app/routes/research.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-11",
+        "claim": "GET /learn redirects to req.query.url (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-12",
+        "claim": "The session is not regenerated on login.",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-13",
+        "claim": "Passwords are compared in plaintext.",
+        "location": "app/data/user-dao.js:61",
+        "status": "unconfirmed"
+      }
+    ]
+  }
+}

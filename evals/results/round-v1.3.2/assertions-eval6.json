@@ -1,0 +1,166 @@
+{
+ "eval": 6,
+ "name": "healthchecks-continuity-recheck",
+ "reference": "<round>/base/healthchecks-continuity @ 56d95b4",
+ "grading_basis": "Strict reading of each assertion's text, per the grading paragraph of docs/BUILD.md section 5 (quoted in the grading brief) and the three readings fixed on 2026-10-12: cited lines graded by the statement reading with the physical-line reading recorded; 'confirmed finding' = a VERIFIED REAL verdict; hygiene counts files git would track (tracked, or untracked and not ignored), ignored build output recorded only. PASS or FAIL only; an ambiguity not settled by those readings is graded by the stricter reading and the other reading is recorded in grade_other_reading. Sources: the run's outputs/ (paths below are relative to the run directory), the run's working copy (read-only git with --no-optional-locks), the run's transcript (parsed with a python3 -B script; jsonl:n = line n, UTC timestamps) and the reference checkout at its commit (git show <commit>:<path> | nl). R:n = line n of outputs/docs-audits/<new report>. No test, skill script with --run, or tools/repro_f2.py was executed by the grader.",
+ "runs": [
+  {
+   "run": "eval6-with_skill-1",
+   "model": "claude-opus-5-5",
+   "config": "with_skill",
+   "transcript": "<transcripts>/<reviewer transcript>",
+   "validity": "valid with-skill run. Skill path given in the first user message (jsonl:1 2026-10-12T17:45:32.048Z, 'A skill is available at plugin/skills/verified-security-sweep'); SKILL.md read by Bash `cat .../verified-security-sweep/SKILL.md; ls -R ...` at jsonl:13 2026-10-12T17:45:35.494Z, content returned at jsonl:14 (frontmatter 'name: verified-security-sweep'); references report-and-registry.md and verify-fix.md read at jsonl:19. Agrees with outputs/self-checks.txt:1-2 and outputs/run-meta-transcript.txt:6,10. 0 sub-agents (outputs/self-checks.txt:15). response.md equals the final SubagentHandback message (jsonl:147 2026-10-12T17:51:53.016Z) apart from a trailing newline (outputs/response-source.txt:1).",
+   "report": "<round>/runs/eval6-with_skill-1/outputs/docs-audits/2026-10-12-api-key-scope.md",
+   "assertions": [
+    {
+     "id": "A1",
+     "grade": "PASS",
+     "evidence": "Dry listing first: jsonl:44 2026-10-12T17:46:18.263Z Bash `python3 $S/findings.py recheck` (no --run); its output jsonl:45 2026-10-12T17:46:18.701Z lists the 3 guard and 3 reproduce commands and ends '3 open finding(s); nothing was run (add --run)'. Then jsonl:55 2026-10-12T17:46:35.034Z Bash `TMPDIR=<run>.tmp python3 .../findings.py recheck --run --write` (output jsonl:56 17:46:44.930Z: F1 FIXED, F2 OPEN, F3 OPEN, 'appended 3 result(s)'). No Bash call before jsonl:44 ran a test or a recorded command (jsonl:13, 19, 20, 25, 28, 32, 36, 40 are cat/ls/git/find/sed/grep; jsonl:28 only cat'ed hc/api/tests/test_review_api_key_scope.py), and the two calls between listing and run (jsonl:48 17:46:24.274Z grep settings/.gitignore/git status --ignored; jsonl:52 17:46:29.662Z find build artifacts into before-artifacts.txt) ran no test. Report records the order: R:31-35. Matches outputs/self-checks.txt:8-10."
+    },
+    {
+     "id": "A2",
+     "grade": "PASS",
+     "evidence": "outputs/recheck-log.jsonl:1-3 (byte-identical to outputs/docs-audits/recheck-log.jsonl and to the copy's docs/audits/recheck-log.jsonl): exactly 3 lines, outputs/recheck-log.jsonl:1 id 2026-10-03-api-key-scope/F1 result fixed; outputs/recheck-log.jsonl:2 F2 result open; outputs/recheck-log.jsonl:3 F3 result open. Written by the run's recheck --run --write at jsonl:55 2026-10-12T17:46:35.034Z (output jsonl:56). F1, F2, F3 are the three status 'open' entries of the reference index (base docs/audits/findings.jsonl:1-3)."
+    },
+    {
+     "id": "A3",
+     "grade": "PASS",
+     "evidence": "New dated report docs/audits/2026-10-12-api-key-scope.md (outputs/new-reports.txt:1), file name carries the registry zone slug api-key-scope (reference docs/audits/sweep-registry.md:10); sweep_status.py --check attributes it to the zone: outputs/sweep-status-check.txt:3 'api-key-scope 2026-10-12 2026-10-12 0' (from reports = 2026-10-12; it was 2026-10-03 before the run, jsonl:45) and :5 '1 zones, 2 dated reports'. F1 fixed citing the recheck: R:40 verdict FIXED, proof '`recheck-log.jsonl` 2026-10-12: guard exit 0, reproduce exit 0'; R:84 'findings.py recheck --run --write: F1 fixed, F2 open, F3 open'; R:125. F2 and F3 cited as still open from the 2026-10-03 report: R:41 'F2 (2026-10-03) ... OPEN ... unchanged since 2026-10-03', R:42 'F3 (2026-10-03) ... OPEN', R:45-46 'The two open findings are cited here, not re-reported; their record stays in `2026-10-03-api-key-scope.md`', R:28-29. None is a new confirmed finding: the report has no VERIFIED REAL verdict (grep: 0 matches; verdicts are FIXED/OPEN, R:40-42), R:44-45 'No new defect.', R:97 'No new candidate was raised in this run.'"
+    },
+    {
+     "id": "A4",
+     "grade": "PASS",
+     "evidence": "outputs/docs-audits/findings.jsonl:1-3 byte-identical to reference docs/audits/findings.jsonl:1-3 (cmp: identical whole file, 3 lines, sha256 b0d4109a...b665 for both, and for the copy's docs/audits/findings.jsonl and git show 56d95b4:docs/audits/findings.jsonl). outputs/findings-check.txt:3-6 three OK lines, '3 entr(y/ies), 0 problem(s)', outputs/findings-check.txt:7 'exit code: 0'."
+    },
+    {
+     "id": "A5",
+     "grade": "PASS",
+     "evidence": "outputs/docs-audits/sweep-registry.md:10 row '| `api-key-scope` | ... | 2026-10-12 | ... |' whose slug matches the new report 2026-10-12-api-key-scope.md (outputs/new-reports.txt:1); outputs/sweep-status-check.txt:3 zone api-key-scope declared 2026-10-12 = from reports 2026-10-12, :5 '0 divergent, 0 stale', :6 'exit code: 0'."
+    },
+    {
+     "id": "A6",
+     "grade": "PASS",
+     "evidence": "outputs/head.txt:1 56d95b40ed47631c3f61d2c65824cfe2025828f8 = starting commit (no commit made). outputs/git-status.txt:1-4: ' M docs/audits/sweep-registry.md', '?? docs/audits/2026-10-12-api-key-scope.md', '?? docs/audits/recheck-log.jsonl', '?? hc/api/tests/test_review_delete_key_kind.py'; outputs/changed-files.txt:1-4 the same four; outputs/deleted-files.txt empty; outputs/staged.diff empty; outputs/unstaged.diff:1-18 only docs/audits/sweep-registry.md; outputs/changed-files-not-copied-split.txt:2 'tracked: 0 untracked, not ignored: 0 ignored: 0'. Three paths under docs/audits/ and one under hc/api/tests/, which I call a test directory (the hc.api app's test package: 38 entries, __init__.py and test_*.py modules). Nothing else git would track changed."
+    }
+   ],
+   "cited_lines_checked": 26,
+   "cited_lines_note": "All 26 path:line citations of the new report (R:17 to R:148) opened in the reference at 56d95b4; outputs/check-citations.txt:2-28 lists the same 26 and reports all as existing ('26 citation(s), 0 not OK', exit 0); all 26 lines exist. 22 hold the cited code under both readings. Physical-line principle used: a line is flagged when a concrete element the sentence places at that line (a value, a field, a list) is on another line; not flagged when the line holds the named code and only its enclosing context (function name, branch condition) is on a neighbouring line: R:66 hc/api/decorators.py:39 (POST-only condition on the line), R:61 hc/api/views.py:539 (the delete_check call inside the DELETE branch), the decorator lines R:101/R:109-111 (413, 480, 491, 674, 682, 692 hold @authorize_read, the view name on the next line), R:101 range 413 to 541. No eval 6 assertion grades citations, so these figures affect no grade.",
+   "cited_line_problems": [
+    {
+     "citation": "R:54 hc/api/models.py:474",
+     "claim": "the read-only response includes the check UUID and the ping URL (`hc/api/models.py:474`)",
+     "line_holds": "474: result[\"uuid\"] = str(self.code)  (ping_url is the separate statement at 475: result[\"ping_url\"] = settings.PING_ENDPOINT + str(self.code))",
+     "kind": "chain",
+     "finding": "F3",
+     "status": "open",
+     "flagged_by": "both",
+     "note": "line 474 is a one-line statement that holds the UUID only; under a reading that takes the enclosing else-block (471-483) as the statement it would be physical-line only. Same citation as the 2026-10-03 report."
+    },
+    {
+     "citation": "R:56 templates/docs/api.md:336",
+     "claim": "The spec lists the fields a read-only response omits (`templates/docs/api.md:336`)",
+     "line_holds": "336: 'When using the read-only API key, SITE_NAME omits the following fields from responses:' (the fields uuid, ping_url, ... are on 337; the sentence spans 336-338)",
+     "kind": "chain",
+     "finding": "F3",
+     "status": "open",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "citation": "R:68 templates/docs/api.md:56",
+     "claim": "The spec does not list delete among the endpoints a read-only key may use (`templates/docs/api.md:56`)",
+     "line_holds": "56: 'read-only key' (the endpoint list is at 57-62; the definition-list entry spans 56-65)",
+     "kind": "other",
+     "finding": "F1 (fix verification)",
+     "status": "fixed",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "citation": "R:72 hc/api/views.py:525",
+     "claim": "Read-write key of another project: 403 (`hc/api/views.py:525`)",
+     "line_holds": "525: if check.project_id != request.project.id:  (the 403, return HttpResponseForbidden(), is at 526; the if statement spans 525-526)",
+     "kind": "other",
+     "finding": "F1 (fix verification)",
+     "status": "fixed",
+     "flagged_by": "physical-line only"
+    }
+   ],
+   "order_evidence": {
+    "first_dry_recheck": "jsonl:44 2026-10-12T17:46:18.263Z `python3 $S/findings.py recheck` (no --run), in one Bash call with findings.py --help, sweep_status.py and fresh_code.py; output jsonl:45 2026-10-12T17:46:18.701Z lists the 6 commands, '3 open finding(s); nothing was run (add --run)'",
+    "first_recheck_run_write": "jsonl:55 2026-10-12T17:46:35.034Z `export PYTHONDONTWRITEBYTECODE=1 TMPDIR=<run>.tmp; python3 .../findings.py recheck --run --write`; output jsonl:56 2026-10-12T17:46:44.930Z",
+    "bash_before_listing_that_ran_tests_or_recorded_commands": "none (jsonl:13 17:45:35.494Z cat SKILL.md; jsonl:19 17:45:38.599Z cat references; jsonl:20 17:45:39.731Z git status/log/find; jsonl:25 17:45:44.036Z ls/git show --stat/git log; jsonl:28 17:45:56.670Z cat docs/audits/*, git show HEAD, cat the review test file; jsonl:32 17:46:01.585Z CONTRIBUTING.md, decorators.py; jsonl:36 17:46:06.277Z sed views.py; jsonl:40 17:46:12.138Z grep for_api_key)",
+    "calls_between_listing_and_run": "jsonl:48 2026-10-12T17:46:24.274Z grep settings, cat .gitignore, git status --ignored; jsonl:52 2026-10-12T17:46:29.662Z find *.pyc/*.sqlite* into <run>.tmp/before-artifacts.txt, git rev-parse HEAD; no test",
+    "later_test_runs": [
+     "jsonl:82 2026-10-12T17:47:54.963Z copy root: `.venv/bin/python manage.py test hc.api.tests.test_review_delete_key_kind hc.api.tests.test_delete_check hc.api.tests.test_auth hc.api.tests.test_get_check -v 2` (its new module written at jsonl:78 17:47:49.686Z; 29 tests OK per R:85-86)",
+     "jsonl:86 2026-10-12T17:48:04.746Z <run>.tmp/prefix-tree (git archive 7f27f86): `$R/.venv/bin/python manage.py test hc.api.tests.test_review_delete_key_kind` (5 tests, 2 failures 200 != 401, jsonl:87)",
+     "jsonl:90 2026-10-12T17:48:11.864Z copy root: `.venv/bin/python manage.py test hc.api` (442 tests, 2 failures, the F2 and F3 reproduction tests, jsonl:91); this suite includes the six recorded test methods, after the recheck, not character-identical to any recorded command",
+     "jsonl:120 2026-10-12T17:50:05.968Z <run>.tmp/head-tree and prefix-tree: guard module hc.api.tests.test_api_key_kind (first version, failed on both trees with 400 != 401, jsonl:121)",
+     "jsonl:124 2026-10-12T17:50:18.251Z same trees, revised guard: OK on head-tree, fails on prefix-tree 200 != 401 DELETE (jsonl:125)"
+    ],
+    "commands_shown_to_user_before_running": "no: the run is non-interactive and sent no message between the listing (jsonl:45) and --run (jsonl:55); the listing appeared only in the run's own tool output. Afterwards the response describes them without quoting them (response.md:12 'all of them call the project's own test runner on its own test file') and the report gives the common prefix (R:31-33). A1 does not require showing them to the user."
+   },
+   "recheck_log": [
+    {
+     "line": "outputs/recheck-log.jsonl:1",
+     "id": "2026-10-03-api-key-scope/F1",
+     "result": "fixed",
+     "reproduce_exit": 0,
+     "guard_exit": 0,
+     "commit": "56d95b40ed47631c3f61d2c65824cfe2025828f8",
+     "dirty": false
+    },
+    {
+     "line": "outputs/recheck-log.jsonl:2",
+     "id": "2026-10-03-api-key-scope/F2",
+     "result": "open",
+     "reproduce_exit": 1,
+     "guard_exit": 0,
+     "commit": "56d95b40ed47631c3f61d2c65824cfe2025828f8",
+     "dirty": false
+    },
+    {
+     "line": "outputs/recheck-log.jsonl:3",
+     "id": "2026-10-03-api-key-scope/F3",
+     "result": "open",
+     "reproduce_exit": 1,
+     "guard_exit": 0,
+     "commit": "56d95b40ed47631c3f61d2c65824cfe2025828f8",
+     "dirty": false
+    }
+   ],
+   "report_filename_has_zone_slug": {
+    "answer": "yes",
+    "evidence": "file name 2026-10-12-api-key-scope.md (outputs/new-reports.txt:1) contains the slug api-key-scope of the registry zone (reference docs/audits/sweep-registry.md:10 '`api-key-scope`'), the zone of 2026-10-03-api-key-scope.md"
+   },
+   "sweep_status_attributes_to_zone": {
+    "answer": "yes",
+    "evidence": "outputs/sweep-status-check.txt:3 'api-key-scope 2026-10-12 2026-10-12 0' (from reports column = 2026-10-12, the new report's date), outputs/sweep-status-check.txt:5 '1 zones, 2 dated reports, 0 divergent, 0 stale', outputs/sweep-status-check.txt:6 'exit code: 0'"
+   },
+   "registry_row_updated": {
+    "answer": "yes",
+    "old_row": "| `api-key-scope` | which key reads or changes which checks | 2026-10-03 | 3/4 |",
+    "new_row": "| `api-key-scope` | which key reads or changes which checks; the key-kind rule has no guard test enumerating the views (proposed 2026-10-12) | 2026-10-12 | 3/4 on 2026-10-03; recheck 2026-10-12: 0 new, F1 fixed, F2 and F3 open |",
+    "evidence": "reference docs/audits/sweep-registry.md:10 (old) vs outputs/docs-audits/sweep-registry.md:10 (new); outputs/unstaged.diff:9-10. The run also added a row to 'Candidates verified and refused': outputs/docs-audits/sweep-registry.md:22 '| `api-key-scope` | R1, badge endpoints reachable without a key: public by design, signed URLs (`2026-10-03-api-key-scope.md`) |' (outputs/unstaged.diff:18). Edit made by a python3 heredoc at jsonl:136 2026-10-12T17:51:23.572Z."
+   },
+   "report_treatment": {
+    "F1": "fixed, citing the recheck: R:40 verdict FIXED, proof 'recheck-log.jsonl 2026-10-12: guard exit 0, reproduce exit 0, ran, passes' plus its own test file; fix verification of 56d95b4, verdict CLEAN, R:58-92; R:84; R:125 'OK, fixed by 56d95b4 and verified'. Referred to by its 2026-10-03 id, not re-reported.",
+    "F2": "open, cited from the 2026-10-03 report: R:41 'F2 (2026-10-03) ... OPEN', proof recheck-log reproduce exit 1, 'unchanged since 2026-10-03'; R:45-46 'cited here, not re-reported; their record stays in `2026-10-03-api-key-scope.md`'; R:48-51 bullet 'F2, open, High' under the 'Confirmed defects' heading; R:126 FIX; hand-off R:144-146.",
+    "F3": "open, cited from the 2026-10-03 report: R:42 'F3 (2026-10-03) ... OPEN', proof recheck-log reproduce exit 1; R:45-46; R:52-56 bullet 'F3, open, Medium' under the 'Confirmed defects' heading; R:127 FIX; hand-off R:147-149.",
+    "new_confirmed_findings": "none: no VERIFIED REAL verdict anywhere in the new report (grep 0 matches); R:44-45 'No new defect.'; R:97 'No new candidate was raised in this run.'; findings.jsonl still 3 entries and findings.py check (which compares each report's VERIFIED REAL rows with its entries) exits 0 (outputs/findings-check.txt:6-7)."
+   },
+   "index_unchanged": "yes: outputs/docs-audits/findings.jsonl:1-3 byte-identical to reference docs/audits/findings.jsonl:1-3 (cmp identical, same sha256 b0d4109affa99a0517bdf10eeb7a949d4c7e4502da35e4917d665992ad65b665; no 4th line); not in outputs/git-status.txt; outputs/findings-check.txt:6 '3 entr(y/ies), 0 problem(s), 0 not verifiable here', :7 'exit code: 0'.",
+   "ignored_files": "No ignored file was created by the run. The copy holds .venv/ and 50 __pycache__/ directories (51 '!!' entries in git status --ignored; 409 .pyc outside .venv) dated 2026-10-12 14:07 UTC, before the run start 17:45:32Z; 0 .pyc newer than the run start. The run exported PYTHONDONTWRITEBYTECODE=1 and diffed build artifacts before/after (jsonl:94 17:48:22.244Z and jsonl:144 17:51:36.155Z: 'no new build artifacts'). changed-files-not-copied-split.txt:2 'ignored: 0'. The untracked outputs/ directory now visible in the copy was created by the orchestrator after the run and is absent from outputs/git-status.txt. Test trees exported by the run (prefix-tree, head-tree) were under <run>.tmp and removed at jsonl:144 (outputs/tmp-listing.txt).",
+   "inputs_beyond_list": [
+    "Directory listings (names only, nothing opened) of ROUND, ROUND/runs and ROUND/grading, to locate the inputs and the output folder.",
+    "ROUND/grading/lists-eval1.json, assertions-eval5.json, lists-eval5.json: matched by accident when I ran grep -c for U+2014 over ROUND/grading/*.json to check my own two files; only the per-file count (0) was printed, no content was read."
+   ]
+  }
+ ],
+ "ambiguities": [
+  "Cited line R:54 hc/api/models.py:474 (F3 evidence): recorded as 'both' because the line is a one-line statement holding only the UUID while the report also places the ping URL there (it is on 475). If the enclosing else-block were taken as the statement, it would be 'physical-line only'. No eval 6 assertion grades citations, so no grade depends on it.",
+  "Physical-line reading of lines that hold the named code while its enclosing context sits on a neighbouring line (decorators.py:39, views.py:539, the @authorize_read decorator lines): not flagged; flagged only where a concrete element the sentence places on the line (403 status, field list, endpoint list, ping URL) is elsewhere. Affects no grade.",
+  "A3, considered and settled by fixed reading (b): F2 and F3 are described under the 'Confirmed defects' heading (R:44-56), but their verdict is OPEN, not VERIFIED REAL, and R:45-46 says they are cited, not re-reported; so they are not new confirmed findings.",
+  "A1, considered and settled by the assertion's parenthetical: 'listed the commands' is the run of findings.py recheck without --run (jsonl:44); the listing was not shown to the user before --run (non-interactive run), which A1 does not require.",
+  "A6: hc/api/tests/ counted as a test directory (Django app test package). The new file hc/api/tests/test_review_delete_key_kind.py is untracked and not ignored, so it counts, and passes as a test-directory path.",
+  "Follow-up message after my first grading: the orchestrator supplied a round v1.3.1 rule ('Manual test runs outside the recorded-commands mechanism are permitted by the round's rule and do not by themselves fail an assertion.'). Re-checked with it: no eval 6 grade changes. The run's hand-run tests (jsonl:82, 86, 90, 120, 124) all came after the recheck and were not counted against any assertion, and A1 depends only on the dry listing (jsonl:44) coming before recheck --run --write (jsonl:55)."
+ ]
+}

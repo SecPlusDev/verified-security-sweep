@@ -1,0 +1,13 @@
+{
+  "note": "check_citations.py runs. 'by_run' is read from each run's transcript (Bash tool calls that execute scripts/check_citations.py on the run's new report, and their tool results). 'by_orchestrator' is outputs/check-citations.txt, run after the run on its final docs/audits. Counts are 'citations, not OK, exit'.",
+  "runs": {
+    "opus/eval1-with_skill-1": {"ran_itself": true, "invocations_on_new_report": 1, "first": "40, 0, exit 0", "last": "40, 0, exit 0", "other": "one earlier invocation on the planted 2026-10-03 report: 4, 0, exit 0", "by_orchestrator": "40, 0, exit 0"},
+    "opus/eval5-with_skill-1": {"ran_itself": true, "invocations_on_new_report": 2, "first": "69, 0, exit 0", "last": "69, 0, exit 0", "by_orchestrator": "69, 0, exit 0"},
+    "sonnet/eval1-with_skill-1": {"ran_itself": true, "invocations_on_new_report": 2, "first": "31, 0 (exit not printed)", "last": "31, 0 (exit not printed)", "by_orchestrator": "31, 0, exit 0"},
+    "sonnet/eval1-with_skill-2": {"ran_itself": true, "invocations_on_new_report": 2, "first": "23, 1, exit 1 (OUT OF RANGE app/data/allocations-dao.js:117, file has 114 lines)", "last": "24, 0, exit 0", "by_orchestrator": "24, 0, exit 0"},
+    "sonnet/eval1-with_skill-3": {"ran_itself": true, "invocations_on_new_report": 2, "first": "30, 10, exit 1 (10 OUT OF RANGE in memos-dao.js, tutorial.js, contributions.js, session.js, research.js)", "last": "30, 0 (exit not printed)", "by_orchestrator": "30, 0, exit 0"},
+    "sonnet/eval5-with_skill-1": {"ran_itself": true, "invocations_on_new_report": 3, "first": "50, 3 (OUT OF RANGE hc/api/urls.py:168 twice, :170; file has 98 lines)", "last": "exit 0 (output discarded); a third call only grepped for urls", "by_orchestrator": "49, 0, exit 0 on the report"},
+    "sonnet/eval5-with_skill-2": {"ran_itself": true, "invocations_on_new_report": 2, "first": "25, 0", "last": "25, 0", "by_orchestrator": "25, 0, exit 0"},
+    "sonnet/eval5-with_skill-3": {"ran_itself": true, "invocations_on_new_report": 2, "first": "34, 2, exit 1 (OUT OF RANGE hc/api/urls.py:170, :171; file has 98 lines)", "last": "34, 0, exit 0", "by_orchestrator": "34, 0, exit 0"}
+  }
+}

@@ -1,0 +1,198 @@
+{
+ "opus/eval1-with_skill-1": {
+  "eval": 1,
+  "letter": "A",
+  "items": 26,
+  "confirmed": 1,
+  "confirmed_real": 1,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "GT-1"
+  ],
+  "gt_found_only_unconfirmed": [
+   "GT-2"
+  ],
+  "recall_confirmed": 0.5,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "A-3"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 25,
+  "unconfirmed_real": [
+   "A-4",
+   "A-8",
+   "A-9",
+   "A-10",
+   "A-18",
+   "A-19",
+   "A-20",
+   "A-21",
+   "A-22",
+   "A-23",
+   "A-24",
+   "A-25",
+   "A-26"
+  ],
+  "unconfirmed_real_gt": {
+   "A-4": "ADJ-1",
+   "A-8": "GT-2",
+   "A-9": "ADJ-9",
+   "A-10": "ADJ-3",
+   "A-18": "ADJ-4",
+   "A-19": "ADJ-9",
+   "A-20": "ADJ-8",
+   "A-21": "ADJ-7",
+   "A-22": "ADJ-6",
+   "A-23": "outside GT",
+   "A-24": "outside GT",
+   "A-25": "ADJ-2",
+   "A-26": "ADJ-5"
+  },
+  "planted_prior_confirmed": []
+ },
+ "opus/eval1-with_skill-2": {
+  "eval": 1,
+  "letter": "B",
+  "items": 32,
+  "confirmed": 1,
+  "confirmed_real": 1,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "GT-1"
+  ],
+  "gt_found_only_unconfirmed": [
+   "GT-2"
+  ],
+  "recall_confirmed": 0.5,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "B-3"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 31,
+  "unconfirmed_real": [
+   "B-10",
+   "B-11",
+   "B-12",
+   "B-19",
+   "B-20",
+   "B-21",
+   "B-23",
+   "B-24",
+   "B-25",
+   "B-26",
+   "B-27",
+   "B-28",
+   "B-29",
+   "B-30",
+   "B-31",
+   "B-32"
+  ],
+  "unconfirmed_real_gt": {
+   "B-10": "ADJ-1",
+   "B-11": "outside GT",
+   "B-12": "outside GT",
+   "B-19": "ADJ-8",
+   "B-20": "ADJ-7",
+   "B-21": "ADJ-6",
+   "B-23": "GT-2",
+   "B-24": "ADJ-2",
+   "B-25": "ADJ-3",
+   "B-26": "ADJ-5",
+   "B-27": "ADJ-5",
+   "B-28": "ADJ-9",
+   "B-29": "outside GT",
+   "B-30": "outside GT",
+   "B-31": "ADJ-9",
+   "B-32": "outside GT"
+  },
+  "planted_prior_confirmed": []
+ },
+ "opus/eval5-with_skill-2": {
+  "eval": 5,
+  "letter": "A",
+  "items": 25,
+  "confirmed": 3,
+  "confirmed_real": 3,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "P-1",
+   "P-2",
+   "P-3"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 1.0,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "A-4",
+   "A-8",
+   "A-9"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 22,
+  "unconfirmed_real": [
+   "A-13",
+   "A-14",
+   "A-15"
+  ],
+  "unconfirmed_real_gt": {
+   "A-13": "outside GT",
+   "A-14": "outside GT",
+   "A-15": "outside GT"
+  },
+  "planted_prior_confirmed": []
+ },
+ "opus/eval5-with_skill-1": {
+  "eval": 5,
+  "letter": "B",
+  "items": 20,
+  "confirmed": 3,
+  "confirmed_real": 3,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "P-1",
+   "P-2",
+   "P-3"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 1.0,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "B-1",
+   "B-2",
+   "B-3"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 17,
+  "unconfirmed_real": [
+   "B-18"
+  ],
+  "unconfirmed_real_gt": {
+   "B-18": "P-2"
+  },
+  "planted_prior_confirmed": [],
+  "strict_status": {
+   "note": "B-4 counted as confirmed (adjustments.json)",
+   "confirmed": 4,
+   "confirmed_real": 3,
+   "confirmed_not_real": [
+    "B-4"
+   ],
+   "precision": 0.75,
+   "unconfirmed": 16
+  }
+ }
+}

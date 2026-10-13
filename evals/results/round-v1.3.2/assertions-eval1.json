@@ -1,0 +1,388 @@
+{
+ "eval": 1,
+ "name": "nodegoat-access-control-sweep",
+ "reference": "<round>/base/nodegoat @ 9e832da",
+ "grading_basis": "Strict reading of each assertion text, PASS or FAIL only; a required section that is missing fails even if its content appears elsewhere. The three readings fixed on 2026-10-12 apply: (a) a cited line of a statement or construct spanning several lines holds the cited code when the statement does, and that statement reading gives A2's grade, while the physical-line reading (the physical line must contain every element the report attributes to it; enclosing function names and object-literal braces are context; a range is accepted in the chain but not as the location) is recorded in grade_physical_line; (b) a confirmed finding is one with the verdict VERIFIED REAL, any other verdict is a candidate examined and not confirmed for A4; (c) A7 counts files git would track (tracked, or untracked and not ignored), ignored files are recorded only. Any other ambiguity is graded under the stricter reading, with the other grade in grade_other_reading and the ambiguity listed. For A4 a disposition given only outside the Refused or unconfirmed candidates section (for example only in the Hand-off) counts as missing under the strict reading; grade_other_reading accepts Hand-off dispositions; out of zone is allowed only for a defect of another zone of the run's sweep-registry.md, categories.md or the prompt's zone description, never for an access-control candidate whatever its class. Every line cited anywhere in the report was opened in the reference checkout base/nodegoat at 9e832da with read-only git show. Conventions: R:<n> is line n of outputs/docs-audits/2026-10-12-access-control.md (byte-identical to the copy's docs/audits/2026-10-12-access-control.md); response.md:<n> is outputs/response.md; outputs/<file>:<n> is a line of the orchestrator's output files; bare repository paths (app/..., test/..., server.js, Gruntfile.js, package.json, README.md) are lines of the fixture at 9e832da unless stated as the working copy.",
+ "runs": [
+  {
+   "run": "eval1-with_skill-1",
+   "model": "claude-opus-5-5",
+   "config": "with_skill",
+   "report": "<round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-12-access-control.md",
+   "validity": "Valid with-skill run. The skill path was given (outputs/self-checks.txt:1, outputs/run-meta-transcript.txt:6: 'A skill is available at plugin/skills/verified-security-sweep (read its SKILL.md ...)') and SKILL.md was read with cat at 2026-10-12T17:45:35.698Z, three seconds after the first message (outputs/self-checks.txt:2, outputs/run-meta-transcript.txt:10). The run reply came through SubagentHandback (outputs/response-source.txt). The run did not commit: outputs/head.txt:1 is 9e832da.",
+   "cited_lines_checked": 65,
+   "cited_lines_checked_note": "65 citations opened: every path:line citation of the report, the same 65 entries as outputs/check-citations.txt (R-line and path pairs; a comma list such as user-dao.js:44,119 or a range counts as one entry; expanding the six comma lists gives 71 line references). check_citations checks existence only and reports 65 OK, 0 not OK (outputs/check-citations.txt:67-68). All 65 exist at 9e832da. Under the statement reading all 65 hold the cited code; under the physical-line reading 11 entries (15 line numbers) do not, listed in cited_line_problems, 6 of them in F1's location and chain. One further citation is outside the repository and was not opened: R:272-273 cites express-session's session/cookie.js, line 28 (httpOnly default); node_modules is absent from both the fixture and the copy, so it is not verifiable from the listed inputs and is not counted or listed as a problem. Informal line mentions without a path (R:112 'line 18', response.md:19 'lines 13-14') refer to app/routes/allocations.js:18 and :13-14, already checked.",
+   "assertions": [
+    {
+     "id": "A1",
+     "grade": "PASS",
+     "evidence": "New report docs/audits/2026-10-12-access-control.md (outputs/new-reports.txt:1). Run date 2026-10-12 (outputs/run-meta-transcript.txt:2 first_ts 2026-10-12T17:45:32Z). The slug access-control names the swept zone, the registry row `access-control` (outputs/docs-audits/sweep-registry.md:10). All six template sections are present as headings: Context R:3, Delegation R:31, Verification R:56, Confirmed defects R:67, Refused or unconfirmed candidates R:132, Coverage R:172 (plus Hand-off R:241)."
+    },
+    {
+     "id": "A2",
+     "grade": "PASS",
+     "grade_physical_line": "FAIL",
+     "evidence": "One confirmed finding, F1 (VERIFIED REAL, R:60). Location R:71 `app/routes/allocations.js:18`, one line, not a range. The evidence chain has the three elements, labelled: 1 vulnerable line R:74-77 (allocations.js:18, with the commented intended fix allocations.js:13-14); 2 data flow from the untrusted URL segment R:78-86 (index.js:59 route with isLoggedIn only, allocations.js:23 handler call, allocations-dao.js:58 parseInt, :82 filter, :86 query, :94 owner lookup, app/views/allocations.html:35 render); 3 missing mitigation R:87-93 (session.js:36-42 checks only that a session exists, user-dao.js:44,119 sequential ids, profile.js:16,80 and contributions.js:15,44 as the session-scoped pattern). Every cited line exists at 9e832da (outputs/check-citations.txt:7-20) and, under the statement reading, holds the described code: allocations.js:16-18 is `const { userId } = req.params;`; allocations-dao.js:94-107 is the getUserById call whose callback sets alloc.firstName and alloc.lastName (98-99); user-dao.js:110-119 is the `counters` findAndModify with `$inc` whose callback returns data.value.seq, and :44 sets user._id from it inside the getNextSequence callback; profile.js:14-16 and 78-80, contributions.js:13-15 and 42-44 destructure userId from req.session; index.js:59, allocations.js:23, allocations-dao.js:58, :82, :86, allocations.html:35 hold their code on the cited line; the ranges allocations.js:13-14 and session.js:36-42 hold the commented fix and isLoggedInMiddleware. Physical-line reading FAIL: allocations.js:18 (location R:71 and chain R:75) holds only `} = req.params;`, the `userId` the report attributes to it is on line 17; allocations-dao.js:94 (R:85) holds only the lookup, the name is attached at 98-99; user-dao.js:119 (R:91) holds only `callback(null, data.value.seq)`, the cited `counters` sequence is at 110 and the increment at 113; profile.js:16,80 and contributions.js:15,44 (R:93) hold only `} = req.session;`, the identity userId is on 15/79 and 14/43. See cited_line_problems."
+    },
+    {
+     "id": "A3",
+     "grade": "PASS",
+     "evidence": "F1 is VERIFIED REAL (R:60), the only finding with that verdict. It names the reproduction test test/unit/allocations-scope-test.js (R:60, R:103), which exists after the run in the working copy (runs/eval1-with_skill-1/test/unit/allocations-scope-test.js, untracked) and in outputs/files/test/unit/allocations-scope-test.js (identical). The report states that it ran and the results: R:102 'Reproduction (all three ran)'; R:107-109 the attack case fails on the current code as expected (rendered user 3's allocations for session user 2); R:110-111 the legitimate case passes; R:112-113 on a patched copy both pass; R:115-117 the reproduce selection exited 1 and the guard selection exited 0; R:60 'ran, fails as expected'. Corroborated by outputs/self-checks.txt:12 (mocha runs at 17:50:52Z, 17:51:04Z and 17:54:31Z)."
+    },
+    {
+     "id": "A4",
+     "grade": "FAIL",
+     "grade_other_reading": "FAIL",
+     "evidence": "The section exists (R:132-170) and gives allowed dispositions to four candidates: F2 refused, lens exploitability (R:134); F3 refused, lens claim correctness (R:143); AC-1 closed earlier by the 2026-10-03 report (R:150); AC-2 closed earlier, 2026-10-03 (R:169). It fails because ten candidates raised by the reviewer and examined by the run ('The reviewer listed these and I read the lines. None was verified in this run', R:253-254; R:47-48) carry their disposition only in the Hand-off (R:253-275), not in the section: contributions.js:32 eval (R:256), allocations-dao.js:78 threshold in $where (R:260, also R:126-130 in Confirmed defects), memos.html:31 Markdown with autoescape off (R:262), index.js:68 /learn redirect (R:264), user-dao.js:92 userName from a JSON body (R:265), and the sessions leads session.js:116, server.js:107, server.js:95 (with the reviewer's httpOnly claim refuted at R:272-273), user-dao.js:25, session.js:85 (R:268-275). One of them is also an out-of-zone misuse: the threshold $where at allocations-dao.js:78 is sent to input-handling (R:127-128, R:253, R:260-261) although the report itself calls it 'the remaining cross-user read on /allocations once F1 is fixed' (R:261) and 'the remaining way for a regular user to read other users' allocations' (R:129-130): it bypasses the DAO's per-user scope `this.userId == ${parsedUserId}` (allocations-dao.js:78), which is the swept zone by the prompt ('whether a regular user can touch other users' data') and by the registry row (sweep-registry.md:10 'per-user scoping in the handlers and DAOs'). A borderline eleventh, the nav observation in Coverage (R:206-208, admin sees the non-admin menu, 'display only: the server enforces the gate'), has no disposition in the section either (stricter reading: candidate). Other reading (Hand-off dispositions accepted): still FAIL, because the $where lead keeps an out-of-zone disposition on an access-control candidate and the nav observation has no disposition anywhere but Coverage. Only if, in addition, the $where lead is taken as input-handling (sweep-registry.md:16) and the nav observation as a checked path rather than a candidate would A4 pass."
+    },
+    {
+     "id": "A5",
+     "grade": "PASS",
+     "evidence": "outputs/docs-audits/sweep-registry.md:10 has the row `access-control` with Last run 2026-10-12, matching the report slug 2026-10-12-access-control. outputs/sweep-status-check.txt:3 'access-control 2026-10-12 2026-10-12 0', :5 '1 zones, 2 dated reports, 0 divergent, 0 stale', :6 'exit code: 0' (the orchestrator's run of sweep_status.py --check on the copy's docs/audits)."
+    },
+    {
+     "id": "A6",
+     "grade": "PASS",
+     "evidence": "The only confirmed finding is F1, the /allocations/:userId object-level check (R:60, R:69-71), distinct from AC-1 (/benefits made admin-only, outputs/docs-audits/2026-10-03-access-control.md:16, :21-22) and AC-2 (redirect instead of 403, 2026-10-03-access-control.md:17, :36). Both appear only in the Refused or unconfirmed section as closed earlier (R:150, R:169), not in the Verification table (R:58-62) and not in findings.jsonl (outputs/docs-audits/findings.jsonl:1 is F1 only). The AC-1 guard gap (R:166-168) is a test proposal (R:276-279), not a finding."
+    },
+    {
+     "id": "A7",
+     "grade": "PASS",
+     "evidence": "outputs/head.txt:1 9e832da61b323e1e234bbc69501bf5e175b009b6 (no commit). outputs/git-status.txt:1-5 and outputs/changed-files.txt:1-5 list only docs/audits/categories.md (M), docs/audits/sweep-registry.md (M), docs/audits/2026-10-12-access-control.md (??), docs/audits/findings.jsonl (??) and test/unit/allocations-scope-test.js (??). outputs/deleted-files.txt and outputs/staged.diff are empty; outputs/unstaged.diff changes only docs/audits/categories.md and docs/audits/sweep-registry.md; outputs/changed-files-not-copied.txt is empty and outputs/changed-files-not-copied-split.txt:2 reports 0 tracked, 0 untracked, 0 ignored. test/unit/allocations-scope-test.js is in a test directory: test/unit/ is a new directory under test/ and is the project's declared unit-test directory (Gruntfile.js:118-119 mochaTest unit src test/unit/*.js, run by the test task Gruntfile.js:184, which is `npm test`, package.json scripts.test). No application code or other file changed. The copy now also shows an untracked outputs/ directory: it is the orchestrator's output directory, created after the run ended (run last_ts 17:55:34Z, outputs/run-meta-transcript.txt:3; absent from outputs/git-status.txt), so it is not attributed to the run."
+    },
+    {
+     "id": "A8",
+     "grade": "PASS",
+     "evidence": "The fixture has no docs/audits/findings.jsonl at 9e832da (git ls-tree lists only 2026-10-03-access-control.md, categories.md and sweep-registry.md under docs/audits), so every line is new. outputs/docs-audits/findings.jsonl:1 is one line for the one VERIFIED REAL finding, 2026-10-12-access-control/F1, with commit 9e832da61b323e1e234bbc69501bf5e175b009b6, location app/routes/allocations.js:18, snippet '} = req.params;' (the text of line 18 at 9e832da), reproduce and guard. outputs/findings-check.txt:3 OK for F1, :4 '1 entr(y/ies), 0 problem(s), 0 not verifiable here', :5 'exit code: 0'."
+    },
+    {
+     "id": "A9",
+     "grade": "PASS",
+     "evidence": "outputs/docs-audits/findings.jsonl:1: reproduce `node_modules/.bin/mocha test/unit/allocations-scope-test.js --grep \"blocks the attack path\"`, guard `node_modules/.bin/mocha test/unit/allocations-scope-test.js --grep \"lets the legitimate path through\"`. Both invoke mocha, the project's own unit test runner (package.json devDependencies mocha ^2.4.5; `npm test` runs grunt test, Gruntfile.js:184, which runs mochaTest unit over test/unit/*.js, Gruntfile.js:114-120), on test/unit/allocations-scope-test.js, which exists in the working copy and in outputs/files. Neither starts a shell (no sh or bash -c, no pipe, no ';' or '&&') nor passes inline code (no node -e or -p); --grep only selects the cases titled at test/unit/allocations-scope-test.js:75 and :83. The commands assume dependencies installed with npm install (R:115-117); node_modules is absent from the copy because the run installed them outside the tree (R:239), which A9 does not require."
+    }
+   ],
+   "cited_line_problems": [
+    {
+     "finding": "F1",
+     "status": "confirmed",
+     "kind": "location",
+     "report_line": "R:71",
+     "cited": "app/routes/allocations.js:18",
+     "holds": "Line 18 is `} = req.params;`; the destructured `userId` the finding is about is on line 17 (statement `const { userId } = req.params;` at 16-18).",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "F1",
+     "status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:75",
+     "cited": "app/routes/allocations.js:18",
+     "holds": "The report quotes `} = req.params;` and says it 'takes `userId` from the URL segment'; `userId` is on line 17 of the same statement (16-18).",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "F1",
+     "status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:85",
+     "cited": "app/data/allocations-dao.js:94",
+     "holds": "Line 94 is `userDAO.getUserById(alloc.userId, (err, user) => {` (the owner lookup); the target's name is attached at 98-99 (`alloc.firstName = user.firstName;`, `alloc.lastName = user.lastName;`) inside the same call statement 94-107.",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "F1",
+     "status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:91",
+     "cited": "app/data/user-dao.js:119 (of user-dao.js:44,119)",
+     "holds": "Line 119 is `(err, data) =>  err ? callback(err, null) : callback(null, data.value.seq));`; the cited `counters` sequence is at line 110 (`db.collection(\"counters\").findAndModify(`) and the increment at 113-115, in the same statement 110-119. Line 44 `user._id = id;` holds the id assignment, with the enclosing getNextSequence callback (38) as context.",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "F1",
+     "status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:93",
+     "cited": "app/routes/profile.js:16,80",
+     "holds": "Both lines are `} = req.session;`; the identity `userId` the report says is taken is on lines 15 and 79 (statements 14-16 and 78-80).",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "F1",
+     "status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:93",
+     "cited": "app/routes/contributions.js:15,44",
+     "holds": "Both lines are `} = req.session;`; `userId` is on lines 14 and 43 (statements 13-15 and 42-44).",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "F1 (fix approach)",
+     "status": "confirmed",
+     "kind": "other",
+     "report_line": "R:99",
+     "cited": "app/routes/contributions.js:15",
+     "holds": "Cited as taking `userId` from `req.session`; line 15 is `} = req.session;`, `userId` is on line 14.",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "AC-1 recheck (closed earlier)",
+     "status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:156",
+     "cited": "app/data/profile-dao.js:78",
+     "holds": "Line 78 is `users.update({`; the cited `$set` is on line 81 (statement 78-91) and the seven named fields are assigned at 46-66 of the same function.",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "Coverage: GET and POST /profile, checked no defect",
+     "status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:196",
+     "cited": "app/routes/profile.js:16,80",
+     "holds": "`} = req.session;` on both lines; the identity `userId` is on 15 and 79.",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "Coverage: GET and POST /contributions, checked no defect",
+     "status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:199",
+     "cited": "app/routes/contributions.js:15,44",
+     "holds": "`} = req.session;` on both lines; the identity `userId` is on 14 and 43.",
+     "flagged_by": "physical-line only"
+    },
+    {
+     "finding": "F1 (Hand-off item 1)",
+     "status": "confirmed",
+     "kind": "other",
+     "report_line": "R:249",
+     "cited": "test/e2e/integration/allocations_spec.js:21",
+     "holds": "Line 21 is `cy.visitPage(\"/allocations/1\");`; the report attributes to it visiting 'as user1 and expects the page': the sign-in `cy.userSignIn();` is line 20 and the expectation `cy.url().should(\"include\", \"allocations\");` is line 22, in the same it() block 19-23.",
+     "flagged_by": "physical-line only"
+    }
+   ],
+   "recorded_as_defect_without_verified_real": [
+    {
+     "item": "F2, memos carry no author (reviewer L1)",
+     "report_line": "R:61, R:134",
+     "wording": "Verification row: 'OVER-RATED | Low | Info | no data owned by a user is exposed; this concerns attribution, not access'; section: 'OVER-RATED, Low to Info, lens exploitability. The claim is correct ... It is not an access-control defect.' Recorded because the claim was verified correct and kept at Info outside the headline count (as AC-2 was in 2026-10-03); the report itself says it is not an access-control defect and lists it as an owner decision (R:292-293)."
+    }
+   ],
+   "candidates": [
+    {
+     "candidate": "F2 memos carry no author (shared anonymous board)",
+     "raised_by": "both",
+     "report_lines": "R:61, R:134-142, R:188, R:292-293",
+     "in_section": "yes",
+     "disposition": "refused (lens: exploitability)",
+     "disposition_as_worded": "F2, memos carry no author: OVER-RATED, Low to Info, lens exploitability.",
+     "candidate_zone": "access-control",
+     "zone_basis": "Verification row Zone access-control (R:61); per-user data on /memos (index.js:62-63)",
+     "out_of_zone_misused": false,
+     "allowed_disposition": true
+    },
+    {
+     "candidate": "F3 open self-registration makes signed-in equal anyone",
+     "raised_by": "both",
+     "report_lines": "R:62, R:143-149, R:181, R:289-291",
+     "in_section": "yes",
+     "disposition": "refused (lens: claim correctness)",
+     "disposition_as_worded": "F3, open self-registration: FALSE POSITIVE, lens claim correctness, by design.",
+     "candidate_zone": "access-control",
+     "zone_basis": "Verification row Zone access-control (R:62); who reaches isLoggedIn routes (index.js:38)",
+     "out_of_zone_misused": false,
+     "allowed_disposition": true
+    },
+    {
+     "candidate": "AC-1 /benefits reachable by any signed-in user (rechecked)",
+     "raised_by": "run",
+     "report_lines": "R:20, R:150-168, R:186",
+     "in_section": "yes",
+     "disposition": "closed earlier (report: 2026-10-03-access-control.md)",
+     "disposition_as_worded": "AC-1, `/benefits` reachable by any signed-in user: closed earlier, by the 2026-10-03 report.",
+     "candidate_zone": "access-control",
+     "zone_basis": "2026-10-03-access-control.md:16, :21; index.js:55-56",
+     "out_of_zone_misused": false,
+     "allowed_disposition": true
+    },
+    {
+     "candidate": "AC-2 admin gate redirects instead of answering 403",
+     "raised_by": "run",
+     "report_lines": "R:169-170",
+     "in_section": "yes",
+     "disposition": "closed earlier (report: 2026-10-03-access-control.md)",
+     "disposition_as_worded": "AC-2, admin gate redirects instead of answering 403: closed earlier (refused, 2026-10-03). Not reconsidered.",
+     "candidate_zone": "access-control",
+     "zone_basis": "2026-10-03-access-control.md:17, :36; session.js:28",
+     "out_of_zone_misused": false,
+     "allowed_disposition": true
+    },
+    {
+     "candidate": "eval of the request body on POST /contributions (app/routes/contributions.js:32)",
+     "raised_by": "reviewer",
+     "report_lines": "R:185, R:253-259, R:290",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only: 'Run the `input-handling` sweep next ... The reviewer listed these and I read the lines. None was verified in this run, and none counts in this zone's yield' (R:253-255); Coverage: 'the eval is out of zone' (R:185).",
+     "candidate_zone": "input-handling",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:16 (input-handling: 'reach ... an `eval`'); outputs/docs-audits/categories.md:10 Input validation",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "threshold interpolated into $where on /allocations (app/data/allocations-dao.js:78), a cross-user read",
+     "raised_by": "reviewer",
+     "report_lines": "R:126-130, R:253-255, R:260-261",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Confirmed defects caveat: '(input-handling zone, not verified in this run; see Hand-off)' (R:127-128); Hand-off: 'This is the remaining cross-user read on `/allocations` once F1 is fixed' under the input-handling item (R:260-261). Out of zone (input-handling), only outside the section.",
+     "candidate_zone": "access-control",
+     "zone_basis": "Stricter reading: the injection bypasses the DAO's per-user scope `this.userId == ${parsedUserId}` (allocations-dao.js:78), the prompt's zone 'whether a regular user can touch other users' data' and outputs/docs-audits/sweep-registry.md:10 'per-user scoping in the handlers and DAOs'; the report itself calls it a cross-user read (R:129-130, R:261). Mechanism also matches outputs/docs-audits/sweep-registry.md:16 (query parameters reaching a database query).",
+     "out_of_zone_misused": true,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "memo Markdown rendered with autoescape off on a page the admin reads (app/views/memos.html:31)",
+     "raised_by": "reviewer",
+     "report_lines": "R:253-255, R:262-263",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only, under 'Run the `input-handling` sweep next' (R:253); 'This is a path to acting as the admin on `/benefits`' (R:263).",
+     "candidate_zone": "input-handling",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:16 (input-handling: 'reach ... a template'); server.js:135-142",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "/learn?url= open redirect (app/routes/index.js:68)",
+     "raised_by": "reviewer",
+     "report_lines": "R:189, R:253-255, R:264",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only, under 'Run the `input-handling` sweep next' (R:253); Coverage '(internals out of zone)' (R:189).",
+     "candidate_zone": "input-handling",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:16 lists 'the `/learn` redirect (`app/routes/index.js:68`)'; outputs/docs-audits/categories.md:10 Input validation",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "userName from a JSON body reaches the login query unchecked (app/data/user-dao.js:92)",
+     "raised_by": "reviewer",
+     "report_lines": "R:253-255, R:265-266",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only, under 'Run the `input-handling` sweep next'; 'The reviewer reports user enumeration only, because the password comparison is strict' (R:265-266).",
+     "candidate_zone": "input-handling",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:16 (input-handling, lists user-dao.js:92); outputs/docs-audits/categories.md:11 Database query construction",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "session id not regenerated on login (app/routes/session.js:116)",
+     "raised_by": "reviewer",
+     "report_lines": "R:47-48, R:267-268",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only: 'Propose a new zone, `sessions`, with these leads (not verified)' (R:267).",
+     "candidate_zone": "sessions",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:17 (proposed `sessions`); outputs/docs-audits/categories.md:8 Authentication and sessions",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "CSRF protection commented out (server.js:107)",
+     "raised_by": "reviewer",
+     "report_lines": "R:47-48, R:267, R:269-270",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only, sessions leads (not verified) (R:267, R:269-270).",
+     "candidate_zone": "sessions",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:17 (sessions: request forgery, server.js:107); outputs/docs-audits/categories.md:8",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "cookie options commented out, no secure flag; reviewer's httpOnly claim refuted (server.js:95)",
+     "raised_by": "reviewer",
+     "report_lines": "R:267, R:271-273",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only: 'the cookie has no `secure` flag. Contrary to the reviewer's note, `httpOnly` is on' (R:271-273); the httpOnly part is a claim-correctness refusal given outside the section.",
+     "candidate_zone": "sessions",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:17 (sessions, server.js:95); outputs/docs-audits/categories.md:8",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "passwords stored in plaintext (app/data/user-dao.js:25)",
+     "raised_by": "reviewer",
+     "report_lines": "R:267, R:274",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only, sessions leads (not verified) (R:267, R:274).",
+     "candidate_zone": "sessions",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:17 (sessions, user-dao.js:25); outputs/docs-audits/categories.md:8 Authentication and sessions",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "distinct invalid username / invalid password messages (app/routes/session.js:85)",
+     "raised_by": "reviewer",
+     "report_lines": "R:267, R:275",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Hand-off only, sessions leads (not verified) (R:267, R:275).",
+     "candidate_zone": "sessions",
+     "zone_basis": "outputs/docs-audits/sweep-registry.md:17 (sessions, session.js:85); outputs/docs-audits/categories.md:8 Authentication and sessions",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    },
+    {
+     "candidate": "nav menu gate on user.isAdmin misrenders, admin sees the non-admin menu (app/views/layout.html:48), borderline",
+     "raised_by": "run",
+     "report_lines": "R:206-208",
+     "in_section": "no",
+     "disposition": "none",
+     "disposition_as_worded": "Coverage 'Checked, no defect': 'the admin sees the non-admin menu on the dashboard. This is display only: the server enforces the gate.' (R:206-208).",
+     "candidate_zone": "access-control",
+     "zone_basis": "route gating display in the swept zone (layout.html:48-66, index.js routes); borderline call: the line names an observed anomaly, not only a checked path; stricter reading counts it",
+     "out_of_zone_misused": false,
+     "allowed_disposition": false
+    }
+   ],
+   "candidates_summary": "15 candidates; 11 lack an allowed disposition under the strict reading (10 reviewer leads with dispositions only in the Hand-off, plus the borderline nav observation in Coverage); 1 out-of-zone misuse (the threshold $where at app/data/allocations-dao.js:78, an access-control cross-user read sent to input-handling). Under the reading that accepts Hand-off dispositions, 2 still lack one (the $where misuse and the nav observation).",
+   "index_entries": [
+    {
+     "id": "2026-10-12-access-control/F1",
+     "location": "app/routes/allocations.js:18",
+     "snippet": "} = req.params;",
+     "findings_check": "OK (outputs/findings-check.txt:3); overall: 1 entry, 0 problems, 0 not verifiable here, exit code 0 (outputs/findings-check.txt:4-5)",
+     "reproduce": "node_modules/.bin/mocha test/unit/allocations-scope-test.js --grep \"blocks the attack path\"",
+     "guard": "node_modules/.bin/mocha test/unit/allocations-scope-test.js --grep \"lets the legitimate path through\"",
+     "reproduce_is_runner": "yes: mocha, the project's unit runner (package.json devDependencies mocha; Gruntfile.js:114-120, :184 via npm test); no shell, no inline code",
+     "guard_is_runner": "yes: same runner and file; no shell, no inline code",
+     "test_exists_copy": "yes: runs/eval1-with_skill-1/test/unit/allocations-scope-test.js (untracked, 91 lines)",
+     "test_exists_outputs_files": "yes: outputs/files/test/unit/allocations-scope-test.js, identical to the copy",
+     "snippet_matches_fixture": "yes: line 18 at 9e832da is `        } = req.params;`",
+     "commit": "9e832da61b323e1e234bbc69501bf5e175b009b6"
+    }
+   ],
+   "recheck_log_written_by_run": "No. docs/audits/recheck-log.jsonl is absent from the copy and from outputs/docs-audits, and the run never ran findings.py recheck (outputs/self-checks.txt:10). It ran findings.py check only (outputs/self-checks.txt:7-8).",
+   "ignored_files": "None. outputs/changed-files-not-copied-split.txt:2 reports 0 ignored; a read-only `git status --short --ignored` in the copy lists no ignored entry (no node_modules, bytecode or caches; dependencies were installed in the sibling directory eval1-with_skill-1.tmp, outputs/tmp-listing.txt). The copy's untracked outputs/ directory is the orchestrator's (created after the run) and is not counted against the run.",
+   "inputs_beyond_list": [
+    "Directory listings only (no file opened): `ls` of the round directory and of ROUND/grading, to locate the inputs and confirm the output directory; they showed manifest.md, orchestrator/ and container files, none of which was read."
+   ]
+  }
+ ],
+ "ambiguities": [
+  "A2 physical-line reading: allocations.js:18, profile.js:16,80 and contributions.js:15,44 hold `} = req.params;` or `} = req.session;` while the destructured userId (the identity the report attributes to them) is on the line before. The fixed statement reading settles the grade (PASS); under the physical-line reading they are flagged, so grade_physical_line is FAIL.",
+  "A2 physical-line reading of user-dao.js:44,119: line 44 is read as holding the id assignment with the enclosing getNextSequence callback as context, line 119 is flagged because the cited `counters` sequence (110) and the increment (113) are not on it. Grade effect only on grade_physical_line, which fails on line 18 already.",
+  "A4, F2: its verdict is OVER-RATED rather than literally 'refused'; it is graded as refused with the lens named (exploitability) because it sits in the Refused or unconfirmed section with a lens and the registry lists it under 'Candidates verified and refused' (sweep-registry.md:25). No grade effect: A4 fails on other candidates under both readings.",
+  "A4, zone of the threshold $where lead (allocations-dao.js:78): by mechanism it is input-handling (sweep-registry.md:16), by effect it is the swept zone (the prompt's 'whether a regular user can touch other users' data', sweep-registry.md:10 'per-user scoping in the handlers and DAOs', and the report's own R:129-130 and R:261). Stricter reading: access-control, so its out-of-zone disposition is a misuse. Under the input-handling reading it would be an allowed out-of-zone disposition, but given only in the Hand-off.",
+  "A4, nav observation in Coverage (R:206-208): borderline between a checked path and a candidate, because it names an observed anomaly (the admin sees the non-admin menu) and dismisses it as display only. Stricter reading: candidate without a disposition in the section.",
+  "A4, Hand-off dispositions: ten reviewer leads are sent to input-handling or the proposed sessions zone only in the Hand-off. Strict reading (as in round v1.3.1): no disposition in the section, FAIL. Reading that accepts Hand-off items: still FAIL because of the $where misuse and the nav observation under their stricter readings; PASS only if all three lenient readings are taken together.",
+  "A4, effect-based zoning of the memo XSS (R:263 'a path to acting as the admin') and the contributions eval (R:257-259 'subsumes every access-control boundary'): kept in input-handling, the zone the run's registry names for eval and templates (sweep-registry.md:16); counting them as access-control would add two out-of-zone misuses under the Hand-off reading but would not change any grade.",
+  "Not counted as candidates (borderline calls recorded): the AC-1 guard covering GET only (R:166-168, a test gap with a Hand-off proposal), the e2e spec that visits /allocations/1 as user1 (R:249-252, a test observation), the profile mass-assignment check (R:196-198), the anonymous tutorial and static assets (R:191-192, intended), and the login and signup session id checks (R:202-205): each is a checked path naming no remaining suspected defect."
+ ]
+}

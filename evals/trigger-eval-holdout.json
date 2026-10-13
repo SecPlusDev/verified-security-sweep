@@ -1,0 +1,23 @@
+[
+  {"query": "before we open the beta on friday I'd like someone to go over the auth and billing code in this repo and tell me what is actually exploitable, with proof, not a checklist", "should_trigger": true},
+  {"query": "the PR touches the tenant middleware and the org switcher, can you look at it for anything that could leak data across organizations? https://github.com/acme/portal/pull/503", "should_trigger": true},
+  {"query": "I have a staged change that adds a login rate limit; I'm nervous it also blocks SSO users who hit the same route. can you check it before I commit?", "should_trigger": true},
+  {"query": "we had an incident last month on the public upload endpoint. I want a second opinion on it: enumeration, abuse, timing, that kind of thing. code is in api/upload/", "should_trigger": true},
+  {"query": "go through src/payments and the cron jobs and give me a list of real defects I can hand to the team. no patches, they will do the fixing", "should_trigger": true},
+  {"query": "do the kind of review a security consultant would do on the API layer of this Go service, cite file and line for everything", "should_trigger": true},
+  {"query": "we closed the IDOR on /orders/:id yesterday (see the last commit). is the fix solid, and did it break anything for admins who legitimately open other people's orders?", "should_trigger": true},
+  {"query": "Vreau o verificare serioasă pe modulul de facturare înainte de release, cu dovezi pe cod, nu impresii. Avem rapoarte vechi în docs/audits.", "should_trigger": true},
+  {"query": "new contractor code landed in services/export this week and nobody reviewed it. can you audit it with fresh eyes?", "should_trigger": true},
+  {"query": "is there a way to keep track of which parts of this repo were reviewed for security and when, so we stop re-finding old issues? start with the auth module", "should_trigger": true},
+
+  {"query": "explain what CSRF is and how SameSite cookies mitigate it, two paragraphs for our onboarding doc", "should_trigger": false},
+  {"query": "write a threat model document for our payment service in STRIDE format, markdown", "should_trigger": false},
+  {"query": "set up semgrep in GitHub Actions for this repo with the default ruleset", "should_trigger": false},
+  {"query": "rotate the JWT signing secret and update the env files and the deployment manifest", "should_trigger": false},
+  {"query": "review this PR, it only updates the README and the contributing guide https://github.com/acme/portal/pull/509", "should_trigger": false},
+  {"query": "add structured logging to the payments service, json lines, request id on every entry", "should_trigger": false},
+  {"query": "why is test_invoice_total flaky on CI? it fails roughly every third run", "should_trigger": false},
+  {"query": "generate an SBOM for this project in CycloneDX format", "should_trigger": false},
+  {"query": "draft the scope and rules-of-engagement letter for our external pentest next month", "should_trigger": false},
+  {"query": "summarize last week's npm audit output into one ticket, grouped by severity", "should_trigger": false}
+]

@@ -1,0 +1,308 @@
+{
+  "claude-sonnet-5-5/eval1-with_skill-1": {
+    "eval": 1,
+    "model": "claude-sonnet-5-5",
+    "run": "eval1-with_skill-1",
+    "letter": "A",
+    "items": 18,
+    "confirmed": 1,
+    "confirmed_ids": [
+      "A-3"
+    ],
+    "confirmed_real": 1,
+    "confirmed_not_real": [],
+    "confirmed_undecided": [],
+    "precision": 1.0,
+    "gt_found_confirmed": [
+      "GT-1"
+    ],
+    "gt_found_only_unconfirmed": [
+      "GT-2"
+    ],
+    "recall_confirmed": 0.5,
+    "confirmed_real_outside_gt": [],
+    "confirmed_real_adjacent": {},
+    "confirmed_real_out_of_zone": [],
+    "exact_location": [
+      "A-3"
+    ],
+    "exact_location_physical": [
+      "A-3"
+    ],
+    "location_not_exact": [],
+    "unconfirmed": 17,
+    "unconfirmed_real": [
+      "A-9",
+      "A-14",
+      "A-15",
+      "A-16",
+      "A-17",
+      "A-18"
+    ],
+    "unconfirmed_real_gt": {
+      "A-9": "GT-2",
+      "A-14": "ADJ-6",
+      "A-15": "ADJ-7",
+      "A-16": "ADJ-1",
+      "A-17": "ADJ-8",
+      "A-18": "ADJ-5"
+    },
+    "reading": "fixed reading: confirmed = the record gives the claim the verdict VERIFIED REAL (status confirmed in the list, or VERIFIED REAL in the original status wording)",
+    "strict_status": "identical to the fixed reading: no claim is kept as a defect without the verdict VERIFIED REAL"
+  },
+  "claude-opus-5-5/eval1-with_skill-1": {
+    "eval": 1,
+    "model": "claude-opus-5-5",
+    "run": "eval1-with_skill-1",
+    "letter": "B",
+    "items": 35,
+    "confirmed": 2,
+    "confirmed_ids": [
+      "B-3",
+      "B-4"
+    ],
+    "confirmed_real": 2,
+    "confirmed_not_real": [],
+    "confirmed_undecided": [],
+    "precision": 1.0,
+    "gt_found_confirmed": [
+      "GT-1"
+    ],
+    "gt_found_only_unconfirmed": [
+      "GT-2"
+    ],
+    "recall_confirmed": 0.5,
+    "confirmed_real_outside_gt": [],
+    "confirmed_real_adjacent": {
+      "B-4": "ADJ-1"
+    },
+    "confirmed_real_out_of_zone": [
+      "B-4"
+    ],
+    "exact_location": [
+      "B-3",
+      "B-4"
+    ],
+    "exact_location_physical": [
+      "B-3",
+      "B-4"
+    ],
+    "location_not_exact": [],
+    "unconfirmed": 33,
+    "unconfirmed_real": [
+      "B-13",
+      "B-14",
+      "B-15",
+      "B-16",
+      "B-17",
+      "B-18",
+      "B-19",
+      "B-20",
+      "B-21",
+      "B-22",
+      "B-23",
+      "B-24",
+      "B-25",
+      "B-26",
+      "B-27"
+    ],
+    "unconfirmed_real_gt": {
+      "B-13": "ADJ-8",
+      "B-14": "outside GT",
+      "B-15": "ADJ-7",
+      "B-16": "ADJ-6",
+      "B-17": "outside GT",
+      "B-18": "GT-2",
+      "B-19": "ADJ-9",
+      "B-20": "ADJ-9",
+      "B-21": "ADJ-3",
+      "B-22": "ADJ-2",
+      "B-23": "ADJ-3",
+      "B-24": "ADJ-5",
+      "B-25": "ADJ-5",
+      "B-26": "ADJ-5",
+      "B-27": "outside GT"
+    },
+    "reading": "fixed reading: confirmed = the record gives the claim the verdict VERIFIED REAL (status confirmed in the list, or VERIFIED REAL in the original status wording)",
+    "strict_status": "identical to the fixed reading: no claim is kept as a defect without the verdict VERIFIED REAL"
+  },
+  "claude-opus-5-5/eval5-with_skill-1": {
+    "eval": 5,
+    "model": "claude-opus-5-5",
+    "run": "eval5-with_skill-1",
+    "letter": "A",
+    "items": 38,
+    "confirmed": 8,
+    "confirmed_ids": [
+      "A-1",
+      "A-4",
+      "A-5",
+      "A-7",
+      "A-8",
+      "A-9",
+      "A-10",
+      "A-11"
+    ],
+    "confirmed_real": 8,
+    "confirmed_not_real": [],
+    "confirmed_undecided": [],
+    "precision": 1.0,
+    "gt_found_confirmed": [
+      "P-1",
+      "P-2",
+      "P-3"
+    ],
+    "gt_found_only_unconfirmed": [],
+    "recall_confirmed": 1.0,
+    "confirmed_real_outside_gt": [
+      "A-7",
+      "A-8",
+      "A-9",
+      "A-10",
+      "A-11"
+    ],
+    "confirmed_real_adjacent": {},
+    "confirmed_real_out_of_zone": [
+      "A-8",
+      "A-9",
+      "A-10"
+    ],
+    "exact_location": [
+      "A-1",
+      "A-4",
+      "A-5",
+      "A-7",
+      "A-8",
+      "A-9",
+      "A-10",
+      "A-11"
+    ],
+    "exact_location_physical": [
+      "A-1",
+      "A-4",
+      "A-5",
+      "A-7",
+      "A-8",
+      "A-10",
+      "A-11"
+    ],
+    "location_not_exact": [],
+    "unconfirmed": 30,
+    "unconfirmed_real": [
+      "A-20",
+      "A-21",
+      "A-22"
+    ],
+    "unconfirmed_real_gt": {
+      "A-20": "outside GT",
+      "A-21": "outside GT",
+      "A-22": "outside GT"
+    },
+    "reading": "fixed reading: confirmed = the record gives the claim the verdict VERIFIED REAL (status confirmed in the list, or VERIFIED REAL in the original status wording)",
+    "extraction_status": {
+      "confirmed": 3,
+      "confirmed_ids": [
+        "A-1",
+        "A-4",
+        "A-5"
+      ],
+      "confirmed_real": 3,
+      "confirmed_not_real": [],
+      "confirmed_undecided": [],
+      "precision": 1.0,
+      "gt_found_confirmed": [
+        "P-1",
+        "P-2",
+        "P-3"
+      ],
+      "gt_found_only_unconfirmed": [],
+      "recall_confirmed": 1.0,
+      "confirmed_real_outside_gt": [],
+      "confirmed_real_adjacent": {},
+      "confirmed_real_out_of_zone": [],
+      "exact_location": [
+        "A-1",
+        "A-4",
+        "A-5"
+      ],
+      "exact_location_physical": [
+        "A-1",
+        "A-4",
+        "A-5"
+      ],
+      "location_not_exact": [],
+      "unconfirmed": 35,
+      "unconfirmed_real": [
+        "A-7",
+        "A-8",
+        "A-9",
+        "A-10",
+        "A-11",
+        "A-20",
+        "A-21",
+        "A-22"
+      ],
+      "unconfirmed_real_gt": {
+        "A-7": "outside GT",
+        "A-8": "outside GT",
+        "A-9": "outside GT",
+        "A-10": "outside GT",
+        "A-11": "outside GT",
+        "A-20": "outside GT",
+        "A-21": "outside GT",
+        "A-22": "outside GT"
+      },
+      "note": "extraction status as written by the extraction sub-agent: items with the verdict VERIFIED REAL kept by the record outside its headline count marked unconfirmed, following a sentence of the extraction brief"
+    },
+    "strict_status": "identical to the fixed reading: no claim is kept as a defect without the verdict VERIFIED REAL"
+  },
+  "claude-sonnet-5-5/eval5-with_skill-1": {
+    "eval": 5,
+    "model": "claude-sonnet-5-5",
+    "run": "eval5-with_skill-1",
+    "letter": "B",
+    "items": 25,
+    "confirmed": 3,
+    "confirmed_ids": [
+      "B-3",
+      "B-5",
+      "B-6"
+    ],
+    "confirmed_real": 3,
+    "confirmed_not_real": [],
+    "confirmed_undecided": [],
+    "precision": 1.0,
+    "gt_found_confirmed": [
+      "P-1",
+      "P-2",
+      "P-3"
+    ],
+    "gt_found_only_unconfirmed": [],
+    "recall_confirmed": 1.0,
+    "confirmed_real_outside_gt": [],
+    "confirmed_real_adjacent": {},
+    "confirmed_real_out_of_zone": [],
+    "exact_location": [
+      "B-3",
+      "B-5",
+      "B-6"
+    ],
+    "exact_location_physical": [
+      "B-3",
+      "B-5",
+      "B-6"
+    ],
+    "location_not_exact": [],
+    "unconfirmed": 22,
+    "unconfirmed_real": [
+      "B-19",
+      "B-21"
+    ],
+    "unconfirmed_real_gt": {
+      "B-19": "outside GT",
+      "B-21": "outside GT"
+    },
+    "reading": "fixed reading: confirmed = the record gives the claim the verdict VERIFIED REAL (status confirmed in the list, or VERIFIED REAL in the original status wording)",
+    "strict_status": "identical to the fixed reading: no claim is kept as a defect without the verdict VERIFIED REAL"
+  }
+}

@@ -1,0 +1,66 @@
+diff --git a/app/data/allocations-dao.js b/app/data/allocations-dao.js
+index 24d4718..395e32c 100644
+--- a/app/data/allocations-dao.js
++++ b/app/data/allocations-dao.js
+@@ -57,31 +57,19 @@ const AllocationsDAO = function(db){
+     this.getByUserIdAndThreshold = (userId, threshold, callback) => {
+         const parsedUserId = parseInt(userId);
+ 
+-        const searchCriteria = () => {
+-
+-            if (threshold) {
+-                /*
+-                // Fix for A1 - 2 NoSQL Injection - escape the threshold parameter properly
+-                // Fix this NoSQL Injection which doesn't sanitze the input parameter 'threshold' and allows attackers
+-                // to inject arbitrary javascript code into the NoSQL query:
+-                // 1. 0';while(true){}'
+-                // 2. 1'; return 1 == '1
+-                // Also implement fix in allocations.html for UX.                             
+-                const parsedThreshold = parseInt(threshold, 10);
+-                
+-                if (parsedThreshold >= 0 && parsedThreshold <= 99) {
+-                    return {$where: `this.userId == ${parsedUserId} && this.stocks > ${parsedThreshold}`};
+-                }
+-                throw `The user supplied threshold: ${parsedThreshold} was not valid.`;
+-                */
+-                return {
+-                    $where: `this.userId == ${parsedUserId} && this.stocks > '${threshold}'`
+-                };
++        // Fix for A1 - 2 NoSQL Injection: the threshold is validated as a whole number between
++        // 0 and 99 and the query is built from fields, never from a $where string.
++        const parsedThreshold = parseInt(threshold, 10);
++        if (!/^\d{1,2}$/.test(String(threshold).trim()) || parsedThreshold < 0 || parsedThreshold > 99) {
++            return callback("ERROR: threshold must be a whole number between 0 and 99", null);
++        }
++
++        const searchCriteria = () => ({
++            userId: parsedUserId,
++            stocks: {
++                $gt: parsedThreshold
+             }
+-            return {
+-                userId: parsedUserId
+-            };
+-        };
++        });
+ 
+         allocationsCol.find(searchCriteria()).toArray((err, allocations) => {
+             if (err) return callback(err, null);
+diff --git a/app/views/allocations.html b/app/views/allocations.html
+index 3b28d54..dd4db36 100644
+--- a/app/views/allocations.html
++++ b/app/views/allocations.html
+@@ -14,12 +14,7 @@
+ 
+                 <form action="/allocations/{{userId}}" method="get" role="search">
+                     <div class="form-group">
+-                        <!--Fix for A1 - 2 NoSQL Injection - Provide validation for input.
+-                        Adhering to defence in depth, on the front-end mostly for UX.
+-                        The attacker, or user should not be able to enter anything other than 0-99.              
+-                        Also implement fix in allocations-dao.js-->
+-                        <!--<input type="number" min="0" max="99" class="form-control" placeholder="Stocks Threshold" name="threshold" />-->
+-                        <input type="text" class="form-control" placeholder="Stocks Threshold" name="threshold" />
++                        <input type="number" min="0" max="99" class="form-control" placeholder="Stocks Threshold" name="threshold" required />
+                         <p class="help-block">Using above threshold value, it will return all assets allocation above the specified stocks percentage number.</p>
+                     </div>
+ 

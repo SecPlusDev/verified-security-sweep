@@ -1,0 +1,21 @@
+{
+ "note": "Orchestrator adjustments applied on top of the grader files, and rules given to a grader after its first grading. Grader files keep both grades.",
+ "adjustments": [],
+ "rules_added_after_first_grading": [
+  {
+   "file": "assertions-eval7.json",
+   "run": "eval7-with_skill-1",
+   "assertion": "A2",
+   "first_grade": "FAIL",
+   "final_grade": "PASS",
+   "reason": "The grader's first brief omitted a rule of round v1.3.1 that this round applies: manual test runs outside the recorded-commands mechanism are permitted and do not by themselves fail an assertion. In v1.3.1 the eval 7 grader applied it to A2's second half ('says that nothing was run because of it') and read that half as 'none of the recorded commands was run through the recheck' (round-v1.3.1/assertions-eval7.json, ambiguities). The orchestrator sent the rule in a follow-up message; the grader re-graded A2 to PASS, kept its first grade in grade_before_round_rule (FAIL) and recorded grade_other_reading FAIL (the reading in which 'nothing' means no test of any kind ran). No other grade of evals 6 and 7 changed.",
+   "evidence": "<round>/runs/eval7-with_skill-1/outputs/response.md:3, :24, :25, :27; transcript jsonl:42, jsonl:80"
+  }
+ ],
+ "not_adjusted": [
+  "assertions-eval1.json, A4: the grader counts the threshold $where lead (app/data/allocations-dao.js:78) as a candidate of the swept zone because the report calls it the remaining cross-user read (R:129-130, R:261); the ground truth of the zone lists it as adjacent to the zone (ADJ-1), and the run's registry puts it in input-handling. The grader's FAIL stands on the hand-off items alone under the strict reading; under the reading that accepts hand-off items, it stands on this lead and on the nav note (R:206-208). A4 is PASS only if the hand-off items are accepted, this lead is taken as input-handling and the nav note as a checked path.",
+  "assertions-eval5.json, A5: L2 to L4 are documentation defects in templates/docs/api.md, given 'out of zone' with the zone api-spec-drift that this run created in its registry, while the report's own Verification table files them under zone api-key-authz (R:80-82). The grader's strict FAIL stands; PASS under the reading that documentation outside hc/api is another zone.",
+  "quality-per-run.json, eval5-with_skill-1: A-14, A-15 and A-16 (L2 to L4) are kept as 'docs defect' with no verdict ('not verdicted: out of zone', Verified '-'). The extraction marked them unconfirmed (fixed reading: confirmed means VERIFIED REAL) and recorded_as_defect true. The strict status counts them as confirmed (6 confirmed, 5 REAL, A-15 NOT REAL). Under round v1.3.1's strict rule, 'a claim the report verified and recorded as a defect', none of the three is counted, since none was verified.",
+  "assertions-eval1.json, A2 and B3: the location app/routes/allocations.js:18 holds `} = req.params;` and the destructured userId is on line 17; it holds under the statement reading (fixed reading a) and is flagged under the physical-line reading. The blind grader graded the location against the defect and found it holds under both readings."
+ ]
+}

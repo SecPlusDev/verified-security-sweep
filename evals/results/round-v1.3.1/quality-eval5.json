@@ -1,0 +1,421 @@
+{
+  "eval": 5,
+  "items": [
+    {
+      "id": "A-1",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. create_check (hc/api/views.py:438), update_check (499), pause (546), resume (573), pings (595), ping_body (625) and channels (473) all use authorize, which calls for_api_key(accept_rw=True, accept_ro=False) (hc/api/decorators.py:59). With accept_ro False the hcr_ branch is skipped (hc/accounts/models.py:415) and the plain-text fallback matches only the api_key column (hc/accounts/models.py:429-433), so a read-only key gets 401 (decorators.py:60-61). No defect stated.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-2",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. hc/api/decorators.py:87-89 sets readonly when the key starts with hcr_ (hashed read-only) or equals project.api_key_readonly (legacy read-only). A legacy read-write key that starts with hcr_ is found by the plain-text OR lookup (hc/accounts/models.py:422-426) and flagged readonly, so it gets less, not more; under authorize it is matched on api_key only (hc/accounts/models.py:431) and readonly is False (decorators.py:64). No defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-3",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. get_checks passes readonly=request.readonly (hc/api/views.py:433) and get_check does too (hc/api/views.py:486); Check.to_dict omits uuid, ping_url, update_url, pause_url, resume_url and channels when readonly is True (hc/api/models.py:471-483). No defect stated.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-4",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:415 builds the list with Check.objects.filter(project__owner_id=request.project.owner_id), so it includes the checks of every project owned by the same user. get_checks is under authorize_read (views.py:413), so both key types reach it; with a read-write key to_dict adds uuid and ping_url (hc/api/models.py:473-475). update, delete, pause and resume compare check.project_id with request.project.id and return 403 (views.py:502-503, 525-526, 549-550, 576-577). Matches P-1.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-1"
+    },
+    {
+      "id": "A-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. _lookup filters Check.objects.filter(project=project) (hc/api/views.py:300) with project=request.project (views.py:446), and a new check is built as Check(project=request.project) (views.py:451). No defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. _update resolves '*' as Channel.objects.filter(project=check.project) (hc/api/views.py:323) and names or codes only among Channel.objects.filter(project=check.project) (views.py:330-342). check.project is the key's project on create (views.py:451) and is checked equal to it on update (views.py:502-503). No defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds for cross-project scoping. get_check (hc/api/views.py:483), update_check (502), delete_check (525), pause (549), resume (576), pings (598) and ping_body (628) compare check.project_id with request.project.id and return 403; flips_by_uuid goes through flips(), which does the same (views.py:650). get_check_by_unique_key (493), flips_by_unique_key (684) and badges (695) iterate request.project.check_set; channels filters project=request.project (475). The read-only delete issue (P-2) is a different boundary and is not what this claim says.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-8",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "delete_check is decorated with authorize_read (hc/api/views.py:520), which accepts read-only keys of both formats through for_api_key(accept_rw=True, accept_ro=True) (hc/api/decorators.py:82; hc/accounts/models.py:415-426). The view checks only the project (views.py:525-526) and calls rename_and_delete (528) without reading request.readonly. The response is check.to_dict(v=request.v) without readonly (views.py:529), so uuid and ping_url are in the body (the in-memory object keeps its code; hc/api/models.py:397-401 renames only the row). The response part is true but secondary; the defect is the deletion. Matches P-2.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-2"
+    },
+    {
+      "id": "A-9",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "get_check_by_unique_key returns check.to_dict(v=request.v) with no readonly argument (hc/api/views.py:495), so to_dict takes the read-write branch and adds uuid, ping_url, update_url, pause_url, resume_url and channels (hc/api/models.py:473-483). The list endpoint gives read-only keys the unique_key (hc/api/models.py:471-472, views.py:433). The ping endpoint needs only the UUID (hc/api/urls.py:75, views.py:181-192). Matches P-3.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-3"
+    },
+    {
+      "id": "A-10",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. metrics (hc/api/views.py:855-870) has no API-key decorator, returns 403 unless X-Metrics-Key equals settings.METRICS_KEY (856-861) and returns ts, max ping id, max notification id and the unprocessed flip count (863-868). status runs SELECT 1 and returns OK (873-878). Neither returns project data.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-11",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "The comparison is a plain != at hc/api/views.py:860, as stated. Not graded a defect: the key gates only four global operational counters (views.py:863-868), and a remote timing attack on a Python string comparison of an operator secret is not a practical path; the claim itself notes the low content. Borderline, stricter reading applied (see notes).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-12",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True as stated: the comment at hc/accounts/models.py:587 says 8 + 64 = 72, while _make_api_key stores secret[:8] + '.' + 64 hex chars = 73 (hc/accounts/models.py:556). The code tests for the dot (588) and splits on it (590), not on length. A stale comment that no code relies on is not a defect, as the claim itself says.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-13",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "update_check loads the check with a plain get_object_or_404 (hc/api/views.py:501), with no select_for_update or transaction (no ATOMIC_REQUESTS in hc/settings.py). _update always sets check.alert_after = check.going_down_after() and adds alert_after to update_fields (views.py:398-399, 405). If the loaded copy is new, paused or down, get_grace_start returns None (hc/api/models.py:300-337, 339-349), so alert_after is written as NULL. Check.ping locks the row (hc/api/models.py:508-511, 541-545), but a ping committed between the API read and the API save has its alert_after overwritten while its status=up stays. sendalerts only selects alert_after__lt=now() (hc/api/management/commands/sendalerts.py:135), so that check never goes down. Narrow race, real lost update. Outside GT.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "outside GT"
+    },
+    {
+      "id": "A-14",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "create_check tests request.project.num_checks_available() (hc/api/views.py:448), which counts the owner's Check rows (hc/accounts/models.py:339-345, 465-466), then creates the check in _update (views.py:451, 401) with no lock, transaction or constraint. Concurrent requests can all pass the test and exceed the limit that the code enforces with 403 and the docs state (templates/docs/api.md:653-654). Low severity. Outside GT.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "outside GT"
+    },
+    {
+      "id": "A-15",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "_get_api_version tests request.path_info.startswith('/api/v3/') and '/api/v2/' (hc/api/decorators.py:25-30). hc/urls.py:11-19 puts the SITE_ROOT path into urlpatterns as a prefix, so under a sub-path SITE_ROOT path_info is '/<prefix>/api/v3/...' and the function returns 1 for every version. No middleware rewrites path_info (hc/settings.py:139-150). With v < 3, _update regenerates slug from name (hc/api/views.py:349-352) and to_dict uses v1 semantics (hc/api/models.py:440, 479). Functional defect in a supported configuration. Outside GT.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "outside GT"
+    },
+    {
+      "id": "A-16",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. The hcw_ branch runs only if accept_rw (hc/accounts/models.py:409) and the hcr_ branch only if accept_ro (415); compare_api_key picks api_key_readonly for hcr_ keys and api_key otherwise (581-585) and computes the HMAC over the full key including its prefix (592-593).",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-17",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. Both decorators reject keys whose length is not 32 (hc/api/decorators.py:56-57, 79-80); stored hashed values are 8 + '.' + 64 = 73 chars (hc/accounts/models.py:556), so the exact-match plain-text lookups (hc/accounts/models.py:422-439) cannot match a stored hash.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-18",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. authorize parses the body only for POST (hc/api/decorators.py:39-47) and reads api_key from it only when no X-Api-Key header is present (49-54); authorize_read reads only the header (74-77).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-19",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. unique_key is sha1(code.hex[:16]) (hc/api/models.py:432-434); the other 16 hex digits of the UUID do not enter the hash and cannot be derived from it. No defect.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-20",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True that another project's UUID gives 403 (hc/api/views.py:483-484) and an unknown one 404 (get_object_or_404, views.py:482), and both codes are documented (templates/docs/api.md:283-287). Codes are uuid4 (hc/api/models.py:196), so the difference only confirms a UUID the caller already holds. Not a defect, as the claim says.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-21",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "templates/docs/api.md:85-88 advises staying under 100 requests per minute and says 429 errors will eventually appear; there is no rate limiter in hc/api or in the middleware list (hc/settings.py:139-150). The claim itself allows that the limit is enforced outside the repository, and the docs word it as advice; a missing in-app limiter is not shown to be a defect from the code. Borderline, stricter reading applied.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-22",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "The text is as quoted (templates/docs/api.md:49 and 94; same in apiv1.md:82, apiv2.md:102). It is loose documentation wording, not a code defect: the stated scope (project-specific keys) is the intended one, and the cross-project listing is the code defect P-1 at hc/api/views.py:415, which this claim does not assert. Borderline, stricter reading applied.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-23",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True that the ping body section lists 200, 403, 404 and 503 and no 401 (templates/docs/api.md:1326-1338) while ping_body is under authorize (hc/api/views.py:625), which returns 401 for a missing or unknown key (hc/api/decorators.py:56-61). A documentation omission with no effect on behavior or access control; graded not a defect. Borderline, stricter reading applied.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-24",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "The docs pair 401 with a missing or invalid key and 403 with 'Access denied, wrong API key' (templates/docs/api.md:280-284), which matches the code: unknown key gives 401 (hc/api/decorators.py:60-61, 83-84), a valid key of another project gives 403 (hc/api/views.py:483-484). No contradiction; at most wording.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-25",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/integrations/prometheus/views.py:50 accepts only read-only keys (accept_rw=False, accept_ro=True), scopes to the key's project (54) and emits only name, tags, unique_key and status labels (57-80), no UUID or ping URL. A read-only endpoint by design; no exposure shown.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:415 filters Check.objects.filter(project__owner_id=request.project.owner_id), so the list spans every project of the same owner; get_checks is under authorize_read (413), so both key types reach it. to_dict returns name, desc, tags, schedule/timeout and status for all keys and uuid and ping_url for read-write keys (hc/api/models.py:441-489). update, pause and delete return 403 for those checks (views.py:502-503, 525-526, 549-550). Matches P-1.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-1"
+    },
+    {
+      "id": "B-2",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "delete_check uses authorize_read (hc/api/views.py:520), which accepts hashed and legacy read-only keys (hc/api/decorators.py:82; hc/accounts/models.py:415-426), and the view never reads request.readonly before rename_and_delete (views.py:524-528). The docs limit read-only keys to four read endpoints (templates/docs/api.md:56-62) and update, pause, resume and create use authorize. Matches P-2.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-2"
+    },
+    {
+      "id": "B-3",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "get_check_by_unique_key calls check.to_dict(v=request.v) without readonly (hc/api/views.py:495), so uuid, ping_url, update_url, pause_url, resume_url and channels are returned (hc/api/models.py:473-483). Read-only keys get unique_key from the list (hc/api/models.py:471-472, views.py:433). The UUID pings the check (hc/api/urls.py:75, views.py:181-192) and, with delete_check under authorize_read (views.py:520), lets the same key delete it. Matches P-3.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-3"
+    },
+    {
+      "id": "B-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True: templates/docs/apiv2.md:194-195 and apiv1.md:172-173 leave uuid out of the hidden-field list, while to_dict hides uuid whenever readonly regardless of v (hc/api/models.py:471-474) and api.md:203-204 lists it. The v1/v2 read-only examples already lack uuid (apiv2.md:200-245). The code is the stricter side; a documentation list omission with no effect on behavior is graded not a defect. Borderline, stricter reading applied.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True that the plain-text lookups catch only DoesNotExist (hc/accounts/models.py:425-439) and api_key is not unique (447-448). But keys are only set by set_api_key and set_api_key_readonly from random tokens (hc/accounts/models.py:538-566, hc/accounts/views.py:390-392), so no caller can create a duplicate; the claim concedes this. Not a reachable defect.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True that delete_check returns to_dict without readonly (hc/api/views.py:529) and that a read-only key reaches it because of authorize_read (views.py:520, P-2). But the returned UUID belongs to a check whose row has been renamed and deleted (hc/api/models.py:397-407), so ping/<uuid> returns 404 (views.py:188-192); the body discloses no live capability and is the documented response (templates/docs/api.md:1170-1171). The defect is the deletion (P-2), which this claim does not assert. Borderline, stricter reading applied.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. cors sets Access-Control-Allow-Origin: * (hc/api/decorators.py:112) and allows only the X-Api-Key header (113), with no Allow-Credentials. API authentication uses only the X-Api-Key header or a POST JSON body key (decorators.py:49-54, 74-77); no API view reads request.user or the session. A foreign origin must already hold the key.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-8",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True that another project's UUID gives 403 (hc/api/views.py:483-484) and an unknown one 404 (views.py:482); both are documented (templates/docs/api.md:283-287), codes are uuid4 (hc/api/models.py:196) and the UUID alone already pings (views.py:181-192). Not a defect, as the claim says.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-9",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds for cross-project scoping. get_check, update_check, delete_check, pause, resume, pings, ping_body compare check.project_id with request.project.id and return 403 (hc/api/views.py:483, 502, 525, 549, 576, 598, 628); flips() does the same (650); unique_key lookups iterate request.project.check_set and return 404 otherwise (493-496, 684-687); badges and channels query only the key's project (695, 475). The read-only delete issue (P-2) is a different boundary and is not what this claim says.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-10",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. hc/api/decorators.py:87-89: a hashed read-write key (hcw_) neither starts with hcr_ nor equals the stored hash in api_key_readonly, so False; a hashed read-only key starts with hcr_, so True; a legacy read-write key differs from api_key_readonly, so False; a legacy read-only key equals api_key_readonly, so True. authorize sets False (decorators.py:64).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-11",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. create_check (hc/api/views.py:438), update_check (499), pause (546), resume (573), pings (595), ping_body (625) and channels (473) use authorize, which calls for_api_key(accept_rw=True, accept_ro=False) (hc/api/decorators.py:59); read-only keys of both formats are not found (hc/accounts/models.py:409-433) and get 401 (decorators.py:60-61).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-12",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. get_checks (hc/api/views.py:433) and get_check (views.py:486) pass readonly=request.readonly; to_dict then omits uuid, ping_url, update_url, pause_url, resume_url and channels (hc/api/models.py:471-483).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-13",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. The upsert lookup is Check.objects.filter(project=project) (hc/api/views.py:300) with request.project (446); a new check is Check(project=request.project) (451).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-14",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. Channels are resolved only from Channel.objects.filter(project=check.project) (hc/api/views.py:323, 330-342), and check.project is the key's project on create (451) and verified equal on update (502-503).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-15",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. Hashed keys are looked up by api_key[4:12] against the prefix of the stored column (hc/accounts/models.py:410-418, 556); the column is chosen by the hcr_ prefix (582-585); the HMAC over the full key, prefix included, is compared with hmac.compare_digest (592-593).",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-16",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. With accept_ro False the fallback is Project.objects.get(api_key=api_key) only (hc/accounts/models.py:429-433, line 431).",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-17",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds. authorize reads X-Api-Key, then the JSON body only for POST (hc/api/decorators.py:39-54); authorize_read reads only the header (74-77); both return 401 for a length other than 32 (56-57, 79-80).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-18",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "Both parts are true. The cors wrapper returns 405 for unlisted methods (hc/api/decorators.py:107-110) and every key-protected route is wrapped (hc/api/views.py:463, 471, 489, 533, 544, 571, 593, 623, 672, 680, 690). The claim also states that DELETE on a single check is the one method whose decorator does not match the documented key permissions: delete_check uses authorize_read (views.py:520) while the docs limit read-only keys to list, get, flips and badges (templates/docs/api.md:56-62). Graded on that defect statement, which is P-2. The cited line 110 (the 405 branch) does not hold it. Borderline, see notes.",
+      "in_zone": "yes",
+      "location_holds_defect": "no",
+      "gt": "P-2"
+    },
+    {
+      "id": "B-19",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Safety claim, and it holds in substance. create_check calls request.project.num_checks_available() (hc/api/views.py:448), which counts against the key project's owner account (hc/accounts/models.py:465-466, 339-345), not against another project. 'Counted against the key's project' is loose (it is the owner's account total), but no defect is stated or present.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-20",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "True that hc/api/views.py:860 uses != while the API key path uses hmac.compare_digest (hc/accounts/models.py:593). Not graded a defect: the metrics key gates four global operational counters (views.py:863-868) and remote timing of a Python string comparison is not a practical attack path. Borderline, stricter reading applied (see notes).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    }
+  ],
+  "notes": [
+    "Zone: in_zone is yes only for code in hc/api/decorators.py, hc/api/views.py and hc/api/urls.py, the files the ground truth names. Claims located in hc/accounts/models.py, hc/api/models.py, templates/docs and hc/integrations are marked no even where they concern API key handling. The metrics and status views (A-10, A-11, B-20) are in hc/api/views.py and routed by hc/api/urls.py, so they are marked yes although they are not API-key protected.",
+    "Documentation claims (A-21, A-22, A-23, A-24, B-4): borderline, stricter reading applied. The code behaves correctly and the discrepancies are in the docs only, so they are graded NOT REAL. If documentation inaccuracies counted as defects, A-23 and B-4 would become REAL (outside GT, out of zone), A-22 arguably too, A-21 would be UNDECIDED (proxy configuration not in the repository), and A-24 would stay NOT REAL (no contradiction).",
+    "A-11 and B-20 (non-constant-time metrics key comparison): the fact is true; graded NOT REAL under the stricter reading because it protects four non-sensitive global counters and is not a practical remote timing target.",
+    "B-6 (delete response body with UUID for a read-only key): borderline. The behavior happens, but only as a consequence of P-2 and it discloses the UUID of a check that no longer exists. Graded NOT REAL; the defect is the deletion at hc/api/views.py:520.",
+    "B-18: framed as a method-routing safety claim, but it states explicitly that DELETE on a single check is the one decorator mismatch with the documented key permissions. Per the rule to decide on the part that states the defect, it is graded REAL as P-2, with location_holds_defect no (decorators.py:110 is the 405 branch).",
+    "A-8: the extra statement that the response returns the deleted check's UUID and ping URL is true but secondary; the grade rests on the read-only key deleting the check (P-2).",
+    "A-13, A-14, A-15: REAL outside GT. A-13 and A-14 are low-severity races verified from the code (no lock, no transaction, no constraint). A-13 location 501 is the unlocked load; the stale write of alert_after is at hc/api/views.py:398-405, and both are part of the cause. A-15 needs a SITE_ROOT with a path, a configuration hc/urls.py:11-19 supports.",
+    "B-19: 'counted against the key's project' is loose wording; the limit counts the owner's checks across all their projects. The safety conclusion holds.",
+    "No claim ended UNDECIDED."
+  ]
+}

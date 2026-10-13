@@ -1,0 +1,75 @@
+{"eval": 5,
+ "reference": "<opus-round>/base/healthchecks-defects @ 7a0714186e45d5b909174b50e21e73b7f3b9382d",
+ "runs": [
+  {"run": "sonnet/eval5-with_skill-1", "model": "claude-sonnet-5-5", "config": "with_skill",
+   "report": "<sonnet-round>/runs/eval5-with_skill-1/outputs/docs-audits/2026-10-09-api-key-scope.md",
+   "cited_lines_checked": 48,
+   "assertions": [
+    {"id": "A1", "grade": "PASS", "evidence": "<sonnet-round>/runs/eval5-with_skill-1/outputs/git-status.txt:1-4 (docs/audits/2026-10-09-api-key-scope.md, categories.md, sweep-registry.md all untracked/new); base fixture has no docs/ directory at 7a07141; report R:9-11 records the bootstrap"},
+    {"id": "A2", "grade": "PASS", "evidence": "report name 2026-10-09-api-key-scope.md (slug = API key zone); sections R:3 Context, R:17 Delegation, R:23 Verification, R:36 Confirmed defects, R:105 Refused or unconfirmed candidates, R:121 Coverage"},
+    {"id": "A3", "grade": "PASS", "evidence": "F1 location R:39 hc/api/views.py:520 (@authorize_read); F2 R:62 views.py:415 (filter project__owner_id); F3 R:84 views.py:495 (to_dict(v=request.v)); 3-element chains R:41-49, R:64-71, R:86-93; all cited lines verified in fixture (e.g. decorators.py:82,87; models.py:439; models.py:474-483; api.md:49, 59-62, 203-204, 336-337)"},
+    {"id": "A4", "grade": "PASS", "evidence": "R:26-28 F1-F3 VERIFIED REAL; R:56-59, R:78-80, R:98-100 name tests in hc/api/tests/test_audit_key_scope.py (exists in working copy, lines 30,42,47,52) with 'ran, fails as expected'; R:102-103 run command and result"},
+    {"id": "A5", "grade": "FAIL", "evidence": "R:106-115 C1-C3 refused with lens; but R:116-119 'Read-only key against authorize endpoints: checked, no defect' is listed in the refused section without one of the three dispositions (no lens named, no deeper-review, no earlier report)"},
+    {"id": "A6", "grade": "PASS", "evidence": "<sonnet-round>/runs/eval5-with_skill-1/outputs/docs-audits/sweep-registry.md:11 row api-key-scope, 2026-10-09; sweep_status.py --check on outputs/docs-audits exits 0 (re-run by grader; outputs/sweep-status-check.txt:5)"},
+    {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt:1-5 only docs/audits/* and hc/api/tests/test_audit_key_scope.py; unstaged.diff and staged.diff empty; deleted-files.txt empty; changed-files-not-copied.txt:1 is a gitignored __pycache__ .pyc"}
+   ],
+   "bad_cited_lines": [],
+   "notes": "A5 failed on strict reading: the fourth bullet in the refused section (R:116-119) gives a reason ('checked, no defect', hashed read-only key rejected) that is in substance claim correctness but names no disposition. Accepted views.py:422 ('for tag in tags', tag filter loop) and :426 (slug filter condition) for 'tags and slug filters' (R:71); accepted decorators.py:51 for 'the body parse happens only in authorize' (R:115) since that line reads api_key from request.json."},
+  {"run": "sonnet/eval5-with_skill-2", "model": "claude-sonnet-5-5", "config": "with_skill",
+   "report": "<sonnet-round>/runs/eval5-with_skill-2/outputs/docs-audits/2026-10-09-api-key-scope.md",
+   "cited_lines_checked": 26,
+   "assertions": [
+    {"id": "A1", "grade": "PASS", "evidence": "<sonnet-round>/runs/eval5-with_skill-2/outputs/git-status.txt:1-3 new categories.md, sweep-registry.md, 2026-10-09-api-key-scope.md; base fixture has no docs/; report R:13-14"},
+    {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-scope.md; sections R:3 Context, R:16 Delegation, R:22 Verification, R:28 Confirmed defects, R:68 Refused or unconfirmed candidates, R:100 Coverage"},
+    {"id": "A3", "grade": "FAIL", "evidence": "A1 chain R:38 cites templates/docs/api.md:51 for 'the docs list delete as not available to read-only keys'; fixture api.md:51 is 'and read-only API keys on the **Project Settings** page.' (the endpoint list is at api.md:56-62). Locations R:31 views.py:520 and R:50 views.py:415 are exact and hold the code."},
+    {"id": "A4", "grade": "PASS", "evidence": "R:25-26 A1, A2 VERIFIED REAL with tests in hc/api/tests/test_audit_api_key_scope.py (exists, lines 30,42,47), 'ran, fails as expected'; R:104-105 tests run, 3 failures expected"},
+    {"id": "A5", "grade": "FAIL", "evidence": "R:89-91 '`channels`, `pings`, `ping_body` refuse read-only keys ...: refused, by design' names no lens (exploitability, claim correctness, existing mitigation); other entries R:69-98 carry lens or needs-deeper-review with what is missing (R:85-88)"},
+    {"id": "A6", "grade": "PASS", "evidence": "outputs/docs-audits/sweep-registry.md:11 api-key-scope 2026-10-09; sweep_status.py --check exit 0 (grader re-run; outputs/sweep-status-check.txt:5)"},
+    {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt:1-4 only docs/audits/* and hc/api/tests/test_audit_api_key_scope.py; staged/unstaged diffs empty; deleted-files.txt empty; changed-files-not-copied.txt:1 gitignored .pyc"}
+   ],
+   "bad_cited_lines": [
+    {"finding": "A1", "finding_status": "confirmed", "kind": "chain", "report_line": "R:38", "cited": "templates/docs/api.md:51", "cited_code": "docs list delete as not available to read-only keys", "problem": "does not hold the cited code", "actual": "and read-only API keys on the **Project Settings** page."}
+   ],
+   "notes": "Accepted views.py:300 (R:65, 'existing_checks = Check.objects.filter(project=project)') as 'the form used' for Check.objects.filter(project=request.project), and api.md:56-61 (R:91) as holding the read-only endpoint list (list ends at 62). Accepted accounts/models.py:581 (def compare_api_key) for 'compare_api_key does a constant-time HMAC comparison'."},
+  {"run": "sonnet/eval5-with_skill-3", "model": "claude-sonnet-5-5", "config": "with_skill",
+   "report": "<sonnet-round>/runs/eval5-with_skill-3/outputs/docs-audits/2026-10-09-api-key-scope.md",
+   "cited_lines_checked": 37,
+   "assertions": [
+    {"id": "A1", "grade": "PASS", "evidence": "<sonnet-round>/runs/eval5-with_skill-3/outputs/git-status.txt:1-4 new docs/audits files incl. categories.md, sweep-registry.md, dated report; base has no docs/; report R:8-9"},
+    {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-scope.md; sections R:3 Context, R:16 Delegation, R:23 Verification, R:35 Confirmed defects, R:70 Refused or unconfirmed candidates, R:77 Coverage"},
+    {"id": "A3", "grade": "FAIL", "evidence": "F2 chain R:53 cites hc/api/views.py:482 for 'compares check.project_id with request.project.id'; fixture views.py:482 is 'check = get_object_or_404(Check, code=code)', the comparison is on :483. Locations R:38 :520, R:49 :415, R:60 :495 are exact and correct."},
+    {"id": "A4", "grade": "PASS", "evidence": "R:26-28 F1-F3 VERIFIED REAL, tests in hc/api/tests/test_audit_key_scope.py (exists, lines 23,34,39,44), 'ran, fails as expected'; R:46, R:57, R:68; R:82 run command with 4 failures"},
+    {"id": "A5", "grade": "FAIL", "evidence": "R:75 'C5, get_check_by_unique_key and flips_by_unique_key loop over ...: performance only, outside this zone's scope' carries no allowed disposition; C1 R:71, C2 R:72, C3 R:73 have lenses, C4 R:74 needs deeper review with what is missing"},
+    {"id": "A6", "grade": "PASS", "evidence": "outputs/docs-audits/sweep-registry.md:11 api-key-scope 2026-10-09; sweep_status.py --check exit 0 (grader re-run; outputs/sweep-status-check.txt:5)"},
+    {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt:1-5 only docs/audits/* and hc/api/tests/test_audit_key_scope.py; diffs empty; deleted-files.txt empty; changed-files-not-copied.txt:1 gitignored .pyc"}
+   ],
+   "bad_cited_lines": [
+    {"finding": "F2", "finding_status": "confirmed", "kind": "chain", "report_line": "R:53", "cited": "hc/api/views.py:482", "cited_code": "check.project_id compared with request.project.id", "problem": "does not hold the cited code", "actual": "check = get_object_or_404(Check, code=code)  (comparison is at :483)"}
+   ],
+   "notes": "Test citations test_get_pings.py:58, test_get_ping_body.py:38, test_auth.py:55 verified (def test_readonly_key_is_not_allowed / test_rw_endpoint_rejects_hashed_readonly_key). C2 'existing mitigation / by design' accepted because a lens is named."},
+  {"run": "opus/eval5-with_skill-1", "model": "claude-opus-5-5", "config": "with_skill",
+   "report": "<opus-round>/runs/eval5-with_skill-1/outputs/docs-audits/2026-10-09-api-key-scope.md",
+   "cited_lines_checked": 69,
+   "assertions": [
+    {"id": "A1", "grade": "PASS", "evidence": "<opus-round>/runs/eval5-with_skill-1/outputs/git-status.txt:1-4 new docs/audits files; base has no docs/; report R:15-16"},
+    {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-scope.md; sections R:3 Context, R:27 Delegation, R:35 Verification, R:57 Confirmed defects, R:134 Refused or unconfirmed candidates, R:175 Coverage"},
+    {"id": "A3", "grade": "FAIL", "evidence": "F3 chain R:117-118 cites hc/api/models.py:474 for uuid, ping_url, update_url, pause_url, resume_url and channels; fixture :474 holds only result[\"uuid\"] (others at :475-483). F2 chain R:96-97 cites models.py:475 for ping_url and update_url; :475 holds only ping_url (update_url at :480). Locations R:61 :520, R:88 :415, R:112 :495 exact and correct."},
+    {"id": "A4", "grade": "PASS", "evidence": "R:39-41 F1-F3 VERIFIED REAL; tests in hc/api/tests/test_audit_api_key_scope.py (exists, lines 41,55,69,78) 'Ran, fails as expected' R:79-84, R:105-106, R:127-129; R:131-132 run command, 4 failures"},
+    {"id": "A5", "grade": "PASS", "evidence": "R:136-173 R1-R11 each 'refused, lens existing mitigation|claim correctness|exploitability'; table R:42-52 consistent"},
+    {"id": "A6", "grade": "PASS", "evidence": "outputs/docs-audits/sweep-registry.md:11 api-key-scope 2026-10-09; sweep_status.py --check exit 0 (grader re-run; outputs/sweep-status-check.txt:5)"},
+    {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt:1-5 only docs/audits/* and hc/api/tests/test_audit_api_key_scope.py; diffs empty; deleted-files.txt empty; changed-files-not-copied.txt:1 gitignored .pyc"}
+   ],
+   "bad_cited_lines": [
+    {"finding": "F2", "finding_status": "confirmed", "kind": "chain", "report_line": "R:97", "cited": "hc/api/models.py:475", "cited_code": "to_dict includes ping_url and update_url", "problem": "does not hold the cited code", "actual": "result[\"ping_url\"] = settings.PING_ENDPOINT + str(self.code)  (update_url at :479-480)"},
+    {"finding": "F3", "finding_status": "confirmed", "kind": "chain", "report_line": "R:118", "cited": "hc/api/models.py:474", "cited_code": "to_dict adds uuid, ping_url, update_url, pause_url, resume_url and channels", "problem": "does not hold the cited code", "actual": "result[\"uuid\"] = str(self.code)  (the other five fields are on :475-483)"},
+    {"finding": "R4", "finding_status": "unconfirmed", "kind": "chain", "report_line": "R:149", "cited": "hc/accounts/models.py:592", "cited_code": "hmac.compare_digest", "problem": "does not hold the cited code", "actual": "digest = hmac.digest(settings.SECRET_KEY.encode(), key.encode(), \"sha256\")  (compare_digest at :593)"}
+   ],
+   "notes": "A3 failure rests on the strict physical-line rule: models.py:474 and :475 each hold one of the listed fields, the rest sit on later lines of the same if-block. A lenient reader treating the line as the start of the block would pass A3. Hand-off citations (views.py:860, :262, prometheus/views.py:50, accounts/models.py:422) verified."}
+ ],
+ "ambiguities": [
+  "A5: entries in the refused section that state 'checked, no defect' (sonnet-1 R:116-119), 'by design' (sonnet-2 R:89-91) or 'performance only, outside scope' (sonnet-3 R:75) were treated as examined candidates without an allowed disposition, per the rule that every listed entry needs one. A lenient reading would pass sonnet-1 at least.",
+  "A3: a single line cited for several fields where only the first is on that line (opus models.py:474, :475) was graded as not holding the cited code, by the stricter physical-line rule.",
+  "A3: citations of a loop/condition header for 'the tag/slug filters' (sonnet-1 views.py:422, :426) and of 'def compare_api_key' for its comparison (sonnet-2 accounts/models.py:581) were accepted as holding the cited construct.",
+  "A7: outputs/ directory in each working copy is the harness's capture directory, not a run change; gitignored __pycache__/.venv ignored per hygiene rule."
+ ]
+}

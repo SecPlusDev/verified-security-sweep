@@ -1,0 +1,91 @@
+diff --git a/docs/audits/2026-10-03-ping-api.md b/docs/audits/2026-10-03-ping-api.md
+new file mode 100644
+index 0000000..166d907
+--- /dev/null
++++ b/docs/audits/2026-10-03-ping-api.md
+@@ -0,0 +1,37 @@
++# Defensive audit sweep: ping-api, 2026-10-03
++
++## Context
++Scope: the unauthenticated ping endpoints and the API-key gate: `hc/api/views.py` (`ping`,
++`ping_by_slug`), `hc/api/decorators.py`, `hc/api/urls.py`. Trigger: first sweep on this zone;
++the registry had no row for it. No changes in the zone since the pinned upstream commit.
++
++## Delegation
++One reviewer in a fresh session, with the brief from the skill. Pre-read: `README.md`,
++`SECURITY.md`, `docs/audits/categories.md`. No previous reports existed; the registry was
++bootstrapped in this run.
++
++## Verification
++| Finding | Zone | Verdict | Claimed | Verified | Reservations | Proof |
++|---|---|---|---|---|---|---|
++| PING-1 `/ping/<uuid>` accepts unauthenticated requests and stores the body | ping-api | FALSE POSITIVE | High | - | by design: the check code is the capability; malformed and unknown codes answer 404 | existing `hc/api/tests/test_ping.py::PingTestCase::test_it_handles_bad_uuid` |
++| PING-2 ping body stored without a size bound | ping-api | FALSE POSITIVE | Medium | - | `request.body` is sliced to `PING_BODY_LIMIT` before storage | existing `hc/api/tests/test_ping.py::PingTestCase::test_it_chops_long_body` |
++
++## Confirmed defects
++None.
++
++## Refused or unconfirmed candidates
++- PING-1, FALSE POSITIVE (lens: claim correctness). The product contract is that whoever holds a
++  check's code can ping it; there is no user to authenticate. The code is a UUID the server
++  generates (`hc/api/models.py:196`, `default=uuid.uuid4`, not editable), an unknown code answers
++  404 (`hc/api/views.py:188` to `hc/api/views.py:192`), and a malformed one is rejected by the URL
++  converter. Accepted by the owner as a product rule, so this item is closed, not pending.
++- PING-2, FALSE POSITIVE (lens: existing mitigation). `hc/api/views.py:211` truncates the body to
++  `settings.PING_BODY_LIMIT` (`hc/settings.py:272`, default 10000 bytes) and the response
++  announces the limit (`hc/api/views.py:241` to `hc/api/views.py:242`). An operator who sets the
++  limit to `None` opts out knowingly; `test_it_allows_unlimited_body` documents that choice.
++
++## Coverage
++Read: `hc/api/views.py` lines 170 to 290, `hc/api/decorators.py`, `hc/api/urls.py`,
++`hc/api/tests/test_ping.py`. Skipped: the authenticated management API (`checks`, `channels`,
++`badges`, `metrics`) and the integrations under `hc/api/transports.py`, each a zone of its own.
++Lenses applied: exploitability, claim correctness, existing mitigation.
+diff --git a/docs/audits/categories.md b/docs/audits/categories.md
+new file mode 100644
+index 0000000..09fe296
+--- /dev/null
++++ b/docs/audits/categories.md
+@@ -0,0 +1,12 @@
++# Audit categories
++
++Categories, not patterns. A new pattern lands under an existing category. "Covered by" names the
++control in this project; the last column says whether a test asserts it.
++
++| Category | Covered by | Enforced mechanically? |
++|---|---|---|
++| API authentication | `authorize` and `authorize_read` in `hc/api/decorators.py`: `X-Api-Key` header, read-only keys flagged on the request | yes: `hc/api/tests/` |
++| Ownership per project | views compare `check.project_id` with `request.project.id` and answer 403 (for example `hc/api/views.py:483`) | yes: `hc/api/tests/` |
++| Capability URLs | check codes are server-generated UUIDs (`hc/api/models.py:196`); unknown codes answer 404 | yes: `hc/api/tests/test_ping.py` |
++| Request size limits | `PING_BODY_LIMIT` applied in `hc/api/views.py:211` | yes: `test_it_chops_long_body` |
++| CSRF | API views are `csrf_exempt` by design; browser views rely on the Django middleware | partly |
+diff --git a/docs/audits/sweep-registry.md b/docs/audits/sweep-registry.md
+new file mode 100644
+index 0000000..8553b0e
+--- /dev/null
++++ b/docs/audits/sweep-registry.md
+@@ -0,0 +1,24 @@
++# Sweep registry: what exists, what ran, what it is worth
++
++Proposals for sweeps are written here, not in conversation. The `Last run` column is derived
++from report filenames by `scripts/sweep_status.py`; the other columns are written by hand.
++
++## Candidates
++
++| Zone | Argument | Last run | Yield |
++|---|---|---|---|
++| `ping-api` | Unauthenticated ping endpoints; the check code is the capability. Both candidates refused, with the reasons in the report. | 2026-10-03 | 0/2 |
++
++## Proposed, not yet run
++
++| Zone | Argument | Premise to re-verify before starting |
++|---|---|---|
++| `management-api` | API-key gate and per-project ownership checks across the authenticated views in `hc/api/views.py`. | that `hc/api/decorators.py` still resolves the project the same way as on 2026-10-03 |
++
++## Candidates verified and refused
++
++Written here so they are not rediscovered. A refused candidate without a written reason comes back.
++
++- Unauthenticated ping endpoint: product rule, accepted by the owner, see the 2026-10-03 ping-api
++  report, PING-1.
++- Unbounded ping body: mitigated by `PING_BODY_LIMIT`, see the 2026-10-03 ping-api report, PING-2.

@@ -1,0 +1,104 @@
+{
+ "opus/eval1-with_skill-1": {
+  "eval": 1,
+  "letter": "A",
+  "items": 30,
+  "confirmed": 1,
+  "confirmed_real": 1,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "GT-1"
+  ],
+  "gt_found_only_unconfirmed": [
+   "GT-2"
+  ],
+  "recall_confirmed": 0.5,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "A-3"
+  ],
+  "exact_location_physical": [
+   "A-3"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 29,
+  "unconfirmed_real": [
+   "A-10",
+   "A-15",
+   "A-21",
+   "A-22",
+   "A-23",
+   "A-24",
+   "A-25",
+   "A-26",
+   "A-28",
+   "A-29"
+  ],
+  "unconfirmed_real_gt": {
+   "A-10": "ADJ-1",
+   "A-15": "ADJ-8",
+   "A-21": "ADJ-5",
+   "A-22": "ADJ-6",
+   "A-23": "outside GT",
+   "A-24": "GT-2",
+   "A-25": "ADJ-2",
+   "A-26": "ADJ-3",
+   "A-28": "ADJ-9",
+   "A-29": "ADJ-9"
+  },
+  "planted_prior_confirmed": []
+ },
+ "opus/eval5-with_skill-1": {
+  "eval": 5,
+  "letter": "A",
+  "items": 27,
+  "confirmed": 3,
+  "confirmed_real": 3,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "P-1",
+   "P-2",
+   "P-3"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 1.0,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "A-1",
+   "A-4",
+   "A-7"
+  ],
+  "exact_location_physical": [
+   "A-1",
+   "A-4",
+   "A-7"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 24,
+  "unconfirmed_real": [
+   "A-14",
+   "A-16"
+  ],
+  "unconfirmed_real_gt": {
+   "A-14": "outside GT",
+   "A-16": "outside GT"
+  },
+  "planted_prior_confirmed": [],
+  "strict_status": {
+   "note": "items the record keeps as defects without the verdict VERIFIED REAL (extraction notes, recorded_as_defect) counted as confirmed: A-14, A-15, A-16",
+   "confirmed": 6,
+   "confirmed_real": 5,
+   "confirmed_not_real": [
+    "A-15"
+   ],
+   "precision": 0.83,
+   "unconfirmed": 21
+  }
+ }
+}

@@ -1,0 +1,13 @@
+diff --git a/hc/api/views.py b/hc/api/views.py
+index 5a7e0b3..353828f 100644
+--- a/hc/api/views.py
++++ b/hc/api/views.py
+@@ -517,7 +517,7 @@ def update_check(request: ApiRequest, code: UUID) -> HttpResponse:
+     return JsonResponse(check.to_dict(v=request.v))
+ 
+ 
+-@authorize_read
++@authorize
+ def delete_check(request: ApiRequest, code: UUID) -> HttpResponse:
+     # Don't acquire lock right away, first see if the check exists
+     # and matches the API key

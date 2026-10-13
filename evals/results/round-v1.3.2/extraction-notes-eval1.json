@@ -1,0 +1,487 @@
+{
+  "eval": 1,
+  "notes": {
+    "A-1": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        20,
+        26,
+        27,
+        36,
+        37,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        160,
+        161,
+        162,
+        163,
+        164,
+        165,
+        186
+      ],
+      "original_status_wording": "Context: \"That report closed AC-1 (`/benefits` open to any signed-in user; fixed)\" and \"`isAdmin` was wired on `/benefits` ... the AC-1 fix\" (line 20); section 'Refused or unconfirmed candidates': \"AC-1, `/benefits` reachable by any signed-in user: closed earlier, by the 2026-10-03 report. The fix is present ... Rechecked live this run\"; Coverage table: \"admin only (AC-1, rechecked)\". No severity given. Reply lines 8 and 22-27: \"Admin only: `/benefits`\", \"The earlier `/benefits` fix (AC-1) holds\", rechecked live.",
+      "recorded_as_defect": false,
+      "borderline": "Merged the previously reported issue, its fix, the admin middleware's fail-closed behaviour and the live recheck into one item; split out the GET-only test gap (A-4) and the fixed-field writes statement at lines 154-156 (A-8, A-11). recorded_as_defect is false because the record reports the issue fixed, not a current defect."
+    },
+    "A-2": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        27,
+        37,
+        169,
+        170
+      ],
+      "original_status_wording": "Context: \"refused AC-2 (the admin gate redirects instead of answering 403; informational)\"; section 'Refused or unconfirmed candidates': \"AC-2, admin gate redirects instead of answering 403: closed earlier (refused, 2026-10-03). Not reconsidered.\" Not mentioned in the reply.",
+      "recorded_as_defect": false,
+      "borderline": "The record cites no file:line for this item, so location is null; the admin middleware at app/routes/session.js:25-34 would be a plausible alternative."
+    },
+    "A-3": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        51,
+        60,
+        64,
+        65,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        187,
+        246,
+        247,
+        248
+      ],
+      "original_status_wording": "Verification table: \"F1 `/allocations/:userId` takes the user id from the URL; any signed-in user reads any user's allocations (reviewer R1) | access-control | VERIFIED REAL | High | High | read-only; fields shown are the target's first and last name and three allocation percentages\"; Calibration: \"One confirmed with severity unchanged ... a scope reservation, not a severity reservation\"; section 'Confirmed defects': \"F1: `/allocations/:userId` is not scoped to the signed-in user\" (CWE-639); Coverage table: \"signed in, any user's data (F1)\"; Hand-off item 1: \"Fix F1 as a separate change\". Reply lines 12-19: \"Confirmed finding (F1, High): any signed-in user can read any other user's allocations\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-4": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        52,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        233,
+        276,
+        277,
+        278,
+        279
+      ],
+      "original_status_wording": "Delegation: \"Two items below come only from my read: the guard blind spot on AC-1\"; section 'Refused or unconfirmed candidates', under AC-1: \"Blind spot: the guard asserts the attack path for GET only ... Nothing asserts that POST stays admin-only. Proposal in Hand-off.\"; Coverage lenses: \"what does the guard not cover?\"; Hand-off item 4: \"Guard for AC-1: add a POST case\". No verdict or severity. Reply line 27: \"That guard only tests GET, so I've proposed adding a POST case.\"",
+      "recorded_as_defect": false,
+      "borderline": "Kept separate from A-1 although it sits in the same paragraph; it is a test coverage gap rather than a code defect."
+    },
+    "A-5": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        53,
+        249,
+        250,
+        251,
+        252
+      ],
+      "original_status_wording": "Delegation: \"Two items below come only from my read: ... the existing e2e spec that encodes F1 as expected behavior\"; Hand-off item 1: \"`test/e2e/integration/allocations_spec.js:21` ... encodes the defect as expected behavior\". No verdict or severity. Reply line 20: \"it treats the defect as normal behaviour\".",
+      "recorded_as_defect": false,
+      "borderline": "Kept separate from A-3 because the record names it as its own item; another reader could fold it into the main allocations item."
+    },
+    "A-6": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        61,
+        64,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        188,
+        292,
+        293
+      ],
+      "original_status_wording": "Verification table: \"F2 memos carry no author; the board is shared and anonymous (reviewer L1) | access-control | OVER-RATED | Low | Info | no data owned by a user is exposed; this concerns attribution, not access\"; section 'Refused or unconfirmed candidates': \"F2, memos carry no author: OVER-RATED, Low to Info, lens exploitability ... The claim is correct ... It is not an access-control defect ... Decision pending\"; 'Open items for the owner (decisions, not defects)': \"Decision pending: memos are an anonymous shared board (F2)\". Reply line 30, under 'Not counted as defects': \"I rated the missing author field informational, not an access problem.\"",
+      "recorded_as_defect": false,
+      "borderline": "The record says the factual claim is correct and rates it Info, but explicitly calls it not an access-control defect and lists it among decisions, not defects, so recorded_as_defect is false."
+    },
+    "A-7": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        62,
+        64,
+        95,
+        96,
+        143,
+        144,
+        148,
+        149,
+        181,
+        289,
+        290,
+        291
+      ],
+      "original_status_wording": "Verification table: \"F3 open self-registration makes 'signed-in' equal 'anyone' (reviewer L2) | access-control | FALSE POSITIVE | Low | - | lens: claim correctness; documented as intended\"; section 'Refused or unconfirmed candidates': \"F3, open self-registration: FALSE POSITIVE, lens claim correctness, by design ... Decision pending\"; 'Open items for the owner (decisions, not defects)': \"Decision pending: open self-registration\". Reply lines 31 and 35, under 'Not counted as defects': \"documented as intended ... I listed both as owner decisions.\"",
+      "recorded_as_defect": false,
+      "borderline": "Location taken as README.md:24, the first location cited (as proof); the record also cites app/routes/index.js:38 as where signup is open."
+    },
+    "A-8": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        92,
+        93,
+        155,
+        156,
+        184,
+        196,
+        197,
+        198
+      ],
+      "original_status_wording": "Coverage, 'Checked, no defect': \"GET and POST `/profile`: identity from the session ... `isAdmin`, `_id` and `userId` cannot be assigned from the request\"; Coverage table: \"signed in, own data\"; also cited in the F1 evidence (\"Every other per-user handler takes the identity from the session\") and in the AC-1 recheck (profile update \"`$set` of seven named fields\"). No severity. Reply line 10: \"Every page except allocations scopes reads and writes to the signed-in user.\"",
+      "recorded_as_defect": false,
+      "borderline": "Merged the profile half of the AC-1 recheck statement (lines 155-156) and the F1 evidence mention (line 93) into this item."
+    },
+    "A-9": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        92,
+        93,
+        185,
+        199,
+        200,
+        201
+      ],
+      "original_status_wording": "Coverage, 'Checked, no defect': \"GET and POST `/contributions`: identity from the session ... both session-derived\"; Coverage table: \"signed in, own data (the eval is out of zone)\"; also cited in the F1 evidence. No severity. Reply line 10: \"Every page except allocations scopes reads and writes to the signed-in user.\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-10": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        126,
+        127,
+        128,
+        129,
+        130,
+        253,
+        254,
+        255,
+        260,
+        261
+      ],
+      "original_status_wording": "Section 'Confirmed defects', F1 'Caveat on the fix': \"input-handling zone, not verified in this run; see Hand-off\"; Hand-off item 2: \"None was verified in this run, and none counts in this zone's yield ... This is the remaining cross-user read on `/allocations` once F1 is fixed.\" Reply line 36, under 'Seen but outside this review': \"Once F1 is fixed, this stays a way to read all users' allocations.\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-11": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        145,
+        146,
+        147,
+        154,
+        155
+      ],
+      "original_status_wording": "Section 'Refused or unconfirmed candidates', reasoning under \"F3, open self-registration: FALSE POSITIVE\": \"Signup builds the user from a fixed field list with no `isAdmin` ... and takes `_id` from the server sequence\"; repeated in the AC-1 recheck: \"The only writes to `users` reachable by a regular user use fixed key sets: signup ...\". No verdict or severity of its own.",
+      "recorded_as_defect": false,
+      "borderline": "Split out as its own safe-path claim from reasoning under F3 and the AC-1 recheck; another reader could fold it into either."
+    },
+    "A-12": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192
+      ],
+      "original_status_wording": "Coverage: \"Route table as verified\" with a 'Reachable by' column; rows for `/login`, `/signup`, `/logout` (\"anyone\") and `/learn`, `/research` (\"signed in (internals out of zone)\"). No verdict or severity. Reply lines 5-10, 'Who can reach what': \"The middleware does gate each route as wired. Every page except allocations scopes reads and writes to the signed-in user.\"",
+      "recorded_as_defect": false,
+      "borderline": "Grouped the route table rows that make only a reachability statement (/login, /signup, /logout, /learn, /research) and the reply's summary into one item; rows with a claim of their own (/, /dashboard, tutorial, static assets) and rows tied to other items are separate. No single file:line is cited, so location is null."
+    },
+    "A-13": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        179
+      ],
+      "original_status_wording": "Coverage table row: \"GET | `/` | none; the handler checks the session (`app/routes/session.js:259`) | anonymous: redirect to `/login`; signed in: own dashboard\". No verdict or severity.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-14": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        174,
+        175,
+        183
+      ],
+      "original_status_wording": "Coverage table row: \"GET | `/dashboard` | isLoggedIn | signed in, own data\". No verdict or severity.",
+      "recorded_as_defect": false,
+      "borderline": "Kept as its own item although the record gives only a table row with no cited evidence; location null."
+    },
+    "A-15": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        185,
+        253,
+        254,
+        255,
+        256,
+        257,
+        258,
+        259,
+        290,
+        291
+      ],
+      "original_status_wording": "Coverage table: \"(the eval is out of zone)\"; Hand-off item 2 (run the input-handling sweep next): \"None was verified in this run, and none counts in this zone's yield ... If confirmed, this is server-side code execution\"; 'Open items for the owner': \"the eval in item 2 included\". Reply line 35, under 'Seen but outside this review': \"Most important ... If confirmed, any signed-in user ... can run code on the server\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-16": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        16,
+        191
+      ],
+      "original_status_wording": "Context scope: \"the wiring of `app/routes/tutorial.js`\"; Coverage table: \"none (`app/routes/index.js:75`) | anonymous, static pages, intended (`README.md:13`)\". No verdict or severity. Reply line 6: \"The tutorial being public is intended (the README links to it).\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-17": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        16,
+        192
+      ],
+      "original_status_wording": "Context scope: \"the wiring ... of the static assets (`server.js:121`)\"; Coverage table: \"none (`server.js:121`) | anonymous; images, CSS, vendor JS only\". No verdict or severity. Reply line 6 lists the static assets as reachable by anyone.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-18": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        202,
+        203,
+        204
+      ],
+      "original_status_wording": "Coverage, 'Checked, no defect': \"POST `/login`: the session id is the database `_id` set after the password check ... so the client cannot choose it. Signup does the same\". No severity.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-19": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        205
+      ],
+      "original_status_wording": "Coverage, 'Checked, no defect': \"The session store is the server-side default. No client-side session data exists to forge.\" No severity.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-20": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        206,
+        207,
+        208
+      ],
+      "original_status_wording": "Coverage, 'Checked, no defect': \"Nav (`app/views/layout.html:48`) ... the admin sees the non-admin menu on the dashboard. This is display only: the server enforces the gate.\" No severity.",
+      "recorded_as_defect": false,
+      "borderline": "It describes an actual display bug (the admin sees the non-admin menu), but the record files it under 'Checked, no defect' as display only, so recorded_as_defect is false."
+    },
+    "A-21": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        253,
+        254,
+        255,
+        262,
+        263
+      ],
+      "original_status_wording": "Hand-off item 2: \"None was verified in this run, and none counts in this zone's yield ... This is a path to acting as the admin on `/benefits`.\" Reply line 37, under 'Seen but outside this review'.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-22": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        253,
+        254,
+        255,
+        264
+      ],
+      "original_status_wording": "Hand-off item 2: \"None was verified in this run, and none counts in this zone's yield\": \"`/learn?url=` redirects to any URL.\" Not mentioned in the reply.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-23": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        253,
+        254,
+        255,
+        265,
+        266
+      ],
+      "original_status_wording": "Hand-off item 2: \"None was verified in this run, and none counts in this zone's yield\": \"`userName` from a JSON body reaches the query unchecked. The reviewer reports user enumeration only, because the password comparison is strict.\" Not mentioned in the reply.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-24": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        267,
+        268
+      ],
+      "original_status_wording": "Hand-off item 3: \"Propose a new zone, `sessions`, with these leads (not verified)\": \"the session id is not regenerated on login.\" Reply line 39: \"no new session on login\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-25": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        267,
+        269,
+        270
+      ],
+      "original_status_wording": "Hand-off item 3, leads (not verified): \"CSRF protection is commented out. The admin's POST `/benefits` is one of the forms it would protect.\" Reply line 39: \"CSRF protection commented out\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-26": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        267,
+        271
+      ],
+      "original_status_wording": "Hand-off item 3, leads (not verified): \"the cookie options are commented out, so the cookie has no `secure` flag.\" Not separately mentioned in the reply.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-27": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        267,
+        271,
+        272,
+        273
+      ],
+      "original_status_wording": "Hand-off item 3, within the cookie lead: \"Contrary to the reviewer's note, `httpOnly` is on: express-session sets it by default (its `session/cookie.js`, line 28).\" Reply line 41: \"The reviewer agent claimed the session cookie lacks `httpOnly`. That's wrong ... I corrected it in the report.\"",
+      "recorded_as_defect": false,
+      "borderline": "Split from A-26 although both sit in one bullet and share one location; this one is a rejected claim rather than a lead."
+    },
+    "A-28": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        267,
+        274
+      ],
+      "original_status_wording": "Hand-off item 3, leads (not verified): \"passwords are stored in plaintext.\" Reply line 39: \"plaintext passwords\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-29": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        267,
+        275
+      ],
+      "original_status_wording": "Hand-off item 3, leads (not verified): \"separate 'invalid username' and 'invalid password' messages.\" Not mentioned in the reply.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-30": {
+      "file": "A/record-2026-10-12-access-control.md",
+      "lines": [
+        280,
+        281,
+        282,
+        283,
+        284,
+        285
+      ],
+      "original_status_wording": "Hand-off item 5, 'Route-table guard', under \"Proposals, not changes\": \"the registry notes that every route except `/benefits` relies on middleware wired by hand ... It would not catch F1-class defects\". Not mentioned in the reply.",
+      "recorded_as_defect": false,
+      "borderline": "Included although it is a test proposal about missing coverage rather than a defect; no file:line is cited, so location is null."
+    }
+  }
+}

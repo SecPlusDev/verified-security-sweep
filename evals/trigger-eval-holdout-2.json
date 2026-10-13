@@ -1,0 +1,22 @@
+[
+  {"query": "we fixed a couple of things after last month's security review, can you check which of those findings are actually closed now? the reports are in docs/audits", "should_trigger": true},
+  {"query": "can you re-run the reproduction tests from the last security review and tell me what's still open before the release", "should_trigger": true},
+  {"query": "do a security pass on the payments webhook handlers in services/payments, I need something I can hand to our auditor with exact lines", "should_trigger": true},
+  {"query": "look at the admin API under app/admin for privilege escalation, and verify anything you find before you report it", "should_trigger": true},
+  {"query": "I staged a fix for the IDOR on /api/projects/:id. does it break anything legit? don't commit", "should_trigger": true},
+  {"query": "we keep re-finding the same issues every quarter. set up a proper review record for the auth module and go through it", "should_trigger": true},
+  {"query": "fă un review de securitate pe modulul de facturare din src/billing, vreau doar raport cu ce e real, fără fixuri", "should_trigger": true},
+  {"query": "new endpoints landed this week in routes/v2, check them for access-control holes and leave a written record in the repo", "should_trigger": true},
+  {"query": "is the tenant isolation in our GraphQL resolvers actually enforced? check it and prove it with tests, no code changes", "should_trigger": true},
+  {"query": "pre-merge check please: the diff changes the session cookie handling and the password reset flow", "should_trigger": true},
+  {"query": "run npm audit and summarize which dependencies have critical CVEs", "should_trigger": false},
+  {"query": "add an authorization check to the delete endpoint in api/items.py so only owners can delete", "should_trigger": false},
+  {"query": "explain what an IDOR is with a small Express example", "should_trigger": false},
+  {"query": "write unit tests for the date formatting helpers in utils/dates.ts", "should_trigger": false},
+  {"query": "set up CodeQL in our GitHub Actions workflow", "should_trigger": false},
+  {"query": "review this PR, it renames some CSS classes and updates the footer copy", "should_trigger": false},
+  {"query": "fill in this vendor security questionnaire based on our SOC 2 report", "should_trigger": false},
+  {"query": "the login page is slow, can you profile the auth controller and speed it up", "should_trigger": false},
+  {"query": "convert the SARIF output from our semgrep run into a markdown table", "should_trigger": false},
+  {"query": "summarize the findings in the attached pentest PDF for the board", "should_trigger": false}
+]

@@ -1,0 +1,324 @@
+{
+ "eval": 1,
+ "items": [
+  {
+   "id": "A-1",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate safe-path claim, not a defect claim. app/routes/index.js:55-56 chain isLoggedIn and isAdmin on GET and POST /benefits; isAdminUserMiddleware (app/routes/session.js:25-34) reads isAdmin from the user document fetched by getUserById, calls next() only when user && user.isAdmin, otherwise redirects (a lookup error leaves user undefined, so it redirects at :28), and redirects at :32 without a session. The GT lists this as AC-1 CLOSED and under checks not listed as defects (fail-closed, role read from the database). The live-test part cannot be seen in code but is consistent with it.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-2",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The behaviour is true (app/routes/session.js:28 and :32 redirect to /login rather than answering 403), but the GT classifies it as AC-2 CLOSED (OVER-RATED, informational): nothing relevant is disclosed. The claim itself does not assert it as a defect.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-3",
+   "status": "confirmed",
+   "verdict": "REAL",
+   "reason": "True: app/routes/allocations.js:16-18 destructures userId from req.params and passes it to getByUserIdAndThreshold at :23; the route is mounted with isLoggedIn only (app/routes/index.js:59), which checks only req.session.userId (app/routes/session.js:36-42); the DAO filters by that id (app/data/allocations-dao.js:58, :81-83) and adds userName, firstName, lastName (:97-99). Ids are sequential (app/data/user-dao.js:38-44, getNextSequence :109-120) and signup is open. This is GT-1.",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "GT-1"
+  },
+  {
+   "id": "A-4",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "True as an observation: the guard spec only issues GET requests (test/e2e/integration/benefits_access_guard_spec.js:19, :25) and no spec sends a regular-user POST to /benefits (benefits_spec.js:37-53 posts only as admin). But it is a test-coverage suggestion, not a defect: POST /benefits is guarded by isAdmin at app/routes/index.js:56. The GT records AC-1 as closed with this guard.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-5",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Mostly true but not a defect: test/e2e/integration/allocations_spec.js:20-22 signs in as user1 (fixture users/user.json; _id 2 per artifacts/db-reset.js:22) and visits /allocations/1, the admin's id (artifacts/db-reset.js:14), expecting the page to load, so the suite encodes the GT-1 behaviour. This is a test-suite observation about GT-1, which A-3 already covers, not an additional defect. The sub-claim that the suite keeps passing if a fix ignores the URL id is also not fully right: with the commented fix (app/routes/allocations.js:14) the rendered userId becomes the session id, the form action becomes /allocations/2 (app/views/allocations.html:15), and the assertion at allocations_spec.js:45 (pathname /allocations/1) would fail.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-6",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate, and it asserts no defect: memos are inserted without an owner (app/data/memos-dao.js:18-21) and read globally (:28 find({})); app/routes/memos.js:13 writes without a user. The GT lists this under candidates examined and not included (shared board by design, no per-user data exposed).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-7",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate, and not asserted as a defect: signup is mounted without middleware (app/routes/index.js:37-38) and README.md:24 documents that new users can sign up, so isLoggedIn-only routes are reachable by any registered visitor. The GT route map treats these routes as open to any signed-in user and does not list open signup as a defect.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-8",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate safe-path claim, not a defect: displayProfile and handleProfileUpdate take userId from req.session (app/routes/profile.js:14-16, :78-80); the DAO filters by _id (app/data/profile-dao.js:79, :96) and $set uses only firstName, lastName, address, bankAcc, bankRouting, ssn, dob (:45-66, seven fields). GT checks not listed as defects (no mass assignment; /profile identity from session).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-9",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate safe-path claim, not a defect: both handlers take userId from req.session (app/routes/contributions.js:13-15, :42-44); the upsert filter {userId} and the stored userId (parsedUserId) both derive from it (app/data/contributions-dao.js:18-30), and reads filter by it (:57-58). GT checks not listed as defects.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-10",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: threshold is interpolated into a $where string (app/data/allocations-dao.js:77-79), so an input such as 1'; return 1 == '1 neutralises the this.userId filter and returns every user's allocations, independently of the URL id. This is GT ADJ-1 (adjacent; amplifies GT-1 and survives a session-based GT-1 fix).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-1"
+  },
+  {
+   "id": "A-11",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate safe-path claim, not a defect: addUser builds the document from userName, firstName, lastName, benefitStartDate, password (app/data/user-dao.js:20-31, email at :34-36) and sets _id from getNextSequence (:38-44). GT checks not listed as defects (no mass assignment to isAdmin).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-12",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Not a defect claim, and partly inaccurate. The middleware statements match app/routes/index.js:33-72 (login/signup/logout open; dashboard, profile, contributions, allocations, memos, learn, research behind isLoggedIn; /benefits behind isLoggedIn and isAdmin at :55-56). But 'every page except allocations limits reads and writes to the signed-in user' is not true of /memos (global read, app/data/memos-dao.js:28) or /benefits (the admin reads all non-admin users and writes any user's start date via req.body.userId, app/routes/benefits.js:15, :30-35, intended per the GT route map).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-13",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate safe-path claim, not a defect: GET / has no middleware (app/routes/index.js:30), and displayWelcomePage redirects when req.session.userId is missing (app/routes/session.js:259-262) and loads only the session user (:264-266). Matches the GT route map.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-14",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate safe-path claim, not a defect: /dashboard is behind isLoggedIn (app/routes/index.js:44) and displayWelcomePage reads only req.session.userId (app/routes/session.js:264-272). Matches the GT route map.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-15",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: app/routes/contributions.js:32-34 call eval on req.body.preTax, afterTax and roth; the route needs only isLoggedIn (app/routes/index.js:52) and signup is open, so any registered user gets server-side code execution, which bypasses every access check. GT ADJ-8 (adjacent).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-8"
+  },
+  {
+   "id": "A-16",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate, not a defect: the tutorial router is mounted without middleware (app/routes/index.js:75) and only renders static pages (app/routes/tutorial.js:8-37); README.md:13 points users to /tutorial. The GT lists /tutorial/* public under candidates examined and not included (public on purpose).",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-17",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Not a defect claim, true in substance: express.static serves app/assets without authentication (server.js:121), and the directory holds images, a favicon, fonts, CSS and JavaScript, nothing sensitive. Minor imprecision: two small app-authored scripts (app/assets/js/chart/chart-data-morris.js, app/assets/js/tour/redirects-steps.js) and font files are not third-party JS or CSS, but they contain no data. The GT route map does not list static files; in_zone basis: it is a who-can-reach-what question about a path mounted on the Express app.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-18",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate safe-path claim, not a defect: req.session.userId is set from user._id only after validateLogin succeeds (app/routes/session.js:58-116) and, on signup, from the inserted user's server-generated _id (:234-235). It does not contradict GT-2 (session fixation at :116), which concerns the missing regenerate, not who chooses the userId.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-19",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Accurate, not a defect claim: the session() options set no store (server.js:78-102), so express-session keeps session data server-side (default MemoryStore) and the cookie carries only a signed id.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-20",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "The described behaviour is true but the claim itself says it is display-only, and it is not a security defect: layout.html:48 tests user.isAdmin, displayWelcomePage renders {...doc} with isAdmin at the top level and no user key (app/routes/session.js:269-272), while benefits passes user: {isAdmin: true} (app/routes/benefits.js:21-23), so an admin on /dashboard sees the regular menu. Server-side enforcement is at app/routes/index.js:55-56. Outside the GT.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-21",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: memos are rendered unescaped with {{ marked(doc.memo) }} (app/views/memos.html:31) while swig autoescape is false (server.js:135-142); marked 0.3.5 (package.json:17) has the javascript-link sanitize bypass shown in the tutorial (app/views/tutorial/a9.html:156-163), and /memos is reachable by the admin (app/routes/index.js:62). Script running in the admin's page can POST /benefits on the admin's session, so the chain to admin actions holds even though the cookie is HttpOnly (GT correction). GT ADJ-5 (adjacent; memos listed as an output point).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-5"
+  },
+  {
+   "id": "A-22",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: GET /learn redirects to req.query.url without validation (app/routes/index.js:66-69, line 68). GT ADJ-6 (adjacent).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-6"
+  },
+  {
+   "id": "A-23",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: bodyParser.json() is enabled (server.js:71), handleLoginRequest passes req.body.userName unchanged (app/routes/session.js:54-58), and validateLogin uses it directly in findOne({userName: userName}) (app/data/user-dao.js:91-93), so a query operator such as {\"$regex\": \"^a\"} is accepted. Because comparePassword is a strict === against the request password (app/data/user-dao.js:60-61, :75), this does not bypass authentication; combined with the distinct messages (app/routes/session.js:85, :94) it allows username enumeration by pattern. A real but low-impact NoSQL operator injection not listed in the GT (it relies on the ADJ-9 messages for its effect).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "outside GT"
+  },
+  {
+   "id": "A-24",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: on login req.session.userId is set on the existing session without req.session.regenerate (app/routes/session.js:116; the fix is only in the comment at :104-115), and saveUninitialized: true issues ids to anonymous visitors (server.js:84). GT-2 (session fixation).",
+   "in_zone": "yes",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "GT-2"
+  },
+  {
+   "id": "A-25",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: csurf is commented out (server.js:7, :104-113; app.use(csrf()) at :107), so state-changing POSTs, including the admin's POST /benefits (app/routes/index.js:56), carry no token. GT ADJ-2 (adjacent).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-2"
+  },
+  {
+   "id": "A-26",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: the cookie options block is commented out (server.js:92-100; cookie: { at :95, secure: true commented at :98), so the session cookie has no Secure flag, and the app serves plain HTTP (server.js:145). The GT correction keeps this part of ADJ-3 (no secure). GT ADJ-3 (adjacent).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-3"
+  },
+  {
+   "id": "A-27",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "A correct claim that something is not a defect: no cookie options are set (server.js:78-102), so the express-session default for ^1.13.0 (package.json:14) applies, which is httpOnly: true. This matches the GT 'Correction after grading' to ADJ-3. As a defect claim it is NOT REAL.",
+   "in_zone": "no",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  },
+  {
+   "id": "A-28",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: addUser stores the request password as is (app/data/user-dao.js:25; the bcrypt fix is commented at :26-30) and validateLogin compares plaintext with === (:60-61, used at :75). GT ADJ-9 (adjacent).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-9"
+  },
+  {
+   "id": "A-29",
+   "status": "unconfirmed",
+   "verdict": "REAL",
+   "reason": "True: login renders 'Invalid username' for an unknown user (app/routes/session.js:85, message defined at :60) and 'Invalid password' for a wrong password (:94, :61); the identical-message fix is commented at :86-87, :95-96. GT ADJ-9 (adjacent, user enumeration).",
+   "in_zone": "no",
+   "location_holds_defect": "yes",
+   "location_holds_defect_physical": "yes",
+   "gt": "ADJ-9"
+  },
+  {
+   "id": "A-30",
+   "status": "unconfirmed",
+   "verdict": "NOT REAL",
+   "reason": "Not a defect claim (a process and testing proposal), and partly inaccurate: /benefits is wired by hand like every other route (app/routes/index.js:44-72), and the e2e specs do check the sign-in requirement of most routes (for example test/e2e/integration/dashboard_spec.js:10-11, profile_spec.js:14-15, contributions_spec.js:14-15, allocations_spec.js:14-17, memos_spec.js:14-15, learn_spec.js:10-11, benefits_spec.js:14-29). No defect in the code is asserted.",
+   "in_zone": "yes",
+   "location_holds_defect": null,
+   "location_holds_defect_physical": null,
+   "gt": null
+  }
+ ],
+ "counts": {
+  "items": 30,
+  "REAL": 11,
+  "NOT REAL": 19,
+  "UNDECIDED": 0
+ },
+ "notes": [
+  "AC-1 is CLOSED (fix applied, isAdmin on both /benefits routes at app/routes/index.js:55-56): A-1, which states the fix holds, is read as a correct non-defect claim, so NOT REAL as a defect claim.",
+  "AC-2 is CLOSED as OVER-RATED (informational): A-2, which describes the redirect-instead-of-403 behaviour and its earlier harmless verdict, is NOT REAL per the GT classification.",
+  "The GT 'Correction after grading' overrides ADJ-3 on HttpOnly: the session cookie has httpOnly by the express-session default. A-27 agrees with it and is a non-defect claim (NOT REAL as a defect claim); A-26 (no Secure flag) is the part of ADJ-3 that stands, so REAL with ADJ-3. For A-21, the XSS-to-admin-action chain does not depend on reading the cookie, so the correction does not defeat it.",
+  "Safe-path and design claims that match the GT route map, the 'checks not listed as defects' and the 'candidates examined and not included' (A-6, A-7, A-8, A-9, A-11, A-13, A-14, A-16, A-18, A-19) are NOT REAL as defect claims, not because they are false.",
+  "Borderline: A-4 and A-5 are accurate observations about the e2e suite (no regular-user POST to /benefits; allocations_spec visits the admin's id 1 as user1) but describe test coverage, not a defect in the code; graded NOT REAL. A-5 also overstates that the suite keeps passing under a session-id fix (allocations_spec.js:45 would fail because the form action follows the rendered userId).",
+  "Borderline: A-20 is true of the code (admin sees the regular menu on /dashboard because the layout reads user.isAdmin), but the claim itself calls it display-only and there is no security effect; graded NOT REAL as a defect claim.",
+  "Borderline: A-23 (operator injection into the login findOne via JSON body) is not in the GT. Graded REAL with gt 'outside GT' because unvalidated query operators reach the database and enable pattern-based username enumeration; it does not bypass the password check. Its enumeration effect relies on the distinct messages of ADJ-9, so one could argue an ADJ-9 match; I kept the mechanism (injection at user-dao.js:92) as outside GT.",
+  "in_zone: adjacent-class claims (A-10, A-15, A-21, A-22, A-23, A-25, A-26, A-27, A-28, A-29) are 'no'. A-17 (static files) is marked 'yes' because it is a reachability question about a path mounted on the Express app, although the GT route map does not list it. A-20 is marked 'yes' because it concerns the role-based admin menu tied to the isAdmin check, although it is display-only.",
+  "Location readings: A-3 cites allocations.js:18, the last line of the destructuring at :16-18, which physically holds 'req.params', so both readings yes. A-26 cites server.js:95, which holds the commented 'cookie: {' options; the commented 'secure: true' itself is on :98, and I read :95 as holding the claimed element (the commented cookie options) under both readings.",
+  "No claim ended UNDECIDED. The 'live requests' part of A-1 cannot be checked statically, but it does not change the verdict."
+ ],
+ "inputs_beyond_list": []
+}

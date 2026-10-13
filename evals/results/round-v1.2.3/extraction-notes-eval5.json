@@ -1,0 +1,592 @@
+{
+  "eval": 5,
+  "notes": {
+    "A-1": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        39,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "A-2": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        40,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "A-3": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        41,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (Medium)"
+    },
+    "A-4": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        42,
+        136,
+        137,
+        138
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens existing mitigation"
+    },
+    "A-5": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        43,
+        139,
+        140,
+        141
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-6": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        44,
+        142,
+        143,
+        144,
+        145
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-7": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        45,
+        146,
+        147,
+        148,
+        149
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-8": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        46,
+        150,
+        151,
+        152,
+        153
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability, fails safe"
+    },
+    "A-9": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        47,
+        154,
+        155,
+        156
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-10": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        48,
+        157,
+        158,
+        159
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-11": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        49,
+        160,
+        161,
+        162,
+        163
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-12": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        50,
+        164,
+        165,
+        166,
+        167
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-13": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        51,
+        168,
+        169,
+        170
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability"
+    },
+    "A-14": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        52,
+        171,
+        172,
+        173
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability"
+    },
+    "A-15": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        215,
+        216
+      ],
+      "original_status_wording": "Proposed sweeps of other zones (no verdict, not counted here)"
+    },
+    "A-16": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        216,
+        217
+      ],
+      "original_status_wording": "Proposed sweeps of other zones (no verdict, not counted here)"
+    },
+    "A-17": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        217
+      ],
+      "original_status_wording": "Proposed sweeps of other zones (no verdict, not counted here)"
+    },
+    "A-18": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        168,
+        169,
+        170,
+        218,
+        219
+      ],
+      "original_status_wording": "Owner decision pending"
+    },
+    "B-1": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        25,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "B-2": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        26,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "B-3": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        69,
+        70,
+        71
+      ],
+      "original_status_wording": "refused, lens claim correctness"
+    },
+    "B-4": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        72,
+        73,
+        74
+      ],
+      "original_status_wording": "refused, lens existing mitigation"
+    },
+    "B-5": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        75,
+        76,
+        77,
+        78
+      ],
+      "original_status_wording": "refused, lens existing mitigation"
+    },
+    "B-6": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        79,
+        80
+      ],
+      "original_status_wording": "refused, claim correctness"
+    },
+    "B-7": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        81,
+        82,
+        83,
+        84
+      ],
+      "original_status_wording": "refused, claim correctness"
+    },
+    "B-8": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        85,
+        86,
+        87,
+        88
+      ],
+      "original_status_wording": "needs deeper review, not a scope defect"
+    },
+    "B-9": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        89,
+        90,
+        91
+      ],
+      "original_status_wording": "refused, by design"
+    },
+    "B-10": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        92,
+        93,
+        94,
+        95
+      ],
+      "original_status_wording": "refused, exploitability; decision pending with the owner"
+    },
+    "B-11": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        96,
+        97,
+        98
+      ],
+      "original_status_wording": "refused, existing mitigation"
+    },
+    "C-1": {
+      "file": "C/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        26,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "C-2": {
+      "file": "C/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        27,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "C-3": {
+      "file": "C/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        28,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (Medium; claimed High)"
+    },
+    "C-4": {
+      "file": "C/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        29,
+        106,
+        107,
+        108,
+        109
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability"
+    },
+    "C-5": {
+      "file": "C/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        30,
+        110,
+        111,
+        112
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability"
+    },
+    "C-6": {
+      "file": "C/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        31,
+        113,
+        114,
+        115
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "C-7": {
+      "file": "C/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        116,
+        117,
+        118,
+        119
+      ],
+      "original_status_wording": "checked, no defect"
+    },
+    "D-1": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        26,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "D-2": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        27,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (High)"
+    },
+    "D-3": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        28,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68
+      ],
+      "original_status_wording": "VERIFIED REAL; Confirmed defects (Medium)"
+    },
+    "D-4": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        29,
+        71
+      ],
+      "original_status_wording": "FALSE POSITIVE (as \"legitimate path blocked\"); refused, lens claim correctness, by design"
+    },
+    "D-5": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        30,
+        72
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, existing mitigation / by design"
+    },
+    "D-6": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        73
+      ],
+      "original_status_wording": "refused; closed under claim correctness"
+    },
+    "D-7": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        74
+      ],
+      "original_status_wording": "needs deeper review"
+    }
+  },
+  "borderline": [
+    "A: hand-off items 3 and 4 (metrics key compared with !=, unauthenticated callbacks and slug auto-provisioning, Prometheus integration, legacy plain-text keys still accepted) were included as unconfirmed claims because they are named possible defects handed off without a verdict; the Prometheus item is only an area pointer and was phrased generically.",
+    "A: R10's mention of legacy plain keys being out of the operator's control was merged into A-18 (legacy plain-text keys accepted) rather than A-13.",
+    "B: 'channels, pings, ping_body refuse read-only keys' was kept as an unconfirmed claim although it describes over-restriction rather than an attacker capability, because the write-up lists it as a candidate; same for D-4.",
+    "B: the low-entropy legacy key rate-limit decision (response line 25) was merged into B-10 as unconfirmed (decision pending, not asserted).",
+    "B, C: proposed follow-up sweeps named only as areas (public endpoints, write validation, key lifecycle; callback endpoints, ping and badge views) were not listed as claims because no possible defect is stated.",
+    "C-3: recorded as confirmed even though verified severity was lowered from High to Medium.",
+    "D: C5 (unique_key loops over all project checks) was excluded because the write-up classifies it as a performance issue only, not a security defect.",
+    "D: proposed sweeps of ping, ping_by_slug, notification_status, bounces were not listed as claims because no defect is stated."
+  ]
+}

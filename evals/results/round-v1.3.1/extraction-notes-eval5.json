@@ -1,0 +1,652 @@
+{
+  "eval": 5,
+  "notes": {
+    "A-1": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        56,
+        63,
+        65,
+        68,
+        69,
+        70,
+        71,
+        74,
+        112
+      ],
+      "original_status_wording": "Access matrix rows marked OK with read-only key 'no (401)'; also cited in the delete item's evidence ('every other mutating view uses authorize'). Not a listed candidate, examined state only."
+    },
+    "A-2": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        57,
+        58,
+        222,
+        223
+      ],
+      "original_status_wording": "Reviewer's 'examined and not confirmed' item, 're-read here and holding'."
+    },
+    "A-3": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        62,
+        64,
+        142,
+        143
+      ],
+      "original_status_wording": "Access matrix 'yes, reduced fields'; used as the contrast ('sibling views pass the flag') in the unique_key item. Examined state, no verdict wording of its own."
+    },
+    "A-4": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        62,
+        85,
+        161,
+        162,
+        163,
+        164,
+        165,
+        166,
+        167,
+        168,
+        169,
+        170,
+        171,
+        172,
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182,
+        183,
+        184,
+        185,
+        186,
+        187,
+        188,
+        189,
+        190,
+        191,
+        192,
+        193,
+        287,
+        288,
+        298,
+        299
+      ],
+      "original_status_wording": "F3: 'VERIFIED REAL', claimed High, verified High, reservation narrower scope; under 'Confirmed defects'; matrix FIX. Also coverage matrix line 11 (FIX) and response line 6."
+    },
+    "A-5": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        63,
+        229
+      ],
+      "original_status_wording": "Access matrix row OK; the _lookup part sits in the reviewer's 'examined and not confirmed' list ('holding'). Coverage matrix line 12: 'none in the key lens'."
+    },
+    "A-6": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        63,
+        227,
+        228,
+        229
+      ],
+      "original_status_wording": "Reviewer's 'examined and not confirmed' item, 're-read here and holding'; matrix OK. Response line 13: 'Everything else I re-checked holds'."
+    },
+    "A-7": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        174,
+        175
+      ],
+      "original_status_wording": "Access matrix project-scoping column, rows OK; also 'Every other view scopes by the project' in the list-checks evidence. Response line 13: 'the project check on update, pause, resume, pings and flips' re-checked and holds. Grouped from several matrix rows into one item."
+    },
+    "A-8": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        66,
+        83,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        287,
+        288
+      ],
+      "original_status_wording": "F1: 'VERIFIED REAL', claimed High, verified High; under 'Confirmed defects'; matrix FIX. Also coverage matrix line 16 (FIX) and response line 4."
+    },
+    "A-9": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        67,
+        84,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155,
+        156,
+        157,
+        158,
+        159,
+        287,
+        288
+      ],
+      "original_status_wording": "F2: 'VERIFIED REAL', claimed High, verified High, no reservation; under 'Confirmed defects'; matrix FIX. Also coverage matrix line 14 (FIX) and response line 5."
+    },
+    "A-10": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        76,
+        77
+      ],
+      "original_status_wording": "Access matrix rows OK ('global counters only', 'SELECT 1 only'). Coverage matrix line 22 OK."
+    },
+    "A-11": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        86,
+        205,
+        206,
+        207,
+        208,
+        209,
+        304
+      ],
+      "original_status_wording": "L1: 'FALSE POSITIVE', claimed Low, refused on exploitability; suggested as optional hardening in Hand-off. Coverage matrix line 22 'metrics compare refused, Low hardening'; response line 12 'refused with a reason'."
+    },
+    "A-12": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        87,
+        210,
+        211,
+        212,
+        213
+      ],
+      "original_status_wording": "L3: 'FALSE POSITIVE', claimed Low, refused on exploitability. Response line 12."
+    },
+    "A-13": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        89,
+        249,
+        250,
+        307,
+        308,
+        309,
+        310,
+        311,
+        312,
+        313
+      ],
+      "original_status_wording": "R4: reviewer claimed Medium; out of class, 'received no verdict here', handed off as a proposed concurrency sweep, 'needs an interleaving test to confirm'. Lines 249-250 (categories.md draft wrongly claimed select_for_update, corrected) folded in here rather than a separate item. Coverage matrix line 15; response line 18 'Unconfirmed'."
+    },
+    "A-14": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        89,
+        314,
+        315
+      ],
+      "original_status_wording": "L2: out of class, no verdict, handed off as proposed sweep. Coverage matrix line 12 'plan-limit race proposed under concurrency'; response line 19."
+    },
+    "A-15": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        89,
+        316,
+        317,
+        318,
+        319
+      ],
+      "original_status_wording": "L4: out of class, no verdict, handed off, 'Not verified'. Response line 20 'Not checked'."
+    },
+    "A-16": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        215,
+        216,
+        217,
+        218,
+        219
+      ],
+      "original_status_wording": "Reviewer's 'examined and not confirmed' item, 're-read here and holding'. Response line 13 'the hcw_/hcr_ key separation' holds."
+    },
+    "A-17": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        220,
+        221
+      ],
+      "original_status_wording": "Reviewer's 'examined and not confirmed' item, holding. Response line 13 'legacy plain-text keys' holds."
+    },
+    "A-18": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        224,
+        225,
+        226
+      ],
+      "original_status_wording": "Reviewer's 'examined and not confirmed' item, holding. Response line 13 'the key in a JSON body' holds."
+    },
+    "A-19": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        230,
+        231
+      ],
+      "original_status_wording": "Reviewer's 'examined and not confirmed' item, holding."
+    },
+    "A-20": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        232,
+        233
+      ],
+      "original_status_wording": "Reviewer's 'examined and not confirmed' item, holding ('documented behavior')."
+    },
+    "A-21": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        234,
+        235,
+        236,
+        237
+      ],
+      "original_status_wording": "D5: 'needs deeper review, outside this lens'; 'Decision pending'. Left open."
+    },
+    "A-22": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        241,
+        242,
+        243
+      ],
+      "original_status_wording": "Spec drift note, 'documentation items, not counted'. Response line 22 'minor documentation mismatches'. Included as a claim about repository docs; not a confirmed defect."
+    },
+    "A-23": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        244,
+        245
+      ],
+      "original_status_wording": "Spec drift note, 'documentation items, not counted'."
+    },
+    "A-24": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        246,
+        247,
+        248
+      ],
+      "original_status_wording": "Spec drift note, 'Wording only', not counted."
+    },
+    "A-25": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        265,
+        266,
+        267,
+        268
+      ],
+      "original_status_wording": "Skipped, 'proposed as its own zone'. Coverage matrix line 26 NEW; response line 21 'not in scope', listed under proposed next reviews. Borderline inclusion: an area handed off rather than a stated defect."
+    },
+    "B-1": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        52,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        192,
+        241,
+        242,
+        250,
+        251,
+        252,
+        253
+      ],
+      "original_status_wording": "F1: 'VERIFIED REAL', claimed High, verified High, scope reservation; under 'Confirmed defects'. Coverage matrix line 11 FIX; response lines 5-9."
+    },
+    "B-2": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        53,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        197
+      ],
+      "original_status_wording": "F2: 'VERIFIED REAL', claimed High, verified High, no reservation; under 'Confirmed defects'. Coverage matrix line 16 FIX; response lines 11-14."
+    },
+    "B-3": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        54,
+        127,
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        195
+      ],
+      "original_status_wording": "F3: 'VERIFIED REAL', claimed High, verified High, scope reservation; under 'Confirmed defects'. Coverage matrix line 14 FIX; response lines 16-19."
+    },
+    "B-4": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        55,
+        162,
+        163,
+        164,
+        165,
+        254
+      ],
+      "original_status_wording": "L1: verdict 'LOW, recorded', verified Low, 'spec drift in the safe direction', placed under 'Low (not in the headline count)', not under Confirmed defects. Borderline: verified as true but documentation only and not counted, so marked unconfirmed. Response lines 32, 42."
+    },
+    "B-5": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        56,
+        169,
+        170,
+        171,
+        172
+      ],
+      "original_status_wording": "L2: 'FALSE POSITIVE', claimed Low, refused on exploitability. Response line 33 'ruled out'."
+    },
+    "B-6": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        57,
+        173,
+        174,
+        175
+      ],
+      "original_status_wording": "L3: 'FALSE POSITIVE', claimed Low, refused on claim correctness as 'the same defect as F2, not a second one'. Borderline: tied to a confirmed issue but explicitly not counted as its own, so unconfirmed. Response line 33."
+    },
+    "B-7": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        41,
+        58,
+        176,
+        177,
+        178,
+        179
+      ],
+      "original_status_wording": "R1: 'FALSE POSITIVE', refused on existing mitigation, 'disqualified in the brief'. Response line 33."
+    },
+    "B-8": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        59,
+        180,
+        181,
+        182,
+        183
+      ],
+      "original_status_wording": "R2: 'FALSE POSITIVE', refused on exploitability. Response line 33."
+    },
+    "B-9": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        77,
+        78,
+        79,
+        80,
+        115,
+        194,
+        195,
+        196,
+        197,
+        198,
+        199,
+        200,
+        201,
+        202
+      ],
+      "original_status_wording": "Stated as the sibling views' correct scoping in the list-checks evidence and in the Coverage access table ('own project, else 403'). Response line 27 under 'What checked out'. Grouped from several table rows into one item."
+    },
+    "B-10": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        109,
+        210
+      ],
+      "original_status_wording": "Under 'Checked, no defect'."
+    },
+    "B-11": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        111,
+        112,
+        113,
+        193,
+        196,
+        198,
+        199,
+        201
+      ],
+      "original_status_wording": "Stated in the delete item's evidence and the Coverage access table (401). Coverage matrix rows OK with key 'read-write' (lines 12, 15, 17, 18, 19, 21). Response line 26 'correctly rejected' under 'What checked out'."
+    },
+    "B-12": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        139,
+        140,
+        192,
+        194
+      ],
+      "original_status_wording": "Contrast in the unique_key item's evidence; Coverage access table 'yes, fields omitted'. Examined state."
+    },
+    "B-13": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        193
+      ],
+      "original_status_wording": "Coverage access table 'own project'. Response line 28 'Creating with unique fields can't match another project's check' under 'What checked out'."
+    },
+    "B-14": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        196
+      ],
+      "original_status_wording": "Coverage access table 'channels resolved in own project only'. Response line 28 under 'What checked out'."
+    },
+    "B-15": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        205,
+        206,
+        207,
+        208
+      ],
+      "original_status_wording": "Under 'Checked, no defect'. Response line 26 'Key lookup and hashed-key comparison are sound'."
+    },
+    "B-16": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        208,
+        209
+      ],
+      "original_status_wording": "Under 'Checked, no defect' (same bullet as the hashed-key item, split out as a separate claim)."
+    },
+    "B-17": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        177,
+        178,
+        211,
+        212,
+        213
+      ],
+      "original_status_wording": "Under 'Checked, no defect'."
+    },
+    "B-18": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        214,
+        215
+      ],
+      "original_status_wording": "Under 'Checked, no defect' ('the only wrong decorator for a method is F2')."
+    },
+    "B-19": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        216
+      ],
+      "original_status_wording": "Under 'Checked, no defect'."
+    },
+    "B-20": {
+      "file": "B/record-2026-10-12-api-key-access.md",
+      "lines": [
+        255,
+        256,
+        257
+      ],
+      "original_status_wording": "Hand-off: 'Other zone, no verdict here', to be looked at in a proposed public-surface sweep. Response line 36 (listed as not covered)."
+    }
+  }
+}

@@ -1,0 +1,157 @@
+diff --git a/docs/audits/2026-10-03-api-key-scope.md b/docs/audits/2026-10-03-api-key-scope.md
+new file mode 100644
+index 0000000..e9b4675
+--- /dev/null
++++ b/docs/audits/2026-10-03-api-key-scope.md
+@@ -0,0 +1,50 @@
++# Verified security sweep: api-key-scope, 2026-10-03
++
++## Context
++Scope: the API-key protected management API, `hc/api/decorators.py`, `hc/api/views.py`,
++`hc/api/urls.py`. Trigger: release preparation. First sweep of this zone; no earlier report.
++
++## Delegation
++One read-only reviewer in a fresh context, with the standard brief and the categories file. No
++earlier report to cite.
++
++## Verification
++| Finding | Zone | Verdict | Claimed | Verified | Reservations | Proof |
++|---|---|---|---|---|---|---|
++| F1 read-only key can delete a check | api-key-scope | VERIFIED REAL | High | High | none | `hc/api/tests/test_review_api_key_scope.py`, ran, fails as expected |
++| F2 check list scoped to the owner, not the key's project | api-key-scope | VERIFIED REAL | High | High | needs a second project of the same owner | `hc/api/tests/test_review_api_key_scope.py`, ran, fails as expected |
++| F3 lookup by unique key returns the read-write view to a read-only key | api-key-scope | VERIFIED REAL | Medium | Medium | the key only reaches its own project's checks | `hc/api/tests/test_review_api_key_scope.py`, ran, fails as expected |
++| R1 badge endpoints reachable without a key | api-key-scope | FALSE POSITIVE | Medium | - | lens: claim correctness; public by design, signed URLs | `hc/api/urls.py:83` |
++
++## Confirmed defects
++F1, location `hc/api/views.py:520`: `delete_check` is decorated with `authorize_read`, which
++accepts read-only keys (`hc/api/decorators.py:82`), and the view never checks `request.readonly`.
++Evidence chain: the decorator at `hc/api/views.py:520`; the read-only key accepted at
++`hc/api/decorators.py:82`; no `request.readonly` check before `check.rename_and_delete()`.
++Reproduction: `ReviewApiKeyScope.test_readonly_key_cannot_delete` (attack, fails on the current
++code) and `test_read_write_key_can_delete` (legitimate path, passes). Status: ran, fails as
++expected.
++
++F2, location `hc/api/views.py:415`: `get_checks` filters by `project__owner_id` instead of the
++key's project. Evidence chain: the filter at `hc/api/views.py:415`; the project bound to the key at
++`hc/api/decorators.py:82`; every other view compares `check.project_id` with `request.project.id`
++(`hc/api/views.py:483`). Reproduction: `test_list_shows_only_the_key_projects_checks` (attack) and
++`test_list_shows_the_key_projects_own_checks` (legitimate path). Status: ran, fails as expected.
++
++F3, location `hc/api/views.py:495`: `get_check_by_unique_key` calls `check.to_dict(v=request.v)`
++without `readonly=request.readonly`, so a read-only key receives the UUID and ping URL
++(`hc/api/models.py:474`). Reproduction: `test_readonly_key_by_unique_key_hides_uuid` (attack) and
++`test_read_write_key_by_unique_key_shows_uuid` (legitimate path). Status: ran, fails as expected.
++
++## Refused or unconfirmed candidates
++- R1, badge endpoints reachable without a key: refused, lens claim correctness. Badges are public
++  by design and their URLs are signed (`hc/api/urls.py:83`).
++
++## Coverage
++Read: `hc/api/decorators.py`, `hc/api/views.py`, `hc/api/urls.py`, `hc/api/models.py` (`to_dict`).
++Skipped: the unauthenticated ping endpoints (another zone). Checked, no defect: `update_check`,
++`pause`, `resume` and `create_check` require a read-write key (`hc/api/decorators.py:59`).
++
++## Hand-off
++Proposals: restore `authorize` on `delete_check`; filter `get_checks` by `request.project`; pass
++`readonly=request.readonly` in `get_check_by_unique_key`. Each fix ships with its reproduction test.
+diff --git a/docs/audits/categories.md b/docs/audits/categories.md
+new file mode 100644
+index 0000000..5f9a84d
+--- /dev/null
++++ b/docs/audits/categories.md
+@@ -0,0 +1,6 @@
++# Categories the sweep verifies
++
++| Category | What is checked |
++|---|---|
++| authorization | every view checks the key's project and the key's kind (read-only or read-write) |
++| data exposure | responses to a read-only key omit identifiers that act as capabilities |
+diff --git a/docs/audits/findings.jsonl b/docs/audits/findings.jsonl
+new file mode 100644
+index 0000000..05a91a6
+--- /dev/null
++++ b/docs/audits/findings.jsonl
+@@ -0,0 +1,3 @@
++{"id": "2026-10-03-api-key-scope/F1", "report": "2026-10-03-api-key-scope.md", "zone": "api-key-scope", "commit": "7a0714186e45d5b909174b50e21e73b7f3b9382d", "title": "A read-only API key can delete a check", "severity": "High", "category": "authorization", "location": "hc/api/views.py:520", "snippet": "@authorize_read", "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_readonly_key_cannot_delete", "guard": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_read_write_key_can_delete", "status": "open"}
++{"id": "2026-10-03-api-key-scope/F2", "report": "2026-10-03-api-key-scope.md", "zone": "api-key-scope", "commit": "7a0714186e45d5b909174b50e21e73b7f3b9382d", "title": "The check list is scoped to the owner, not to the key's project", "severity": "High", "category": "authorization", "location": "hc/api/views.py:415", "snippet": "q = Check.objects.filter(project__owner_id=request.project.owner_id)", "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_list_shows_only_the_key_projects_checks", "guard": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_list_shows_the_key_projects_own_checks", "status": "open"}
++{"id": "2026-10-03-api-key-scope/F3", "report": "2026-10-03-api-key-scope.md", "zone": "api-key-scope", "commit": "7a0714186e45d5b909174b50e21e73b7f3b9382d", "title": "Lookup by unique key returns the read-write view to a read-only key", "severity": "Medium", "category": "data exposure", "location": "hc/api/views.py:495", "snippet": "return JsonResponse(check.to_dict(v=request.v))", "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_readonly_key_by_unique_key_hides_uuid", "guard": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_read_write_key_by_unique_key_shows_uuid", "status": "open"}
+diff --git a/docs/audits/sweep-registry.md b/docs/audits/sweep-registry.md
+new file mode 100644
+index 0000000..3cd593f
+--- /dev/null
++++ b/docs/audits/sweep-registry.md
+@@ -0,0 +1,21 @@
++# Sweep registry: what exists, what ran, what it is worth
++
++The "last run" column is derived from report filenames by `sweep_status.py`; write by hand only the
++zone, its argument and the observed yield.
++
++## Candidates
++
++| Zone | Argument | Last run | Yield |
++|---|---|---|---|
++| `api-key-scope` | which key reads or changes which checks | 2026-10-03 | 3/4 |
++
++## Proposed, not yet run
++
++| Zone | Argument |
++|---|---|
++| `ping-api` | unauthenticated ping endpoints: body size, rate, method handling |
++
++## Candidates verified and refused
++
++| Zone | Why |
++|---|---|
+diff --git a/hc/api/tests/test_review_api_key_scope.py b/hc/api/tests/test_review_api_key_scope.py
+new file mode 100644
+index 0000000..ded7aa3
+--- /dev/null
++++ b/hc/api/tests/test_review_api_key_scope.py
+@@ -0,0 +1,47 @@
++from __future__ import annotations
++
++from hc.accounts.models import Project
++from hc.api.models import Check
++from hc.test import BaseTestCase
++
++
++class ReviewApiKeyScope(BaseTestCase):
++    """Reproductions from the 2026-10-03 sweep: each attack test fails while its defect is present."""
++
++    def setUp(self) -> None:
++        super().setUp()
++        self.project.api_key_readonly = "R" * 32
++        self.project.save()
++        self.a1 = Check.objects.create(project=self.project, name="Alice 1")
++        self.other = Project.objects.create(
++            owner=self.alice, name="Alices Other Project", api_key="Y" * 32, badge_key="alice-other"
++        )
++        Check.objects.create(project=self.other, name="Other 1")
++
++    # F1
++    def test_readonly_key_cannot_delete(self) -> None:
++        r = self.client.delete(f"/api/v3/checks/{self.a1.code}", HTTP_X_API_KEY="R" * 32)
++        self.assertEqual(r.status_code, 401)
++        self.assertTrue(Check.objects.filter(code=self.a1.code).exists())
++
++    def test_read_write_key_can_delete(self) -> None:
++        r = self.client.delete(f"/api/v3/checks/{self.a1.code}", HTTP_X_API_KEY="X" * 32)
++        self.assertEqual(r.status_code, 200)
++
++    # F2
++    def test_list_shows_only_the_key_projects_checks(self) -> None:
++        r = self.client.get("/api/v3/checks/", HTTP_X_API_KEY="X" * 32)
++        self.assertEqual({c["name"] for c in r.json()["checks"]}, {"Alice 1"})
++
++    def test_list_shows_the_key_projects_own_checks(self) -> None:
++        r = self.client.get("/api/v3/checks/", HTTP_X_API_KEY="X" * 32)
++        self.assertIn("Alice 1", {c["name"] for c in r.json()["checks"]})
++
++    # F3
++    def test_readonly_key_by_unique_key_hides_uuid(self) -> None:
++        r = self.client.get(f"/api/v3/checks/{self.a1.unique_key}", HTTP_X_API_KEY="R" * 32)
++        self.assertNotIn("uuid", r.json())
++
++    def test_read_write_key_by_unique_key_shows_uuid(self) -> None:
++        r = self.client.get(f"/api/v3/checks/{self.a1.unique_key}", HTTP_X_API_KEY="X" * 32)
++        self.assertEqual(r.json()["uuid"], str(self.a1.code))

@@ -1,0 +1,219 @@
+# CI for the skill repository. It applies the same discipline the skill sells:
+# actions pinned to a commit SHA, read-only token, pinned runner image, and only triggers that
+# run with the token of the repository itself (push, pull_request, workflow_dispatch).
+#
+# Gates, in order:
+#   lint     frontmatter and line limits on the skill, em dash check on every Markdown file, the
+#            plugin folder checks of the Claude directory, `claude plugin validate`, leakage check, public hygiene check
+#   test     pytest on the skill scripts and the CI scripts, on Python 3.10 and 3.13
+#   py39     the two skill scripts compiled and smoke-run under Python 3.9, without pytest
+#   package  build the .skill archive from the checked tree and keep it as a run artifact
+#   release  on a v* tag only: rebuild the archive from the tagged commit and attach it to a
+#            GitHub release; the only job with contents: write
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Frontmatter, line limit, leakage
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Frontmatter, line limits, em dash
+        run: python3 .github/scripts/check_skill.py plugin/skills/verified-security-sweep --markdown-root . --plugin-root plugin --max-lines 500
+
+      # The official validator, from the Linux x64 native build of Claude Code on npm. The
+      # tarball is pinned by version and SHA-256 and holds only the binary: no install script,
+      # no Node.js. It needs no login; the home directory is a fresh temporary one.
+      - name: Plugin manifest (claude plugin validate)
+        env:
+          CLAUDE_CODE_VERSION: "2.1.289"
+          CLAUDE_CODE_SHA256: "50a6eb433422febcfa7b7ac1e78ba795cdf79f1fe58f017fb1d9aeb9491b337d"
+          CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+        run: |
+          set -euo pipefail
+          dir="$RUNNER_TEMP/claude-code"
+          mkdir -p "$dir/home"
+          curl -fsSL --retry 3 --retry-all-errors -o "$dir/pkg.tgz" "https://registry.npmjs.org/@anthropic-ai/claude-code-linux-x64/-/claude-code-linux-x64-${CLAUDE_CODE_VERSION}.tgz"
+          echo "${CLAUDE_CODE_SHA256}  $dir/pkg.tgz" | sha256sum -c -
+          tar -xzf "$dir/pkg.tgz" -C "$dir" package/claude
+          HOME="$dir/home" "$dir/package/claude" plugin validate ./plugin --strict < /dev/null
+
+      - name: Leakage check
+        env:
+          LEAKAGE_TERMS: ${{ secrets.LEAKAGE_TERMS }}
+        run: |
+          set -euo pipefail
+          if [ -n "${LEAKAGE_TERMS:-}" ]; then
+            printf '%s\n' "$LEAKAGE_TERMS" > "$RUNNER_TEMP/leakage-terms.txt"
+            export LEAKAGE_TERMS_FILE="$RUNNER_TEMP/leakage-terms.txt"
+          else
+            echo "LEAKAGE_TERMS secret not available (fork or unset): shapes only"
+          fi
+          .github/scripts/leakage_grep.sh
+
+      - name: Public hygiene check
+        run: python3 .github/scripts/public_hygiene_check.py
+
+  test:
+    name: pytest on Python ${{ matrix.python }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.13"]
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install pytest (pinned, hash-checked)
+        run: python -m pip install --disable-pip-version-check --require-hashes -r requirements-ci.txt
+
+      - name: Scripts answer --help
+        run: |
+          python plugin/skills/verified-security-sweep/scripts/sweep_status.py --help
+          python plugin/skills/verified-security-sweep/scripts/fresh_code.py --help
+          python plugin/skills/verified-security-sweep/scripts/check_citations.py --help
+          python plugin/skills/verified-security-sweep/scripts/findings.py --help
+          python plugin/skills/verified-security-sweep/scripts/check_report.py --help
+
+      - name: pytest
+        run: python -m pytest tests/ -q -p no:cacheprovider
+
+  py39:
+    name: Python 3.9 compatibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.9"
+
+      # pytest 9 needs Python 3.10, so the skill's "Python 3.9 or newer" claim is checked here
+      # without it: the scripts compile under 3.9 and run end to end on a synthetic fixture.
+      - name: Compile and smoke-run the scripts under 3.9
+        run: |
+          set -euo pipefail
+          s=plugin/skills/verified-security-sweep/scripts
+          python -W error -m py_compile "$s/sweep_status.py" "$s/fresh_code.py" "$s/check_citations.py" "$s/findings.py" "$s/check_report.py"
+          python "$s/sweep_status.py" --help > /dev/null
+          python "$s/fresh_code.py" --help > /dev/null
+          python "$s/check_citations.py" --help > /dev/null
+          python "$s/findings.py" --help > /dev/null
+          python "$s/check_report.py" --help > /dev/null
+          d="$RUNNER_TEMP/audits"; mkdir -p "$d"
+          : > "$d/2026-01-15-money.md"
+          printf '## Candidates\n\n| Zone | Argument | Last run | Yield |\n|---|---|---|---|\n| `money` | billing | 2026-01-15 | 1/1 |\n' > "$d/sweep-registry.md"
+          python "$s/sweep_status.py" --check --audits "$d"
+          printf 'x = 1\ny = 2\n' > "$RUNNER_TEMP/a.py"; printf 'see `a.py:2`\n' > "$d/2026-01-15-money.md"
+          python "$s/check_citations.py" "$d/2026-01-15-money.md" --root "$RUNNER_TEMP"
+          mkdir -p "$RUNNER_TEMP/docs/audits"; printf '| F1 | money | VERIFIED REAL |\nF1 at `a.py:2`\n' > "$RUNNER_TEMP/docs/audits/2026-01-15-money.md"
+          printf '{"id":"2026-01-15-money/F1","report":"2026-01-15-money.md","zone":"money","title":"t","severity":"High","location":"a.py:2","snippet":"y = 2","reproduce":"false","guard":"true","status":"open"}\n' > "$RUNNER_TEMP/docs/audits/findings.jsonl"
+          python "$s/findings.py" check --root "$RUNNER_TEMP"
+          python "$s/findings.py" sarif --root "$RUNNER_TEMP" > /dev/null
+          printf '## Context\nScope: `a.py`.\n## Delegation\nnone\n## Verification\n| Finding | Verdict |\n|---|---|\n| F1 t | VERIFIED REAL |\n## Confirmed defects\nF1 at `a.py:2`\n## Refused or unconfirmed candidates\n- R1: refused, lens claim correctness.\n## Coverage\n`a.py`\n## Hand-off\nFix F1 at `a.py:2`.\n' > "$d/2026-01-16-money.md"
+          python "$s/check_report.py" "$d/2026-01-16-money.md"
+          r="$RUNNER_TEMP/repo"; git init -q "$r"; cd "$r"
+          git -c user.name=ci -c user.email=ci@example.invalid commit -q --allow-empty -m init
+          mkdir src && echo 'x = 1' > src/a.py && git add -A && git -c user.name=ci -c user.email=ci@example.invalid commit -q -m a
+          python "$GITHUB_WORKSPACE/$s/fresh_code.py" --json | python -c 'import json,sys; d=json.load(sys.stdin); assert d["files"][0]["file"]=="src/a.py"'
+
+  package:
+    name: Package .skill
+    needs: [lint, test, py39]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build archive
+        run: python3 .github/scripts/package_skill.py --out dist
+
+      - name: Unpack and smoke-test the archive
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/unpacked"
+          python3 -m zipfile -e dist/*.skill "$RUNNER_TEMP/unpacked"
+          python3 -m zipfile -l dist/*.skill
+          root="$(find "$RUNNER_TEMP/unpacked" -mindepth 1 -maxdepth 1 -type d)"
+          test -f "$root/SKILL.md"
+          python3 "$root/scripts/sweep_status.py" --help > /dev/null
+          python3 "$root/scripts/fresh_code.py" --help > /dev/null
+          python3 "$root/scripts/check_citations.py" --help > /dev/null
+          python3 "$root/scripts/findings.py" --help > /dev/null
+          python3 "$root/scripts/check_report.py" --help > /dev/null
+          python3 .github/scripts/check_skill.py "$root" --max-lines 500
+
+      - name: Upload archive
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: skill-package
+          path: dist/*.skill
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Release .skill
+    needs: [package]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build archive
+        run: python3 .github/scripts/package_skill.py --out dist
+
+      - name: Release notes from CHANGELOG.md
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          awk -v tag="$TAG" '$0 ~ "^## "tag"( |$)" {on=1; next} /^## / {on=0} on' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          test -s "$RUNNER_TEMP/notes.md" || { echo "no CHANGELOG.md section for $TAG" >&2; exit 1; }
+
+      - name: Create release with the archive attached
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" dist/*.skill --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" --repo "$GITHUB_REPOSITORY"

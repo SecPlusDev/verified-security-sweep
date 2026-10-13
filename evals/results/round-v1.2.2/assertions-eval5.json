@@ -1,0 +1,155 @@
+{
+  "eval": 5,
+  "reference": "<opus-round>/base/healthchecks-defects @ 7a07141 (planted defects: hc/api/views.py:415 owner-scoped list, :520 @authorize_read on delete_check, :495 to_dict without readonly)",
+  "runs": [
+    {"run": "opus/eval5-with_skill-1", "model": "claude-opus-5-5", "config": "with_skill",
+     "report": "<opus-round>/runs/eval5-with_skill-1/outputs/docs-audits/2026-10-09-api-key-scope.md",
+     "cited_lines_checked": 45,
+     "assertions": [
+      {"id": "A1", "grade": "PASS", "evidence": "outputs/git-status.txt:1-3 (?? docs/audits/2026-10-09-api-key-scope.md, categories.md, sweep-registry.md); none existed at 7a07141"},
+      {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-scope.md:3 Context, :44 Delegation, :57 Verification, :78 Confirmed defects, :160 Refused or unconfirmed candidates, :190 Coverage; slug api-key-scope names the API-key zone"},
+      {"id": "A3", "grade": "PASS", "evidence": "report:82 views.py:415, :108 views.py:520, :134 views.py:495, all exact and holding the cited code; chains :85-91, :111-118, :137-145 each give vulnerable line, route/flow (urls.py:49/50/51, views.py:464/534/492) and missing mitigation; all cited chain lines verified (decorators.py:82-89, models.py:439, 471-483, views.py:413, 475, 486, 499, 525, 538-539, 546, 573, 438)"},
+      {"id": "A4", "grade": "PASS", "evidence": "report:61-63 F1-F3 VERIFIED REAL; :99-154 name hc/api/tests/test_audit_api_key_scope.py (present in working copy, tests at lines 31-78) and state ran, attack cases fail as expected, legit cases pass"},
+      {"id": "A5", "grade": "FAIL", "evidence": "report:176 '_lookup for unique on create: refused, scoped by project=project' names no lens; :180 notification_status 'refused, by design' (no lens in the section); :183-188 pings/v1-v3/JSON-body items carry no disposition lens"},
+      {"id": "A6", "grade": "PASS", "evidence": "docs-audits/sweep-registry.md:11 row api-key-scope 2026-10-09; outputs/sweep-status-check.txt 'exit code: 0' (re-run: exit 0)"},
+      {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt: only docs/audits/* and hc/api/tests/test_audit_api_key_scope.py untracked; staged.diff and unstaged.diff empty"}
+     ],
+     "notes": "A5 strict reading: every item in the refused section must carry one of the three dispositions with the lens named; several items have only a reason. No bad cited lines."},
+
+    {"run": "opus/eval5-with_skill-2", "model": "claude-opus-5-5", "config": "with_skill",
+     "report": "<opus-round>/runs/eval5-with_skill-2/outputs/docs-audits/2026-10-09-api-key-authz.md",
+     "cited_lines_checked": 30,
+     "assertions": [
+      {"id": "A1", "grade": "PASS", "evidence": "outputs/git-status.txt:1-3 docs/audits/2026-10-09-api-key-authz.md, categories.md, sweep-registry.md new"},
+      {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-authz.md:3 Context, :23 Delegation, :34 Verification, :48 Confirmed defects, :121 Refused or unconfirmed candidates, :150 Coverage; slug api-key-authz"},
+      {"id": "A3", "grade": "FAIL", "evidence": "report:41 L1 is marked 'VERIFIED REAL (Low)' and its only record (:115-119) cites views.py:860 with no three-element evidence chain. F1-F3 (:52, :72, :97) are exact with correct chains and all cited lines hold the cited code"},
+      {"id": "A4", "grade": "FAIL", "evidence": "report:41 L1 VERIFIED REAL (Low) has proof 'hc/api/views.py:860, read', no reproduction test; F1-F3 (:38-40) name hc/api/tests/test_audit_api_key_scope.py (present) and state ran/fails as expected"},
+      {"id": "A5", "grade": "FAIL", "evidence": "report:139 'Upsert via unique on create: refused, _lookup filters...' no lens; :141 'channels, pings... refused, they use @authorize' no lens; :145 notification_status 'refused, by design' no lens; :148 'status: returns a constant' no disposition"},
+      {"id": "A6", "grade": "PASS", "evidence": "docs-audits/sweep-registry.md:11 row api-key-authz 2026-10-09; sweep-status-check.txt exit code 0 (re-run: exit 0)"},
+      {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt: only docs/audits/* and hc/api/tests/test_audit_api_key_scope.py; diffs empty"}
+     ],
+     "notes": "Strict reading: the Low finding L1 carries the VERIFIED REAL verdict, so it counts as a confirmed/VERIFIED REAL finding for A3 and A4 even though it is kept out of the headline count. All cited lines correct."},
+
+    {"run": "opus/eval5-with_skill-3", "model": "claude-opus-5-5", "config": "with_skill",
+     "report": "<opus-round>/runs/eval5-with_skill-3/outputs/docs-audits/2026-10-09-api-key-authz.md",
+     "cited_lines_checked": 60,
+     "assertions": [
+      {"id": "A1", "grade": "PASS", "evidence": "outputs/git-status.txt:1-3 docs/audits/2026-10-09-api-key-authz.md, categories.md, sweep-registry.md new"},
+      {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-authz.md:3 Context, :24 Delegation, :36 Verification, :47 Confirmed defects, :96 Refused or unconfirmed candidates, :141 Coverage; slug api-key-authz"},
+      {"id": "A3", "grade": "PASS", "evidence": "report:51 views.py:520, :63 views.py:415, :75 views.py:495 exact; chains :54-56, :66-68, :78-80 (vulnerable line, route urls.py:50/49/51 + views.py:538-539/463-468, mitigation absent with views.py:499, decorators.py:59, views.py:475, 486); every cited line verified, incl. api.md:48, 56-62, 203, 336-341"},
+      {"id": "A4", "grade": "PASS", "evidence": "report:40-42 F1-F3 VERIFIED REAL name hc/api/tests/test_audit_api_key_authz.py (present, tests lines 31-70) and state ran, fails as expected; :59, :71, :83 legit cases pass"},
+      {"id": "A5", "grade": "FAIL", "evidence": "report:98 L1 disposition 'over-rated, kept as Low' is none of refused-with-lens / needs deeper review / closed earlier; :100-139 'examined and found correctly guarded' items (e.g. :110 'not reported', :139 'Not a finding') name no lens"},
+      {"id": "A6", "grade": "PASS", "evidence": "docs-audits/sweep-registry.md:11 row api-key-authz 2026-10-09; sweep-status-check.txt exit code 0 (re-run: exit 0)"},
+      {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt: only docs/audits/* and hc/api/tests/test_audit_api_key_authz.py; diffs empty"}
+     ],
+     "notes": "L1 is OVER-RATED (not VERIFIED REAL) and listed in the refused section, so it is not a confirmed finding for A3/A4, but its disposition does not match an allowed one for A5. All cited lines correct."},
+
+    {"run": "opus/eval5-without_skill-1", "model": "claude-opus-5-5", "config": "without_skill",
+     "report": "<opus-round>/runs/eval5-without_skill-1/docs/security/api-key-authz-review.md",
+     "cited_lines_checked": 0,
+     "assertions": [
+      {"id": "A1", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 only docs/security/api-key-authz-review.md; no docs/audits (sweep-status-check.txt: 'audits folder not found')"},
+      {"id": "A2", "grade": "FAIL", "evidence": "no docs/audits/2026-10-09-<slug>.md; docs/security/api-key-authz-review.md:12-121 has none of the template sections (no Delegation, Verification, Refused or unconfirmed candidates, Coverage)"},
+      {"id": "A3", "grade": "FAIL", "evidence": "api-key-authz-review.md:57, :70, :77 cite 'hc/api/views.py, get_checks/delete_check/get_check_by_unique_key' with no line numbers; no three-element evidence chain"},
+      {"id": "A4", "grade": "FAIL", "evidence": "no finding is marked VERIFIED REAL (api-key-authz-review.md:53-93); tests exist (hc/api/tests/test_api_key_authz.py) but the required verdict is absent"},
+      {"id": "A5", "grade": "FAIL", "evidence": "no refused or unconfirmed candidates section; notes N-1..N-5 at api-key-authz-review.md:87-93 carry no disposition/lens"},
+      {"id": "A6", "grade": "FAIL", "evidence": "no docs/audits/sweep-registry.md; outputs/sweep-status-check.txt 'exit code: 2'"},
+      {"id": "A7", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 '?? docs/security/api-key-authz-review.md' is outside docs/audits/ and test directories"}
+     ],
+     "notes": "Run without skill graded with the same text. No file:line citations exist, so no cited lines to open."},
+
+    {"run": "opus/eval5-without_skill-2", "model": "claude-opus-5-5", "config": "without_skill",
+     "report": "<opus-round>/runs/eval5-without_skill-2/docs/security/api-key-access-review.md",
+     "cited_lines_checked": 0,
+     "assertions": [
+      {"id": "A1", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 only docs/security/api-key-access-review.md; sweep-status-check.txt 'audits folder not found'"},
+      {"id": "A2", "grade": "FAIL", "evidence": "no docs/audits report; api-key-access-review.md:11-183 lacks Context/Delegation/Verification/Refused/Coverage sections"},
+      {"id": "A3", "grade": "FAIL", "evidence": "api-key-access-review.md:75, :100, :118 cite 'hc/api/views.py, get_checks()' etc. without line numbers; no evidence chain"},
+      {"id": "A4", "grade": "FAIL", "evidence": "no VERIFIED REAL marking anywhere (api-key-access-review.md:71-125, :179-183 'Open')"},
+      {"id": "A5", "grade": "FAIL", "evidence": "no refused or unconfirmed candidates section; ':127 Checked and found OK' items have no disposition/lens"},
+      {"id": "A6", "grade": "FAIL", "evidence": "no sweep-registry.md; sweep-status-check.txt exit code 2"},
+      {"id": "A7", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 '?? docs/security/api-key-access-review.md' outside docs/audits/ and test directories"}
+     ],
+     "notes": "No file:line citations."},
+
+    {"run": "sonnet/eval5-with_skill-1", "model": "claude-sonnet-5-5", "config": "with_skill",
+     "report": "<sonnet-round>/runs/eval5-with_skill-1/outputs/docs-audits/2026-10-09-api-key-scope.md",
+     "cited_lines_checked": 28,
+     "assertions": [
+      {"id": "A1", "grade": "PASS", "evidence": "outputs/git-status.txt:1-3 docs/audits/2026-10-09-api-key-scope.md, categories.md, sweep-registry.md new"},
+      {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-scope.md:3 Context, :36 Delegation, :44 Verification, :60 Confirmed defects, :99 Refused or unconfirmed candidates, :110 Coverage; slug api-key-scope"},
+      {"id": "A3", "grade": "FAIL", "evidence": "report:77-78 F2 'Evidence' gives the vulnerable filter and the sibling-handler mitigation but no data flow from the untrusted source (no route/handler path from the request); all cited lines themselves are correct (views.py:415, 520, 495, 528, 538, 300, 481-486, decorators.py:82, models.py:473-483)"},
+      {"id": "A4", "grade": "PASS", "evidence": "report:47-49 F1-F3 VERIFIED REAL; :71 names hc/api/tests/test_audit_key_scope.py (present, tests lines 34-49) and each states 'ran, fails as expected'"},
+      {"id": "A5", "grade": "FAIL", "evidence": "report:107-108 'Hashed key path (for_api_key 408-419, compare_api_key 581-593): ... No finding.' examined, not confirmed, no disposition/lens; C1-C6 (:100-106) are correct"},
+      {"id": "A6", "grade": "PASS", "evidence": "docs-audits/sweep-registry.md:11 row api-key-scope 2026-10-09; sweep-status-check.txt exit code 0 (re-run: exit 0)"},
+      {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt: only docs/audits/* and hc/api/tests/test_audit_key_scope.py; diffs empty"}
+     ],
+     "notes": "A3 failed on the chain-completeness clause (F2 lacks the source-to-sink data-flow element), not on cited lines; strict reading applied. No bad cited lines."},
+
+    {"run": "sonnet/eval5-with_skill-2", "model": "claude-sonnet-5-5", "config": "with_skill",
+     "report": "<sonnet-round>/runs/eval5-with_skill-2/outputs/docs-audits/2026-10-09-api-key-scope.md",
+     "cited_lines_checked": 32,
+     "assertions": [
+      {"id": "A1", "grade": "PASS", "evidence": "outputs/git-status.txt:1-4 docs/audits/2026-10-09-api-key-scope.md, categories.md, coverage-matrix.md, sweep-registry.md new"},
+      {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-scope.md:3 Context, :15 Delegation, :20 Verification, :29 Confirmed defects, :70 Refused or unconfirmed candidates, :82 Coverage; slug api-key-scope"},
+      {"id": "A3", "grade": "FAIL", "evidence": "report:35 AUD-1 chain cites hc/api/decorators.py:62 as the line where authorize_read accepts the read-only key; line 62 is blank (authorize_read's accept_ro=True is at :82). Also AUD-2 chain :54-57 has no data flow from the untrusted source"},
+      {"id": "A4", "grade": "PASS", "evidence": "report:23-24 AUD-1/AUD-2 VERIFIED REAL name hc/api/tests/test_audit_key_scope.py (present, tests lines 26-49), 'ran, fails as expected'"},
+      {"id": "A5", "grade": "FAIL", "evidence": "report:75-78 O1 'decision pending' is not one of the three dispositions; :79-80 O2 'refused as defect; same secret, documented' names no lens"},
+      {"id": "A6", "grade": "PASS", "evidence": "docs-audits/sweep-registry.md:11 row api-key-scope 2026-10-09; sweep-status-check.txt exit code 0 (re-run: exit 0)"},
+      {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt: only docs/audits/* and hc/api/tests/test_audit_key_scope.py; diffs empty"}
+     ],
+     "notes": "Run did not report the planted views.py:495 unique_key defect (only 2 confirmed). coverage-matrix.md function:line refs (413, 438, 480, 499, 520, 491, 546, 573, 595, 625, 674, 682, 473, 692) all hold the decorator lines and are correct."},
+
+    {"run": "sonnet/eval5-with_skill-3", "model": "claude-sonnet-5-5", "config": "with_skill",
+     "report": "<sonnet-round>/runs/eval5-with_skill-3/outputs/docs-audits/2026-10-09-api-key-scope.md",
+     "cited_lines_checked": 12,
+     "assertions": [
+      {"id": "A1", "grade": "PASS", "evidence": "outputs/git-status.txt:1-4 docs/audits/2026-10-09-api-key-scope.md, categories.md, coverage-matrix.md, sweep-registry.md new"},
+      {"id": "A2", "grade": "PASS", "evidence": "2026-10-09-api-key-scope.md:3 Context, :13 Delegation, :19 Verification, :29 Confirmed defects, :64 Refused or unconfirmed candidates, :77 Coverage; slug api-key-scope"},
+      {"id": "A3", "grade": "FAIL", "evidence": "report:34 F1 chain cites hc/api/decorators.py:57 for 'authorize_read accepts read-only keys'; line 57 is `return error(\"missing api key\", 401)` inside authorize. Also F2 chain :46-47 has no data flow from the untrusted source"},
+      {"id": "A4", "grade": "PASS", "evidence": "report:22-24 F1-F3 VERIFIED REAL; :41 names hc/api/tests/test_audit_api_key_scope.py (present, tests lines 32-69); table states 'ran, fails as expected'"},
+      {"id": "A5", "grade": "FAIL", "evidence": "report:69 'unique_key lookups: ... OK', :70-71 channel assignment/_lookup 'OK', :72-73 hashed keys 'OK', :74 'by design' carry no disposition or lens"},
+      {"id": "A6", "grade": "PASS", "evidence": "docs-audits/sweep-registry.md:11 row api-key-scope 2026-10-09; sweep-status-check.txt exit code 0 (re-run: exit 0)"},
+      {"id": "A7", "grade": "PASS", "evidence": "outputs/git-status.txt: only docs/audits/* and hc/api/tests/test_audit_api_key_scope.py; diffs empty"}
+     ],
+     "notes": "Strict reading applied to A3 (one wrong chain line fails the run) and A5."},
+
+    {"run": "sonnet/eval5-without_skill-1", "model": "claude-sonnet-5-5", "config": "without_skill",
+     "report": "<sonnet-round>/runs/eval5-without_skill-1/docs/security-audits/2026-10-api-key-authorization.md",
+     "cited_lines_checked": 0,
+     "assertions": [
+      {"id": "A1", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 only docs/security-audits/2026-10-api-key-authorization.md; sweep-status-check.txt 'audits folder not found'"},
+      {"id": "A2", "grade": "FAIL", "evidence": "no docs/audits report; 2026-10-api-key-authorization.md:9-65 lacks the template sections"},
+      {"id": "A3", "grade": "FAIL", "evidence": "2026-10-api-key-authorization.md:37, :41, :45 name functions in hc/api/views.py with no line numbers; no evidence chain"},
+      {"id": "A4", "grade": "FAIL", "evidence": "2026-10-api-key-authorization.md:6 'none of the findings below were reproduced dynamically'; no VERIFIED REAL, no test file written (outputs/changed-files.txt)"},
+      {"id": "A5", "grade": "FAIL", "evidence": "no refused or unconfirmed section; :48-54 'Lower-severity observations' without dispositions/lenses"},
+      {"id": "A6", "grade": "FAIL", "evidence": "no sweep-registry.md; sweep-status-check.txt exit code 2"},
+      {"id": "A7", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 '?? docs/security-audits/...' outside docs/audits/ and test directories (deleted __pycache__ files in deleted-files.txt are gitignored and not counted)"}
+     ],
+     "notes": "No file:line citations."},
+
+    {"run": "sonnet/eval5-without_skill-2", "model": "claude-sonnet-5-5", "config": "without_skill",
+     "report": "<sonnet-round>/runs/eval5-without_skill-2/docs/security-audits/2026-10-api-keys.md",
+     "cited_lines_checked": 0,
+     "assertions": [
+      {"id": "A1", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 only docs/security-audits/2026-10-api-keys.md; sweep-status-check.txt 'audits folder not found'"},
+      {"id": "A2", "grade": "FAIL", "evidence": "no docs/audits report; 2026-10-api-keys.md:12-88 lacks the template sections"},
+      {"id": "A3", "grade": "FAIL", "evidence": "2026-10-api-keys.md:42 'hc/api/views.py: delete_check', :48, :58 function names only, no line numbers; no evidence chain"},
+      {"id": "A4", "grade": "FAIL", "evidence": "no VERIFIED REAL marking (2026-10-api-keys.md:39-63); tests named (test_api_key_matrix.py, present) but verdict absent"},
+      {"id": "A5", "grade": "FAIL", "evidence": "no refused or unconfirmed section; :65-81 'Checked, no issue found' / 'Notes' without dispositions/lenses"},
+      {"id": "A6", "grade": "FAIL", "evidence": "no sweep-registry.md; sweep-status-check.txt exit code 2"},
+      {"id": "A7", "grade": "FAIL", "evidence": "outputs/git-status.txt:1 '?? docs/security-audits/2026-10-api-keys.md' outside docs/audits/ and test directories"}
+     ],
+     "notes": "No file:line citations."}
+  ],
+  "bad_cited_lines": [
+    {"run": "sonnet/eval5-with_skill-2", "finding": "AUD-1", "finding_status": "confirmed", "kind": "chain",
+     "report_line": "<sonnet-round>/runs/eval5-with_skill-2/outputs/docs-audits/2026-10-09-api-key-scope.md:35",
+     "cited": "hc/api/decorators.py:62", "cited_code": "authorize_read accepts the read-only key (and sets request.readonly = True)",
+     "problem": "does not hold the cited code", "actual": "blank line (between `return error(\"wrong api key\", 401)` at :61 and `request.project = project` at :63 inside authorize); accept_ro=True is at :82"},
+    {"run": "sonnet/eval5-with_skill-3", "finding": "F1", "finding_status": "confirmed", "kind": "chain",
+     "report_line": "<sonnet-round>/runs/eval5-with_skill-3/outputs/docs-audits/2026-10-09-api-key-scope.md:34",
+     "cited": "hc/api/decorators.py:57", "cited_code": "authorize_read accepts read-only keys",
+     "problem": "does not hold the cited code", "actual": "`        return error(\"missing api key\", 401)` inside authorize (the read-write decorator); authorize_read's accept_ro=True is at :82"}
+  ]
+}

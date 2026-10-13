@@ -1,0 +1,165 @@
+{
+ "a_guard_required": {
+  "index_entries_written_in_round": [
+   {
+    "run": "eval1-with_skill-1",
+    "id": "2026-10-12-access-control/F1",
+    "has_guard": true,
+    "guard": "node_modules/.bin/mocha test/unit/allocations-scope-test.js --grep \"lets the legitimate path through\"",
+    "guard_is_runner": true,
+    "guard_test_exists": "yes: same file as reproduce, in the copy and in outputs/files",
+    "guard_tests_legitimate_path": "yes: --grep selects only the case at test/unit/allocations-scope-test.js:83 'lets the legitimate path through: user1 (id 2) asking for /allocations/2 sees their own', which asserts a render of the allocations view with owners [2] and firstName John (:84-89). The reproduce selection matches only the case at :75.",
+    "recorded_status": "Report R:102-117: reproduction and guard ran; the attack case fails on the current code, the legitimate case passes, both pass on a patched copy; reproduce selection exit 1, guard selection exit 0. The run executed mocha with dependencies installed in its tmp directory (outputs/self-checks.txt:12, 17:50:52Z, 17:51:04Z, 17:54:31Z), not the recorded command verbatim: the recorded command names node_modules/.bin/mocha, absent from the copy. No recheck-log.jsonl (no recheck run)."
+   },
+   {
+    "run": "eval5-with_skill-1",
+    "id": "2026-10-12-api-key-authz/F1",
+    "has_guard": true,
+    "guard": ".venv/bin/python -B manage.py test hc.api.tests.test_audit_api_key_authz.DeleteCheckReadWriteKeyLegit",
+    "guard_is_runner": true,
+    "guard_test_exists": "yes: hc/api/tests/test_audit_api_key_authz.py:52 class DeleteCheckReadWriteKeyLegit, methods :58, :66 (copy and outputs/files)",
+    "guard_tests_legitimate_path": "yes: :58 test_hashed_readwrite_key_deletes asserts 200 and the check gone; the class also holds :66 test_readwrite_key_of_other_project_is_refused, which asserts 401 and 403 for another project's key (a refusal case)",
+    "recorded_status": "recheck-log.jsonl:1 (the run's own recheck --run --write, 18:02:16Z): result open, reproduce_exit 1, guard_exit 0, dirty true; report R:107-109 'ran, fails as expected' / 'ran, passes'"
+   },
+   {
+    "run": "eval5-with_skill-1",
+    "id": "2026-10-12-api-key-authz/F2",
+    "has_guard": true,
+    "guard": ".venv/bin/python -B manage.py test hc.api.tests.test_audit_api_key_authz.ListChecksScopeLegit",
+    "guard_is_runner": true,
+    "guard_test_exists": "yes: test_audit_api_key_authz.py:111 class ListChecksScopeLegit, methods :112, :119",
+    "guard_tests_legitimate_path": "yes: :112 test_own_project_checks_are_listed asserts the own project's check is listed for the read-write and read-only keys; :119 test_other_owners_checks_are_not_listed asserts another owner's check is absent (a refusal case)",
+    "recorded_status": "recheck-log.jsonl:2: open, reproduce_exit 1, guard_exit 0, dirty true; report R:124-126"
+   },
+   {
+    "run": "eval5-with_skill-1",
+    "id": "2026-10-12-api-key-authz/F3",
+    "has_guard": true,
+    "guard": ".venv/bin/python -B manage.py test hc.api.tests.test_audit_api_key_authz.UniqueKeyReadOnlyLegit",
+    "guard_is_runner": true,
+    "guard_test_exists": "yes: test_audit_api_key_authz.py:146 class UniqueKeyReadOnlyLegit, methods :152, :160, :165",
+    "guard_tests_legitimate_path": "yes: :152 the read-only lookup by unique key works; :160 the read-write key gets uuid; :165 the read-only lookup by UUID omits the write fields (behaviour that already holds)",
+    "recorded_status": "recheck-log.jsonl:3: open, reproduce_exit 1, guard_exit 0, dirty true; report R:139-141"
+   }
+  ],
+  "summary": {
+   "entries_written": 4,
+   "with_guard": 4,
+   "guard_test_exists_in_outputs": "4 of 4 (assertions-eval1.json, assertions-eval5.json, index_entries)",
+   "guard_selects_legitimate_path_case": "4 of 4, by reading the named test case; 3 of the 4 guard selections (eval 5) also hold one case that asserts a refusal or an omission besides the legitimate path",
+   "guard_passes_evidence": "eval 5, 3 of 3: guard_exit 0 in the run's own recheck-log.jsonl (its own findings.py recheck --run --write, dirty true); eval 1, 1 of 1: the report states the guard selection ran and exited 0, run with mocha installed in the run's tmp directory, not with the recorded command",
+   "fixture_index_eval6_eval7": "the 3 entries of the fixture's index (2026-10-03) each record a guard; in the eval 6 run every guard_exit in recheck-log.jsonl is 0; eval 7 ran no recorded command",
+   "recheck_logs_written": "eval5-with_skill-1 (3 lines: open 3) and eval6-with_skill-1 (3 lines: fixed 1, open 2): 6 lines, open 5, fixed 1, inconclusive 0",
+   "runs_with_inconclusive_for_missing_guard": 0
+  }
+ },
+ "b_command_refusal": {
+  "findings_py_executions_per_run": {
+   "eval1-with_skill-1": [
+    {
+     "time": "2026-10-12T17:54:40Z",
+     "line": "jsonl:215",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T17:55:07Z",
+     "line": "jsonl:228",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval5-with_skill-1": [
+    {
+     "time": "2026-10-12T18:02:09Z",
+     "line": "jsonl:241",
+     "subcommands": [
+      "check",
+      "recheck"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T18:02:16Z",
+     "line": "jsonl:245",
+     "subcommands": [
+      "recheck --run --write"
+     ],
+     "refusal_lines_in_output": [
+      "3 open, 0 fixed, 0 inconclusive"
+     ]
+    },
+    {
+     "time": "2026-10-12T18:02:51Z",
+     "line": "jsonl:253",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval6-with_skill-1": [
+    {
+     "time": "2026-10-12T17:46:18Z",
+     "line": "jsonl:44",
+     "subcommands": [
+      "--help",
+      "recheck"
+     ],
+     "refusal_lines_in_output": [
+      "help text only: the refusal rule for shells and inline code, and 'inconclusive' in the description of recheck"
+     ]
+    },
+    {
+     "time": "2026-10-12T17:46:35Z",
+     "line": "jsonl:55",
+     "subcommands": [
+      "recheck --run --write"
+     ],
+     "refusal_lines_in_output": [
+      "2 open, 1 fixed, 0 inconclusive"
+     ]
+    },
+    {
+     "time": "2026-10-12T17:51:29Z",
+     "line": "jsonl:140",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval7-with_skill-1": [
+    {
+     "time": "2026-10-12T17:46:16Z",
+     "line": "jsonl:42",
+     "subcommands": [
+      "recheck",
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T17:51:32Z",
+     "line": "jsonl:146",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ]
+  },
+  "notes": [
+   "Counted: Bash calls that execute scripts/findings.py check or recheck. Not counted: eval5 jsonl:249 (a heredoc writing sweep-registry.md whose text names the recheck) and eval6 jsonl:105 (a grep of the findings.py source).",
+   "refusal_lines_in_output lists output lines matching 'not run:', 'starts a shell', 'passes inline code', 'cannot parse', 'INCONCLUSIVE' or 'refused'. Apart from the --help text of eval 6, the only lines are the recheck summaries ('0 inconclusive').",
+   "Tool results with is_error in the 6 transcripts (4 runs, 2 reviewers): 1, the eval 5 reviewer's ls of a docs directory that does not exist (exit 2, jsonl:15). None is a permission denial or the refusal of a test-runner command.",
+   "The orchestrator's findings-check.txt reports 0 problems in all 4 runs.",
+   "No false refusal of a legitimate runner command appears in any run.",
+   "The one command not run because of what it is: `.venv/bin/python tools/repro_f2.py` in eval 7, refused by the run after reading the script (transcript jsonl:35, cat; response.md:24-27). findings.py check accepts that entry, since it refuses only shells and inline code (response.md:26). The recorded commands of F1 and F3 in that run, which are runner invocations, were not run through the recheck either; the run ran the review module by hand (jsonl:80, 17:47:39Z)."
+  ]
+ }
+}

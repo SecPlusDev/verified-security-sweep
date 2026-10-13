@@ -1,0 +1,271 @@
+{
+  "eval": 5,
+  "reviews": {
+    "A": [
+      {
+        "id": "A-1",
+        "claim": "A holder of a project's read-only API key can delete that project's checks, because the delete view is wrapped by the decorator that accepts read-only keys and never checks the read-only flag.",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-2",
+        "claim": "An API key for one project can list the checks of every other project with the same owner, including ping and update URLs with a read-write key, because the list query filters by project owner instead of by the key's project.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-3",
+        "claim": "A read-only key can obtain a check's uuid, ping URL and management URLs by looking the check up by unique_key, because that view builds the response without passing the read-only flag.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-4",
+        "claim": "A foreign website could make cross-origin requests to key-authenticated API endpoints because they send Access-Control-Allow-Origin: *.",
+        "location": "hc/api/decorators.py:112",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-5",
+        "claim": "A caller can supply the API key in the JSON request body instead of the header, which might bypass header-based key checks.",
+        "location": "hc/api/decorators.py:51",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-6",
+        "claim": "A caller could authenticate by submitting a stored key hash as a plain-text key, because the legacy plain-text lookup branch could match the hashed value stored in the key column.",
+        "location": "hc/accounts/models.py:426",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-7",
+        "claim": "A key could resolve to the wrong project because the hashed-key lookup selects candidate projects by an 8-character prefix.",
+        "location": "hc/accounts/models.py:411",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-8",
+        "claim": "A caller could gain or lose privileges because whether a request is read-only is derived from the hcr_ prefix of the presented key.",
+        "location": "hc/api/decorators.py:88",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-9",
+        "claim": "A key could read the status-change history of another project's check because the flips-by-uuid view fetches the check by uuid without a project filter.",
+        "location": "hc/api/views.py:676",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-10",
+        "claim": "A key could read another project's check or its status changes through the unique_key lookup views because they might not be scoped to the key's project.",
+        "location": "hc/api/views.py:493",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-11",
+        "claim": "A read-write key could attach another project's notification channels to its checks during create or update because channel lookup might not be scoped to the project.",
+        "location": "hc/api/views.py:330",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-12",
+        "claim": "A key could update, pause, resume or read pings and ping bodies of another project's check because those views might not compare the check's project with the key's project.",
+        "location": "hc/api/views.py:502",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-13",
+        "claim": "An attacker could brute-force API keys because wrong keys are not rate limited.",
+        "location": "hc/accounts/models.py:550",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-14",
+        "claim": "A key holder can learn whether a check uuid exists in another project because the lookup returns 404 for unknown uuids and 403 for foreign ones.",
+        "location": "hc/api/views.py:482",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-15",
+        "claim": "A caller could recover the metrics key through a timing side channel because the metrics endpoint compares the X-Metrics-Key header with a plain inequality.",
+        "location": "hc/api/views.py:860",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-16",
+        "claim": "Unauthenticated callback endpoints and slug-based check auto-provisioning may let unauthenticated callers act on checks.",
+        "location": "hc/api/views.py:262",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-17",
+        "claim": "The Prometheus integration endpoint may expose project check data under a separate authentication scheme that was not reviewed.",
+        "location": "hc/integrations/prometheus/views.py:50",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-18",
+        "claim": "Legacy 32-character plain-text API keys are still accepted, which keeps weaker, unhashed keys usable.",
+        "location": "hc/accounts/models.py:422",
+        "status": "unconfirmed"
+      }
+    ],
+    "B": [
+      {
+        "id": "B-1",
+        "claim": "A holder of a project's read-only API key can delete that project's checks, because the delete view uses the decorator that accepts read-only keys and never checks the read-only flag.",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-2",
+        "claim": "An API key for one project can list the checks of every other project with the same owner, including uuids and ping URLs with a read-write key, because the list query filters by project owner instead of by the key's project.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-3",
+        "claim": "A read-only key placed in a POST body could be accepted where only the read-write key should be.",
+        "location": "hc/api/decorators.py:74",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-4",
+        "claim": "A read-only key could create, update, pause or resume checks.",
+        "location": "hc/api/decorators.py:59",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-5",
+        "claim": "A key could read or change another project's single check by uuid (get, update, delete, pause, resume, pings, ping body, flips).",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-6",
+        "claim": "A key could reach another project's checks through the unique_key lookup, unique_key flips or badges views.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-7",
+        "claim": "A key could resolve to the wrong project, or a read-only key could match the read-write column, because the hashed-key lookup selects candidates by an 8-character prefix.",
+        "location": "hc/accounts/models.py:581",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-8",
+        "claim": "Two projects sharing the same legacy plain-text key could make the key lookup raise MultipleObjectsReturned, because the api_key column has no uniqueness constraint.",
+        "location": "hc/accounts/models.py:447",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-9",
+        "claim": "Read-only keys are refused on the channels, pings and ping body endpoints, which is stricter than the other read endpoints.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-10",
+        "claim": "An attacker could guess API keys because there is no rate limit on key attempts, which matters for any low-entropy legacy keys.",
+        "location": "hc/accounts/models.py:550",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-11",
+        "claim": "A foreign website could make cross-origin API requests because the API sends Access-Control-Allow-Origin: *.",
+        "location": "hc/api/decorators.py:112",
+        "status": "unconfirmed"
+      }
+    ],
+    "C": [
+      {
+        "id": "C-1",
+        "claim": "A holder of a project's read-only API key can delete that project's checks, because the delete view uses the decorator that accepts read-only keys and never checks the read-only flag.",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "C-2",
+        "claim": "An API key for one project can list the checks of every other project with the same owner, including ping, update, pause and resume URLs with a read-write key, because the list query filters by project owner instead of by the key's project.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "C-3",
+        "claim": "A read-only key can obtain a check's uuid, ping URL and management URLs by looking the check up by unique_key, because that view builds the response without passing the read-only flag.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "C-4",
+        "claim": "An attacker could recover legacy plain-text keys through timing because the plain-text key lookup is not a constant-time comparison.",
+        "location": "hc/accounts/models.py:431",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-5",
+        "claim": "A key holder can learn whether a check uuid exists in another project because the lookup returns 404 for unknown uuids and 403 for foreign ones.",
+        "location": "hc/api/views.py:482",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-6",
+        "claim": "A caller can supply the API key in the JSON request body instead of the header.",
+        "location": "hc/api/decorators.py:51",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-7",
+        "claim": "A read-only key could be accepted by endpoints that require the read-write key.",
+        "location": "hc/accounts/models.py:409",
+        "status": "unconfirmed"
+      }
+    ],
+    "D": [
+      {
+        "id": "D-1",
+        "claim": "A holder of a project's read-only API key can delete that project's checks, because the delete view uses the decorator that accepts read-only keys and never checks the read-only flag.",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "D-2",
+        "claim": "An API key for one project can list the checks of every other project with the same owner, including uuids and ping URLs with a read-write key, because the list query filters by project owner instead of by the key's project.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "D-3",
+        "claim": "A read-only key can obtain a check's uuid, ping URL and management URLs by looking the check up by unique_key, because that view builds the response without passing the read-only flag.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "D-4",
+        "claim": "Read-only keys are refused on the channels, pings and ping body endpoints while other read endpoints accept them, blocking a possibly legitimate read path.",
+        "location": "hc/api/views.py:473",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-5",
+        "claim": "A caller can supply the API key in the JSON request body instead of the header.",
+        "location": "hc/api/decorators.py:51",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-6",
+        "claim": "A key could pass an endpoint it should not, or be matched incorrectly, through the plain-text and hashed key lookup and comparison.",
+        "location": "hc/accounts/models.py:398",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-7",
+        "claim": "Two projects sharing the same legacy plain-text key could make the key lookup raise MultipleObjectsReturned, because the api_key column has an index but no uniqueness constraint.",
+        "location": "hc/accounts/models.py:426",
+        "status": "unconfirmed"
+      }
+    ]
+  }
+}

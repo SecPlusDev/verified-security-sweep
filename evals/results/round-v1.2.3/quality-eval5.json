@@ -1,0 +1,397 @@
+{
+  "eval": 5,
+  "items": [
+    {
+      "id": "A-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:520 delete_check uses @authorize_read (decorators.py:82 accept_ro=True) and views.py:521-528 never check request.readonly before rename_and_delete.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-2"
+    },
+    {
+      "id": "A-2",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:415 filters Check by project__owner_id=request.project.owner_id; to_dict(readonly=False) at :433 returns uuid/ping/update/pause/resume URLs (hc/api/models.py:474-482); every other view compares check.project_id with request.project.id (e.g. :483).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-1"
+    },
+    {
+      "id": "A-3",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:495 calls check.to_dict(v=request.v) without readonly=request.readonly; readonly defaults to False (hc/api/models.py:439), so uuid, ping_url, update_url, pause_url, resume_url are returned (models.py:473-482) to a read-only key accepted by @authorize_read (:491).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-3"
+    },
+    {
+      "id": "A-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/decorators.py:112 does send ACAO: *, but API auth is an explicit X-Api-Key header (decorators.py:49-50,74-75), not ambient cookies; a foreign origin must already hold the key, so no cross-origin privilege is gained.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/decorators.py:51-52: body key is accepted only in authorize (POST), which then calls for_api_key(accept_rw=True, accept_ro=False) at :59; the same lookup applies as for the header, so no check is bypassed (authorize_read reads the header only, :74-77).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "decorators.py:56/79 require a 32-character key; stored hashes are 8+1+64=73 characters (hc/accounts/models.py:556), so a stored hash can never be submitted, and the hashed values are not plain keys anyway.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:411-413: the 8-char prefix only selects candidates; compare_api_key (models.py:581-593) verifies the full HMAC with hmac.compare_digest before returning the project.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-8",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/decorators.py:87-89: an hcr_ key can only match api_key_readonly (models.py:415-418, 582-583); hcw_ keys cannot match the plain-text columns (they hold 73-char hashes); a legacy key starting with hcr_ would only be made read-only (more restrictive). No privilege gain.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-9",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:676-677 passes the check to flips(), which returns 403 if check.project_id != request.project.id (views.py:650-651).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-10",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:493 and :684 iterate request.project.check_set.all(), so only the key's own project's checks are reachable.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-11",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:323 and :330 load channels with Channel.objects.filter(project=check.project); the check itself is the key's project (create :451, update :502).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-12",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:502, :549, :576, :598, :628: update_check, pause, resume, pings and ping_body all return 403 when check.project_id != request.project.id.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-13",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:550 is key generation, not authentication; keys are prefix+token_urlsafe(21) (~166 bits, models.py:550-554), so online guessing is infeasible without rate limiting.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-14",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:482-484 does return 404 vs 403, but check uuids are random UUID4 values; knowing whether a uuid exists elsewhere requires already holding it and reveals nothing exploitable.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-15",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:860 uses != on X-Metrics-Key, but a remote timing attack on a Python string comparison is not practical and the endpoint returns only global counters (views.py:863-868); not a meaningful defect. Also not an API-key management endpoint.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-16",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:260-278: slug auto-provisioning requires the project's secret ping_key (models.py:575-579, ~113 bits); notification_status (views.py:816-825) requires the notification's random UUID and an age < 1 hour. These are intended unauthenticated endpoints, outside the API-key zone.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-17",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/integrations/prometheus/views.py:47-54 requires a 32-char read-only key via for_api_key(accept_rw=False, accept_ro=True) and only returns that project's checks without uuids; same key scheme, no defect. Outside hc/api.",
+      "in_zone": "no",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "A-18",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:422-440: legacy plain-text keys are a backwards-compatibility path; they must be 32 characters (decorators.py:56,79) and match exactly; no exploitable weakness is shown in the code.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:520 delete_check uses @authorize_read (decorators.py:82 accept_ro=True) and views.py:521-528 never check request.readonly before rename_and_delete.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-2"
+    },
+    {
+      "id": "B-2",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:415 filters Check by project__owner_id=request.project.owner_id; to_dict(readonly=False) at :433 returns uuid/ping/update/pause/resume URLs (hc/api/models.py:474-482); every other view compares check.project_id with request.project.id (e.g. :483).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-1"
+    },
+    {
+      "id": "B-3",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/decorators.py:74-77: authorize_read never reads the POST body; the body key is only read by authorize (:51) which calls for_api_key with accept_ro=False (:59), so a read-only key in the body is refused.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "create_check (:438), update_check (:499), pause (:546), resume (:573) use authorize, which calls for_api_key(accept_rw=True, accept_ro=False) (decorators.py:59) -> only api_key matched (hc/accounts/models.py:429-433); read-only keys get 401.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:483, :502, :525, :549, :576, :598, :628 and flips :650 all compare check.project_id with request.project.id and return 403; no cross-project single-check access. (Read-only delete of own checks is a different defect.)",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:493, :684, :695 all iterate request.project.check_set, scoped to the key's project.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:415-418 an hcr_ key only queries api_key_readonly and compare_api_key (:581-593) uses api_key_readonly for hcr_ keys and verifies the full HMAC; no wrong-project or cross-column match.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-8",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:447 api_key has db_index but no unique; however keys are randomly generated (models.py:550-556) so a collision is not realistic, and the worst outcome would be a 500 error, not an authorization bypass.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-9",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:473, :595, :625 use authorize for channels, pings and ping_body, refusing read-only keys; that is a stricter-than-needed design choice, not a security defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-10",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "Keys carry ~166 bits of entropy (hc/accounts/models.py:550-554); the claim's low-entropy legacy keys are not shown in the code, and models.py:550 is key generation, not a lookup path. Online guessing is not a practical defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "B-11",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/decorators.py:112 does send ACAO: *, but API auth is an explicit X-Api-Key header (decorators.py:49-50,74-75), not ambient cookies; a foreign origin must already hold the key, so no cross-origin privilege is gained.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:520 delete_check uses @authorize_read (decorators.py:82 accept_ro=True) and views.py:521-528 never check request.readonly before rename_and_delete.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-2"
+    },
+    {
+      "id": "C-2",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:415 filters Check by project__owner_id=request.project.owner_id; to_dict(readonly=False) at :433 returns uuid/ping/update/pause/resume URLs (hc/api/models.py:474-482); every other view compares check.project_id with request.project.id (e.g. :483).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-1"
+    },
+    {
+      "id": "C-3",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:495 calls check.to_dict(v=request.v) without readonly=request.readonly; readonly defaults to False (hc/api/models.py:439), so uuid, ping_url, update_url, pause_url, resume_url are returned (models.py:473-482) to a read-only key accepted by @authorize_read (:491).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-3"
+    },
+    {
+      "id": "C-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:431 does an indexed database equality lookup; remote timing recovery of a 32-char random key through a DB index lookup is not practical; not a defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:482-484 does return 404 vs 403, but check uuids are random UUID4 values; knowing whether a uuid exists elsewhere requires already holding it and reveals nothing exploitable.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/decorators.py:51-52: body key is accepted only in authorize (POST), which then calls for_api_key(accept_rw=True, accept_ro=False) at :59; the same lookup applies as for the header, so no check is bypassed (authorize_read reads the header only, :74-77).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "C-7",
+      "status": "unconfirmed",
+      "verdict": "REAL",
+      "reason": "True as stated: delete_check, which should require the read-write key like update/pause/resume, accepts read-only keys via @authorize_read (hc/api/views.py:520, decorators.py:82). The cited for_api_key line (hc/accounts/models.py:409) is correct; the defect is in the decorator choice.",
+      "in_zone": "yes",
+      "location_holds_defect": "no",
+      "gt": "P-2"
+    },
+    {
+      "id": "D-1",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:520 delete_check uses @authorize_read (decorators.py:82 accept_ro=True) and views.py:521-528 never check request.readonly before rename_and_delete.",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-2"
+    },
+    {
+      "id": "D-2",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:415 filters Check by project__owner_id=request.project.owner_id; to_dict(readonly=False) at :433 returns uuid/ping/update/pause/resume URLs (hc/api/models.py:474-482); every other view compares check.project_id with request.project.id (e.g. :483).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-1"
+    },
+    {
+      "id": "D-3",
+      "status": "confirmed",
+      "verdict": "REAL",
+      "reason": "hc/api/views.py:495 calls check.to_dict(v=request.v) without readonly=request.readonly; readonly defaults to False (hc/api/models.py:439), so uuid, ping_url, update_url, pause_url, resume_url are returned (models.py:473-482) to a read-only key accepted by @authorize_read (:491).",
+      "in_zone": "yes",
+      "location_holds_defect": "yes",
+      "gt": "P-3"
+    },
+    {
+      "id": "D-4",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/views.py:473, :595, :625 use authorize for channels, pings and ping_body, refusing read-only keys; that is a stricter-than-needed design choice, not a security defect.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-5",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/api/decorators.py:51-52: body key is accepted only in authorize (POST), which then calls for_api_key(accept_rw=True, accept_ro=False) at :59; the same lookup applies as for the header, so no check is bypassed (authorize_read reads the header only, :74-77).",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-6",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:398-440 and compare_api_key :581-593 are correct: prefix selects candidates, full HMAC verified with compare_digest, accept_rw/accept_ro honored; no incorrect match. The read-only delete comes from views.py:520, not from the lookup.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    },
+    {
+      "id": "D-7",
+      "status": "unconfirmed",
+      "verdict": "NOT REAL",
+      "reason": "hc/accounts/models.py:447 api_key has db_index but no unique; however keys are randomly generated (models.py:550-556) so a collision is not realistic, and the worst outcome would be a 500 error, not an authorization bypass.",
+      "in_zone": "yes",
+      "location_holds_defect": null,
+      "gt": null
+    }
+  ],
+  "undecided": 0,
+  "notes": [
+    "in_zone: claims on hc/accounts/models.py key lookup (for_api_key, compare_api_key) counted in zone because they implement authorize/authorize_read; ping, callback, metrics and Prometheus endpoints counted out of zone (not API-key management API).",
+    "C-7 is generic but true as stated via delete_check (P-2); it is unconfirmed so it does not change confirmed matches."
+  ]
+}

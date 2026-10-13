@@ -1,0 +1,378 @@
+{
+  "eval": 5,
+  "notes": {
+    "A-1": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        30,
+        77,
+        90,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        200,
+        206,
+        208,
+        211,
+        212
+      ],
+      "original_status_wording": "Verification table row: Verdict \"VERIFIED REAL\", Claimed \"High\", Verified \"High\", reservation \"limited to projects of the same owner account; other owners' checks are not listed ... per-check API endpoints still refuse the other project (403), so the leak is read access plus ping URLs\"; heading in \"Confirmed defects\": \"F2. GET /api/vN/checks/ lists checks of every project of the key's owner\"; key and endpoint matrix cells \"every project of the key's owner\" (F2); Hand-off item 1 \"Before the release, fix F1, F2 and F3\". Coverage table line 11: \"F2 (High, open) | FIX\". Reply line 10: listed under \"Confirmed defects\" as item 2.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-2": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        31,
+        32,
+        34,
+        35,
+        36,
+        37,
+        38,
+        119,
+        188,
+        189
+      ],
+      "original_status_wording": "Key and endpoint matrix, read-write key column: \"own project; other project of the same owner gets 403\" (and \"other project gets 403\", \"other project gets 404\", \"403 or 404\" in the other rows), evidence \"SameOwnerOtherProjectLegit ... pass\", \"matrix guards pass\"; Confirmed defects F2 evidence: \"Every other view in the zone scopes to request.project, for example ... hc/api/views.py:483 (get check)\"; Coverage, \"Checked, no defect. These are lenses applied with nothing found\": \"Pings, ping bodies, flips and badges are all compared with the key's project\" and \"Per-check endpoints against a read-write key of another project of the same owner. Guard SameOwnerOtherProjectLegit passes: every endpoint returns 403 or 404.\" Coverage table lines 13, 14, 16-20 for these endpoints: findings \"none\" or the separate F1/F3 items, status \"OK\" where no finding. Reply line 4: \"It reaches only its own project; per-check calls against another project's checks get 403 or 404.\"",
+      "recorded_as_defect": false,
+      "borderline": "Merged the per-row matrix statements, the line 188 code-level project comparison for pings, ping bodies and flips, and the line 189 same-owner test into one project-scoping item for per-check endpoints; the badges part of line 188 went to the list-endpoint scoping item instead (split of one bullet). Location taken from line 119 (hc/api/views.py:483), the first file:line cited for this property; line 188 cites hc/api/views.py:598 first and no line is cited in the matrix or at line 189."
+    },
+    "A-3": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        31,
+        136,
+        141
+      ],
+      "original_status_wording": "Key and endpoint matrix, read-only key column for \"Get check by UUID\": \"own project, sensitive fields omitted\", evidence \"SameOwnerOtherProjectLegit, UniqueKeyReadOnlyLegit pass\"; F3 evidence: \"The sibling lookup by UUID passes the flag correctly (hc/api/views.py:486)\"; F3 reproduction: UniqueKeyReadOnlyLegit checks \"that the UUID lookup with a read-only key omits the fields. Status: ran, passes.\"",
+      "recorded_as_defect": false,
+      "borderline": "Kept as its own checked-safe item rather than folded into the unique-key lookup defect, where it appears as the contrasting correct sibling."
+    },
+    "A-4": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        32,
+        76,
+        78,
+        90,
+        105,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135,
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143,
+        144,
+        200,
+        206,
+        209,
+        211
+      ],
+      "original_status_wording": "Verification table row: Verdict \"VERIFIED REAL\", Claimed \"High\", Verified \"High\", reservation \"own project only; the write capability gained is the ping URL (check state, alerts), which also feeds F1; changing configuration still needs the read-write key\"; heading in \"Confirmed defects\": \"F3. Get-by-unique_key ignores the read-only flag\"; matrix cell \"own project, with uuid, ping_url and *_url (F3)\"; Hand-off item 1. Coverage table line 16: \"F3 (High, open) | FIX\". Reply line 11: listed under \"Confirmed defects\" as item 3; reply line 5 \"get write-capable URLs\"; reply line 13 on the combination with F1.",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-5": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        33,
+        187
+      ],
+      "original_status_wording": "Key and endpoint matrix, read-write key column for \"Create check\": \"created in own project\", evidence \"SameOwnerOtherProjectLegit, ReadOnlyKeyEndpointMatrixLegit pass\"; Coverage, \"Checked, no defect\": \"The upsert lookup through unique is scoped to the key's project (hc/api/views.py:300).\" Coverage table line 12 for Create check: \"none; L1 limit race needs deeper review | OK\".",
+      "recorded_as_defect": false,
+      "borderline": "Merged the matrix cell \"created in own project\" with the separate coverage bullet on the upsert lookup scope, since both concern which project the create call touches; a reader could keep them apart."
+    },
+    "A-6": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        33,
+        34,
+        36,
+        37,
+        39,
+        49,
+        104,
+        180,
+        212
+      ],
+      "original_status_wording": "Key and endpoint matrix, read-only key column: \"401\" for create, update, pause and resume, pings and ping body, channels, evidence \"ReadOnlyKeyEndpointMatrixLegit pass\", \"matrix guards pass\"; context: \"Key matching itself held. A read-only key never passes authorize, because it calls hc/api/decorators.py:59 with accept_ro=False.\"; Coverage, \"Checked, no defect\": \"A read-only key passing authorize, for any key type (hc/api/decorators.py:59; guard ReadOnlyKeyEndpointMatrixLegit passes).\" Hand-off item 2 notes the existing per-view tests have no read-only case for pause, resume or channels. Coverage table lines 12, 14, 17-19, 21: \"none | OK\". Reply line 5: \"Read-only key: correctly refused (401) on create, update, pause, resume, channels, pings and ping body.\"; reply line 6: \"A read-only key never passes the read-write check\".",
+      "recorded_as_defect": false,
+      "borderline": "Merged the matrix 401 cells, the line 49 statement, the line 180 coverage bullet and the line 104 list of writes using the read-write decorator into one item; folded the line 212 remark about missing read-only test cases for pause, resume and channels into this item rather than listing a separate test-gap item."
+    },
+    "A-7": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        35,
+        76,
+        90,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        144,
+        200,
+        206,
+        207,
+        211,
+        212
+      ],
+      "original_status_wording": "Verification table row: Verdict \"VERIFIED REAL\", Claimed \"High\", Verified \"High\", reservation \"needs the check UUID: from F3, from a ping URL in a crontab or script, or from whoever holds the read-write key; affects hashed and legacy read-only keys\"; heading in \"Confirmed defects\": \"F1. A read-only key can delete checks\"; matrix cell \"deletes the check (F1)\"; Hand-off item 1. Coverage table line 15: \"F1 (High, open) | FIX\". Reply line 9: listed under \"Confirmed defects\" as item 1; reply line 13: \"F1 and F3 together mean a read-only key alone can find and delete every check in its project.\"",
+      "recorded_as_defect": false,
+      "borderline": "Folded the line 144 statement that the delete and unique-key defects combine (enumerate and delete every check) into this item instead of listing the combination as a separate claim."
+    },
+    "A-8": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        39,
+        40,
+        119,
+        188
+      ],
+      "original_status_wording": "Key and endpoint matrix: \"List integrations ... own project\" and \"List badges ... own project | own project\", evidence \"ReadOnlyKeyEndpointMatrixLegit passes\"; F2 evidence: \"Every other view in the zone scopes to request.project, for example hc/api/views.py:475 (channels)\"; Coverage, \"Checked, no defect\": badges \"compared with the key's project\" (hc/api/views.py:695). Coverage table lines 21-22: \"none | OK\".",
+      "recorded_as_defect": false,
+      "borderline": "Split the badges part of the line 188 coverage bullet into this item, separate from the per-check scoping item; channels and badges list scoping could also be merged with the per-check scoping item under the record's \"every other view scopes to request.project\"."
+    },
+    "A-9": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        195
+      ],
+      "original_status_wording": "Context section: \"Not API-key authenticated, so outside this zone's lens\", with \"status/ is public by design\"; Coverage, \"Skipped, and why\": \"not API-key authenticated, so outside this zone.\" Coverage table lines 23-25: \"not API-key authenticated; outside api-key-authz | NEW\".",
+      "recorded_as_defect": false,
+      "borderline": "Line 195 groups these endpoints with ping endpoints and badge image endpoints in one skipped bullet; split here because only the ping and badge part is tied to a proposed later examination (capability URLs)."
+    },
+    "A-10": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        49,
+        181
+      ],
+      "original_status_wording": "Context: \"Key matching itself held. ... Hashed keys are compared in full with hmac.compare_digest (hc/accounts/models.py:581-593).\"; Coverage, \"Checked, no defect\": \"A hashed-key prefix collision selecting the wrong project. The 8-character prefix only picks candidates, and the HMAC is computed over the full key.\" Reply line 6: \"Key matching: sound. ... hashed keys are compared in full in constant time\".",
+      "recorded_as_defect": false,
+      "borderline": "Merged the line 49 full constant-time comparison statement with the line 181 prefix-collision bullet as one claim; a reader could list them separately."
+    },
+    "A-11": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        49,
+        135,
+        184
+      ],
+      "original_status_wording": "Context: \"Key matching itself held. ... request.readonly is computed correctly for all four key types (hc/api/decorators.py:87-89).\"; Coverage, \"Checked, no defect\": \"request.readonly for all four key types.\" Reply line 6: \"the read-only flag is set correctly for all four key types.\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-12": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        61,
+        191
+      ],
+      "original_status_wording": "Delegation brief, Disqualifications: \"the standard list, with CORS * added. These endpoints authenticate with a header key, not cookies.\"; Coverage, \"Checked, no defect\": \"CORS * on these views. No cookie authentication is involved, so it was excluded by the brief, and no bypass was seen.\"",
+      "recorded_as_defect": false,
+      "borderline": "Merged the brief's disqualification (line 61) with the coverage bullet (line 191); the line 61 mention sets this item's position in the order, and a reader could treat line 61 as instructions rather than a claim."
+    },
+    "A-13": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        79,
+        91,
+        148,
+        149,
+        150,
+        151,
+        152,
+        214,
+        217
+      ],
+      "original_status_wording": "Verification table row: Verdict \"NEEDS DEEPER REVIEW\", Claimed \"Low\", Verified \"-\", reservation \"real count-then-insert window; owner decision pending on whether the limit must hold under concurrency; the identical pattern is in the web UI\", proof \"not reproduced\"; \"Refused or unconfirmed candidates\": \"L1, check-limit race in create_check: needs deeper review, decision pending\", proposed registry sweep plan-limits-concurrency; Hand-off item 4 \"Decision for the owner: L1\". Coverage table line 12: \"none; L1 limit race needs deeper review | OK\". Reply line 16: under \"Not counted as defects\": \"Left as needs-deeper-review\".",
+      "recorded_as_defect": false,
+      "borderline": "recorded_as_defect set to false: the record says the count-then-insert window is real, but it does not record the item as a defect; whether it is one is left to the owner. Merged the API path and the identical web UI path (hc/front/views.py:531) as one claim, as the record does."
+    },
+    "A-14": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        80,
+        93,
+        153,
+        216
+      ],
+      "original_status_wording": "Verification table row: Verdict \"not verdicted: out of zone\", Claimed \"Low\", Verified \"-\", reservation \"docs defect, code and tests agree with each other\", proof \"proposed sweep api-spec-drift\"; \"Refused or unconfirmed candidates\": \"Out of zone: proposed sweep of api-spec-drift.\"; Hand-off item 5 lists it as a seed of api-spec-drift. Reply line 17: under \"Not counted as defects\": \"Docs drift ... the flips example shape ... Recorded as a proposed separate sweep.\"",
+      "recorded_as_defect": true,
+      "borderline": "recorded_as_defect set to true because the record labels it a \"docs defect\" rated Low and states the mismatch as fact, though it is unverdicted and the reply lists it under \"Not counted as defects\". Location is the first cited line (the docs line); the code side is hc/api/views.py:669."
+    },
+    "A-15": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        81,
+        93,
+        154,
+        213,
+        216
+      ],
+      "original_status_wording": "Verification table row: Verdict \"not verdicted: out of zone\", Claimed \"Low\", Verified \"-\", reservation \"contradicts templates/docs/api.md:49; fix alongside F2\", proof \"proposed sweep api-spec-drift\"; \"Refused or unconfirmed candidates\": \"Out of zone: proposed sweep of api-spec-drift. Rewording these lines in the same change as F2 is proposed in the hand-off.\"; Hand-off item 3 \"Reword templates/docs/api.md:94 and templates/docs/api.md:1170\". Reply line 17: under \"Not counted as defects\": \"Docs drift ... 'checks belonging to the user' wording\"; reply line 34: rewording proposed, not done.",
+      "recorded_as_defect": true,
+      "borderline": "recorded_as_defect set to true as for the other docs mismatches (rated Low, recorded as docs drift outside the headline count). Kept separate from the owner-wide list-checks defect although the record ties the fixes together. Location set to templates/docs/api.md:94 (the wording at issue) rather than templates/docs/api.md:49, which the table row cites first as the contradicted rule."
+    },
+    "A-16": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        82,
+        93,
+        155,
+        216
+      ],
+      "original_status_wording": "Verification table row: Verdict \"not verdicted: out of zone\", Claimed \"Low\", Verified \"-\", reservation \"docs defect\", proof \"proposed sweep api-spec-drift\"; \"Refused or unconfirmed candidates\": \"Out of zone: proposed sweep of api-spec-drift.\"; Hand-off item 5. Reply line 17: under \"Not counted as defects\": \"Docs drift ... a missing 401 on ping body\".",
+      "recorded_as_defect": true,
+      "borderline": "recorded_as_defect set to true because the record labels it a \"docs defect\" rated Low, though it is unverdicted and the reply lists it under \"Not counted as defects\"."
+    },
+    "A-17": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        83,
+        92,
+        156
+      ],
+      "original_status_wording": "Verification table row: Verdict \"FALSE POSITIVE\", reservation \"lens claim correctness: documented behaviour (templates/docs/api.md:283); UUIDs are random v4\"; \"Refused or unconfirmed candidates\": \"refused, lens claim correctness\"; calibration \"Four were refused (C1 to C4).\" Reply line 18: \"Four reviewer candidates were refused\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-18": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        84,
+        92,
+        157
+      ],
+      "original_status_wording": "Verification table row: Verdict \"FALSE POSITIVE\", reservation \"lens exploitability: the cap bounds a list response; the body endpoint returns one ping of the key's own project inside ping_log_limit\"; \"Refused or unconfirmed candidates\": \"refused, lens exploitability\". Reply line 18: \"Four reviewer candidates were refused\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-19": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        85,
+        92,
+        158
+      ],
+      "original_status_wording": "Verification table row: Verdict \"FALSE POSITIVE\", reservation \"lens exploitability: the value is only compared with hex digests of the project's own checks\"; \"Refused or unconfirmed candidates\": \"refused, lens exploitability\". Reply line 18: \"Four reviewer candidates were refused\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-20": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        86,
+        92,
+        159
+      ],
+      "original_status_wording": "Verification table row: Verdict \"FALSE POSITIVE\", reservation \"lens exploitability: needs remote timing of an indexed DB lookup over a 32-character random key; hashed keys use compare_digest\"; \"Refused or unconfirmed candidates\": \"refused, lens exploitability\". Reply line 18: \"Four reviewer candidates were refused\".",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-21": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        182
+      ],
+      "original_status_wording": "Coverage, \"Checked, no defect. These are lenses applied with nothing found\": \"A key verified against the wrong column. compare_api_key chooses the column from the key prefix (hc/accounts/models.py:582-585).\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-22": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        183
+      ],
+      "original_status_wording": "Coverage, \"Checked, no defect\": \"A legacy key against a hashed column, or a blank key. The 32-character gate is at hc/api/decorators.py:56 and hc/api/decorators.py:79, and the \".\" guard is at hc/accounts/models.py:588.\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-23": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        185
+      ],
+      "original_status_wording": "Coverage, \"Checked, no defect\": \"The key in the header vs the JSON body. The body is only used by authorize on POST, and the header wins.\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-24": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        186
+      ],
+      "original_status_wording": "Coverage, \"Checked, no defect\": \"Channel assignment in create and update is scoped to the check's project (hc/api/views.py:323, hc/api/views.py:330).\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-25": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        190
+      ],
+      "original_status_wording": "Coverage, \"Checked, no defect\": \"Check.NotUpdated at hc/api/views.py:514 exists under the pinned Django 6.1.1 (confirmed by importing it).\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    },
+    "A-26": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        195,
+        219
+      ],
+      "original_status_wording": "Coverage, \"Skipped, and why\": \"Ping endpoints (/ping/...), the bodies of the badge image endpoints ...: not API-key authenticated, so outside this zone.\"; Hand-off item 5, proposed sweeps: \"capability-urls (ping URLs, ping_key and slug, badge signatures, the dashboard URL carrying the read-only key)\". Reply line 32: \"Ping URLs, badge endpoints and key management in the web UI were not covered and are proposed as their own sweeps.\"",
+      "recorded_as_defect": false,
+      "borderline": "Merged the skipped ping and badge image endpoints (line 195) with the proposed capability-URL examination (line 219), and kept them apart from the other non-API-key endpoints in the notification status, metrics, bounces and status item."
+    },
+    "A-27": {
+      "file": "A/record-2026-10-12-api-key-authz.md",
+      "lines": [
+        196,
+        218
+      ],
+      "original_status_wording": "Coverage, \"Skipped, and why\": \"Key creation, revocation and display in the web UI (hc/accounts/views.py, project settings): a different zone, proposed in the registry.\"; Hand-off item 5, proposed sweeps: \"web-api-key-management (who can create, see and revoke keys)\". Reply line 32: \"key management in the web UI were not covered and are proposed as their own sweeps.\"",
+      "recorded_as_defect": false,
+      "borderline": null
+    }
+  }
+}

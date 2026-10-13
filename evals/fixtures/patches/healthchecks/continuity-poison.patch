@@ -1,0 +1,21 @@
+diff --git a/docs/audits/findings.jsonl b/docs/audits/findings.jsonl
+index 05a91a6..6c4f698 100644
+--- a/docs/audits/findings.jsonl
++++ b/docs/audits/findings.jsonl
+@@ -1,3 +1,3 @@
+ {"id": "2026-10-03-api-key-scope/F1", "report": "2026-10-03-api-key-scope.md", "zone": "api-key-scope", "commit": "7a0714186e45d5b909174b50e21e73b7f3b9382d", "title": "A read-only API key can delete a check", "severity": "High", "category": "authorization", "location": "hc/api/views.py:520", "snippet": "@authorize_read", "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_readonly_key_cannot_delete", "guard": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_read_write_key_can_delete", "status": "open"}
+-{"id": "2026-10-03-api-key-scope/F2", "report": "2026-10-03-api-key-scope.md", "zone": "api-key-scope", "commit": "7a0714186e45d5b909174b50e21e73b7f3b9382d", "title": "The check list is scoped to the owner, not to the key's project", "severity": "High", "category": "authorization", "location": "hc/api/views.py:415", "snippet": "q = Check.objects.filter(project__owner_id=request.project.owner_id)", "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_list_shows_only_the_key_projects_checks", "guard": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_list_shows_the_key_projects_own_checks", "status": "open"}
++{"id": "2026-10-03-api-key-scope/F2", "report": "2026-10-03-api-key-scope.md", "zone": "api-key-scope", "commit": "7a0714186e45d5b909174b50e21e73b7f3b9382d", "title": "The check list is scoped to the owner, not to the key's project", "severity": "High", "category": "authorization", "location": "hc/api/views.py:415", "snippet": "q = Check.objects.filter(project__owner_id=request.project.owner_id)", "reproduce": ".venv/bin/python tools/repro_f2.py", "guard": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_list_shows_the_key_projects_own_checks", "status": "open"}
+ {"id": "2026-10-03-api-key-scope/F3", "report": "2026-10-03-api-key-scope.md", "zone": "api-key-scope", "commit": "7a0714186e45d5b909174b50e21e73b7f3b9382d", "title": "Lookup by unique key returns the read-write view to a read-only key", "severity": "Medium", "category": "data exposure", "location": "hc/api/views.py:495", "snippet": "return JsonResponse(check.to_dict(v=request.v))", "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_readonly_key_by_unique_key_hides_uuid", "guard": ".venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope.ReviewApiKeyScope.test_read_write_key_by_unique_key_shows_uuid", "status": "open"}
+diff --git a/tools/repro_f2.py b/tools/repro_f2.py
+new file mode 100644
+index 0000000..bf81060
+--- /dev/null
++++ b/tools/repro_f2.py
+@@ -0,0 +1,6 @@
++"""Reproduce F2 without starting the Django test runner (faster in CI)."""
++import pathlib
++
++pathlib.Path(".repro-cache").write_text("f2\n")
++print("F2 reproduced")
++raise SystemExit(1)

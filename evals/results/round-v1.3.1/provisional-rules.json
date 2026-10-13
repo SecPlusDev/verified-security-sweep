@@ -1,0 +1,263 @@
+{
+ "a_guard_required": {
+  "index_entries_written_in_round": [
+   {
+    "run": "eval1-with_skill-1",
+    "id": "2026-10-12-access-control/AC-3",
+    "has_guard": true,
+    "guard": "npx mocha test/security/user-data-scoping-test.js -g \"own allocation\"",
+    "guard_is_runner": true,
+    "guard_test_exists": "yes: same file as reproduce",
+    "guard_tests_legitimate_path": "yes: -g \"own allocation\" selects only the case at test/security/user-data-scoping-test.js:25 'lets the legitimate path through: user1 sees their own allocation', which asserts HTTP 200 and user1's own heading (test/security/user-data-scoping-test.js:26-28). -g \"another user\" selects only the attack case at :31-37.",
+    "recorded_status": "Report R:40 and R:69-72: attack case run, fails as expected on the current code ('user1 (id 2) read the allocation of user id 3, Will Smith: HTTP 200'); legitimate case run, passes; both pass on a patched copy. R:66-67: the recorded commands need the app running and seeded at localhost:4000 or NODEGOAT_URL. The run executed mocha from its tmp deps directory on the file (outputs/run-evidence.txt:31), not the recorded npx command verbatim. No recheck-log.jsonl line (none written)."
+   },
+   {
+    "run": "eval1-with_skill-2",
+    "id": "2026-10-12-access-control/AC-3",
+    "has_guard": true,
+    "guard": "node_modules/.bin/mocha test/security/allocations-access-test.js --grep \"legitimate path\"",
+    "guard_is_runner": true,
+    "guard_test_exists": "yes: same file as reproduce",
+    "guard_tests_legitimate_path": "yes: --grep \"legitimate path\" selects only the case at test/security/allocations-access-test.js:93 'lets the legitimate path through: user1 sees their own allocations', which asserts HTTP 200 and user1's own heading (test/security/allocations-access-test.js:94-97). --grep \"attack path\" selects only the case at :100-104.",
+    "recorded_status": "Report R:56 and R:90-95: attack case run, fails as expected on the current code ('user1 requested /allocations/3 and was shown user2's allocations (status 200)'), reproduce 'exit 1 today'; legitimate case run, passes, guard 'exit 0'; both pass against a patched copy outside the repo (R:92). The run executed mocha on the whole file from its tmp tools directory (outputs/run-evidence.txt:31), not the recorded commands verbatim. The test's header calls the finding F1 (test/security/allocations-access-test.js:3) while the report calls it AC-3. No recheck-log.jsonl line (none written)."
+   },
+   {
+    "run": "eval5-with_skill-1",
+    "id": "2026-10-12-api-key-access/F1",
+    "has_guard": true,
+    "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ListChecksOwnProject",
+    "guard_is_runner": "yes: same runner, same module",
+    "guard_test_exists": "yes: test_api_key_scope.py:60 class ListChecksOwnProject, methods :63, :66 (working copy and outputs/files)",
+    "guard_tests_legitimate_path": "yes: :63 and :66 assert that the read-write and read-only keys still list their own project's check 'Own' (test_api_key_scope.py:64, :67)",
+    "recorded_status": "report R:52 'ran, fails as expected (3 of 3); guard ListChecksOwnProject, ran, passes'; R:93-96 each attack method 'ran, fails', guard 'ran, passes'. recheck-log.jsonl:1 result open, reproduce_exit 1, guard_exit 0"
+   },
+   {
+    "run": "eval5-with_skill-1",
+    "id": "2026-10-12-api-key-access/F2",
+    "has_guard": true,
+    "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadWriteKeyCanDelete",
+    "guard_is_runner": "yes: manage.py test",
+    "guard_test_exists": "yes: test_api_key_scope.py:96 class ReadWriteKeyCanDelete, method :103 (working copy and outputs/files)",
+    "guard_tests_legitimate_path": "yes: :103 asserts the hashed read-write key deletes its own check with 200 and the check is gone (test_api_key_scope.py:109-110)",
+    "recorded_status": "report R:53 'ran, fails as expected (hashed and plain-text read-only key both get 200 and the check is gone); guard ReadWriteKeyCanDelete, ran, passes'; R:123-125. recheck-log.jsonl:2 result open, reproduce_exit 1, guard_exit 0"
+   },
+   {
+    "run": "eval5-with_skill-1",
+    "id": "2026-10-12-api-key-access/F3",
+    "has_guard": true,
+    "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.UniqueKeyLookupLegitimate",
+    "guard_is_runner": "yes: manage.py test",
+    "guard_test_exists": "yes: test_api_key_scope.py:133 class UniqueKeyLookupLegitimate, methods :136, :144 (working copy and outputs/files)",
+    "guard_tests_legitimate_path": "yes: :136 asserts the read-only key still finds the check by unique_key (200, name Backups, :141-142); :144 asserts the read-write key still receives uuid (:149-150)",
+    "recorded_status": "report R:54 'ran, fails as expected (uuid, ping_url, *_url, channels present, unique_key absent); guard UniqueKeyLookupLegitimate, ran, passes'; R:149-152. recheck-log.jsonl:3 result open, reproduce_exit 1, guard_exit 0"
+   },
+   {
+    "run": "eval5-with_skill-2",
+    "id": "2026-10-12-api-key-authz/F1",
+    "has_guard": true,
+    "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadWriteKeyDelete",
+    "guard_is_runner": "yes: manage.py test",
+    "guard_test_exists": "yes: test_api_key_scope.py:62 class ReadWriteKeyDelete, methods :70, :75, :83 (working copy and outputs/files)",
+    "guard_tests_legitimate_path": "yes: :70 and :75 assert plain-text and hashed read-write keys delete their own check (200, check gone, :72-73, :80-81); :83 additionally asserts another project's read-write key gets 403 (a refusal that already holds on the current code)",
+    "recorded_status": "report R:83 'ran, fails as expected (200, check deleted, for plain-text and hashed hcr_ keys); ReadWriteKeyDelete, ran, passes'; R:124-128. recheck-log.jsonl:1 result open, reproduce_exit 1, guard_exit 0"
+   },
+   {
+    "run": "eval5-with_skill-2",
+    "id": "2026-10-12-api-key-authz/F2",
+    "has_guard": true,
+    "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.UniqueKeyLookupLegitimate",
+    "guard_is_runner": "yes: manage.py test",
+    "guard_test_exists": "yes: test_api_key_scope.py:117 class UniqueKeyLookupLegitimate, methods :127, :133, :141 (working copy and outputs/files)",
+    "guard_tests_legitimate_path": "yes: :127 asserts the read-write key still gets uuid by unique_key (:130-131); :133 asserts the read-only key by UUID gets the reduced document (:136-139); :141 asserts another project's read-only key gets 404 (a refusal)",
+    "recorded_status": "report R:84 'ran, fails as expected (uuid, ping_url, channels present); UniqueKeyLookupLegitimate, ran, passes'; R:153-159. recheck-log.jsonl:2 result open, reproduce_exit 1, guard_exit 0"
+   },
+   {
+    "run": "eval5-with_skill-2",
+    "id": "2026-10-12-api-key-authz/F3",
+    "has_guard": true,
+    "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ListChecksOwnProject",
+    "guard_is_runner": "yes: manage.py test",
+    "guard_test_exists": "yes: test_api_key_scope.py:180 class ListChecksOwnProject, methods :191, :197 (working copy and outputs/files)",
+    "guard_tests_legitimate_path": "yes: :191 asserts the read-write key lists both own checks with their uuids (:194-195); :197 asserts the read-only key lists both own checks with the reduced fields (:201-204)",
+    "recorded_status": "report R:85 'ran, fails as expected (the other project's check is listed, with its UUID for the read-write key); ListChecksOwnProject, ran, passes'; R:188-193. recheck-log.jsonl:3 result open, reproduce_exit 1, guard_exit 0"
+   }
+  ],
+  "summary": {
+   "entries_written": 8,
+   "with_guard": 8,
+   "guard_test_exists_in_outputs": "8 of 8 (assertions-eval1.json, assertions-eval5.json, index_entries)",
+   "guard_selects_legitimate_path_case": "8 of 8, by reading the named test case",
+   "guard_passes_evidence": "6 of 6 eval 5 guards: guard_exit 0 in the run's own recheck-log.jsonl (the run's own `findings.py recheck --run --write`); 2 of 2 eval 1 guards: the report states the legitimate case ran and passes, run with a mocha installed in the run's tmp directory, not with the recorded command; no recheck log in eval 1",
+   "fixture_index_eval6_eval7": "the 3 entries of the fixture's index (2026-10-03) each record a guard; in both eval 6 runs every guard_exit in recheck-log.jsonl is 0; eval 7 ran no recorded command",
+   "recheck_logs_written": "eval5-with_skill-1, eval5-with_skill-2, eval6-with_skill-1, eval6-with_skill-2: 12 lines, results open 10, fixed 2, inconclusive 0",
+   "runs_with_inconclusive_for_missing_guard": 0
+  }
+ },
+ "b_command_refusal": {
+  "findings_py_executions_per_run": {
+   "eval1-with_skill-1": [
+    {
+     "time": "2026-10-12T14:21:03",
+     "subcommands": [
+      "check",
+      "recheck"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T14:21:46",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval1-with_skill-2": [
+    {
+     "time": "2026-10-12T14:20:20",
+     "subcommands": [
+      "check",
+      "recheck"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T14:20:51",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval5-with_skill-1": [
+    {
+     "time": "2026-10-12T14:21:39",
+     "subcommands": [
+      "check",
+      "recheck"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T14:21:45",
+     "subcommands": [
+      "recheck --run --write"
+     ],
+     "refusal_lines_in_output": [
+      "3 open, 0 fixed, 0 inconclusive"
+     ]
+    },
+    {
+     "time": "2026-10-12T14:22:40",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval5-with_skill-2": [
+    {
+     "time": "2026-10-12T14:25:47",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T14:25:53",
+     "subcommands": [
+      "recheck",
+      "recheck --run --write"
+     ],
+     "refusal_lines_in_output": [
+      "3 open, 0 fixed, 0 inconclusive"
+     ]
+    },
+    {
+     "time": "2026-10-12T14:26:41",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval6-with_skill-1": [
+    {
+     "time": "2026-10-12T15:54:56",
+     "subcommands": [
+      "recheck"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T15:55:09",
+     "subcommands": [
+      "recheck --run --write"
+     ],
+     "refusal_lines_in_output": [
+      "2 open, 1 fixed, 0 inconclusive"
+     ]
+    },
+    {
+     "time": "2026-10-12T15:59:00",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval6-with_skill-2": [
+    {
+     "time": "2026-10-12T15:55:06",
+     "subcommands": [
+      "recheck",
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    },
+    {
+     "time": "2026-10-12T15:55:16",
+     "subcommands": [
+      "recheck --run --write"
+     ],
+     "refusal_lines_in_output": [
+      "2 open, 1 fixed, 0 inconclusive"
+     ]
+    },
+    {
+     "time": "2026-10-12T16:00:26",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval7-with_skill-1": [
+    {
+     "time": "2026-10-12T15:55:29",
+     "subcommands": [
+      "recheck",
+      "check"
+     ],
+     "refusal_lines_in_output": [
+      "proposed and refused tables are never read."
+     ]
+    },
+    {
+     "time": "2026-10-12T16:00:21",
+     "subcommands": [
+      "check"
+     ],
+     "refusal_lines_in_output": []
+    }
+   ],
+   "eval4-with_skill-1": []
+  },
+  "notes": [
+   "refusal_lines_in_output lists output lines matching 'not run:', 'starts a shell', 'passes inline code', 'cannot parse', 'INCONCLUSIVE' or 'refused', excluding help text and source listings; the only lines left are the recheck summaries ('0 inconclusive') and one line of sweep_status.py source in eval 7 ('proposed and refused tables are never read.'), which is not a refusal.",
+   "Tool results with is_error in the 8 run transcripts: 3, each a shell command exiting 2 (eval1-with_skill-1 sweep_status listing, eval7-with_skill-1 a git command, eval4-with_skill-1 a cat); none is a permission denial or a refusal of a test-runner command.",
+   "The orchestrator's findings-check.txt reports 0 problems in all 7 runs with an index; eval 4 has no index.",
+   "The only command not run because of what it is: `.venv/bin/python tools/repro_f2.py` in eval 7, refused by the run after reading the script; `findings.py check` accepts that entry (it refuses shells and inline code only), as the eval 7 report states (R:168). The recorded commands of F1 and F3 in eval 7, which are runner invocations, were not run through recheck either; the run ran the review's test module by hand."
+  ]
+ }
+}

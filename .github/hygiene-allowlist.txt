@@ -1,0 +1,181 @@
+# Allowlist for .github/scripts/public_hygiene_check.py. Every entry is a deliberate decision:
+# the value may appear in this public repository. `<kind>:<value>`, `#` starts a comment.
+
+# Contact addresses and synthetic addresses used by tests and fixtures
+email:unittest072@gmail.com
+email:*@example.invalid
+email:*@users.noreply.github.com
+email:noreply@anthropic.com
+
+# Files where commit hashes are expected: fixture pins and the workflow's action pins
+hex-file:evals/fixtures/
+hex-file:.github/workflows/
+# Evaluation results cite the commit they measured
+hex-file:evals/results/
+# The showcase copies two evaluation runs unchanged; they and the comparison cite the fixture commit they audited
+hex-file:docs/showcase/
+
+# Hosts that may be linked
+host:github.com
+host:img.shields.io
+host:registry.npmjs.org
+host:docs.github.com
+host:docs.anthropic.com
+host:claude.ai
+
+# github.com owners that may be linked: this repository, the fixtures, a fictional example owner
+github-owner:SecPlusDev
+github-owner:OWASP
+github-owner:healthchecks
+github-owner:acme
+# The skill collection installed next to this one in the co-installation trigger evaluation (B7)
+github-owner:addyosmani
+
+# Files that hold non-English text on purpose (multilingual trigger and evaluation prompts)
+lang-file:evals/trigger-eval.json
+lang-file:evals/evals.json
+# Evaluation results quote the trigger queries verbatim, including the non-English ones
+lang-file:evals/results/trigger-2026-10.md
+# The description v2 re-measurement quotes the same queries verbatim
+lang-file:evals/results/trigger-2026-10-desc-v2.md
+
+# camelCase identifiers that appear in prose: invented for examples, or library and browser names
+identifier:userId
+identifier:isAdmin
+identifier:isLoggedIn
+identifier:toISOString
+identifier:parseInt
+identifier:innerHTML
+identifier:dangerouslySetInnerHTML
+identifier:localStorage
+identifier:sessionStorage
+identifier:setItem
+identifier:logoColor
+identifier:symbolName
+identifier:moduleName
+identifier:dateFormat
+identifier:todayLocal
+identifier:requirePaidPlan
+identifier:auditHelper
+# Cypress helper of the NodeGoat fixture, quoted in the behavior results
+identifier:visitPage
+identifier:tenantIdField
+
+# Synthetic example dates inside the shipped skill (plugin/); 2006-01-02 is Go's layout constant
+date:2026-01-15
+date:2026-01-08
+date:2006-01-02
+
+# Manifest keys and product names that happen to be camelCase
+identifier:displayName
+identifier:documentationUrl
+identifier:supportUrl
+identifier:privacyPolicyUrl
+identifier:macOS
+
+# Claude Code CLI configuration key, quoted in the trigger harness command line
+identifier:mcpServers
+
+# A plain word that matches the identifier shape
+identifier:camelCase
+
+# Held-out trigger set, written after the description and never used to tune it; one query in Romanian
+lang-file:evals/trigger-eval-holdout.json
+# The second held-out trigger set, written after the v1.3.0 description, has one Romanian query on purpose
+lang-file:evals/trigger-eval-holdout-2.json
+# The held-out measurement quotes the Romanian held-out query verbatim
+lang-file:evals/results/trigger-2026-10-holdout.md
+# The behavior measurement quotes the Romanian verdict line of the eval 4 baseline verbatim
+lang-file:evals/results/behavior-2026-10-claude-opus-5-5.md
+# The showcase copy of the run without the skill is unchanged; its endpoint matrix uses arrows
+lang-file:docs/showcase/without-skill/api-key-authz-review.md
+# NodeGoat fixture code names quoted in the ground truth and in the finding-quality artifacts
+identifier:addUser
+identifier:cookieSecret
+identifier:createServer
+identifier:getUserById
+identifier:httpOnly
+identifier:isAdminUserMiddleware
+identifier:maxAge
+identifier:saveUninitialized
+identifier:updateUser
+identifier:tutorialRouter
+identifier:sameSite
+identifier:userName
+identifier:parsedUserId
+identifier:handleSignup
+identifier:getAllMemos
+identifier:displayWelcomePage
+identifier:bodyParser
+identifier:benefitsHandler
+identifier:bankRouting
+identifier:validateLogin
+# unittest method names in the reproduction tests quoted by the healthchecks planted-defects ground truth
+identifier:setUp
+identifier:assertEqual
+identifier:assertTrue
+identifier:assertFalse
+identifier:assertNotIn
+# NodeGoat fixture code names quoted by the round v1.2.2 grading artifacts (claims, verdicts, evidence)
+identifier:afterTax
+identifier:benefitsDAO
+identifier:comparePassword
+identifier:findOne
+identifier:fromDB
+identifier:fromUser
+identifier:getByUserIdAndThreshold
+identifier:handleContributionsUpdate
+identifier:handleLoginRequest
+identifier:isLoggedInMiddleware
+identifier:preTax
+identifier:setDefaults
+identifier:updateBenefits
+# NodeGoat fixture code names quoted by the round v1.2.3 grading artifacts
+identifier:allocationsDAO
+identifier:firstName
+identifier:handleProfileUpdate
+identifier:lastName
+identifier:userDAO
+# NodeGoat fixture code names quoted by the round v1.3.1 grading artifacts (the staged fix included)
+identifier:bankAcc
+identifier:benefitStartDate
+identifier:displayAllocations
+identifier:displayBenefits
+identifier:environmentalScripts
+identifier:invalidPassword
+identifier:invalidUserNameErrorMessage
+identifier:loginError
+identifier:noSuchUser
+identifier:parsedThreshold
+identifier:userSignIn
+# npm and grunt keys quoted by the round v1.3.1 grading artifacts (NodeGoat's test runner)
+identifier:devDependencies
+identifier:devDependency
+identifier:mochaTest
+# healthchecks dashboard script and browser API names quoted by the round v1.3.1 grading artifacts
+identifier:httpRequest
+identifier:setRequestHeader
+# The install test checks that its fixture copy is at the pinned defects commit
+hex-file:evals/install-test.md
+# NodeGoat fixture code names quoted by the round v1.3.2 grading artifacts (findAndModify is the
+# MongoDB driver call in app/data/user-dao.js)
+identifier:displayProfile
+identifier:findAndModify
+identifier:getNextSequence
+# NodeGoat fixture code name quoted by the round v1.3.4 grading artifacts (the query builder in
+# app/data/allocations-dao.js)
+identifier:searchCriteria
+# Framework API names in the Java, C#, Rust and PHP stack probes (Spring Data, JPA, Jackson, Laravel)
+identifier:apiResource
+identifier:createNativeQuery
+identifier:createQuery
+identifier:enableDefaultTyping
+identifier:findById
+identifier:findOrFail
+identifier:getReferenceById
+identifier:jdbcTemplate
+identifier:orderByRaw
+identifier:permitAll
+identifier:selectRaw
+identifier:toDateString
+identifier:whereRaw

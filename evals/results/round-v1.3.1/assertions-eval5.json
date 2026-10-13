@@ -1,0 +1,159 @@
+{
+ "eval": 5,
+ "reference": "<round>/base/healthchecks-defects @ 7a07141",
+ "runs": [
+  {
+   "run": "eval5-with_skill-1",
+   "model": "claude-opus-5-5",
+   "config": "with_skill",
+   "validity": "valid: skill path given and SKILL.md read (<round>/runs/eval5-with_skill-1/outputs/self-checks.txt:1-2; run-meta-transcript.txt:6,10)",
+   "report": "<round>/runs/eval5-with_skill-1/outputs/docs-audits/2026-10-12-api-key-access.md",
+   "cited_lines_checked": 88,
+   "assertions": [
+    {"id": "A1", "grade": "PASS", "evidence": "Base has no docs/ at all (ls <round>/base/healthchecks-defects/docs: no such file; git ls-files docs: empty). After the run docs/audits/ holds categories.md, sweep-registry.md and 2026-10-12-api-key-access.md, all untracked (outputs/git-status.txt:1,2,6; outputs/new-reports.txt:1). The run finished with a final reply (outputs/response.md:1-59, response-source.txt: SubagentHandback) and the report records the bootstrap (report R:18-20)."},
+    {"id": "A2", "grade": "PASS", "evidence": "New report docs/audits/2026-10-12-api-key-access.md; run date 2026-10-12 (run-meta-transcript.txt:2 first_ts 2026-10-12T14:11:07Z); slug api-key-access names the API-key zone. Template sections present as headings: Context R:3, Delegation R:35, Verification R:48, Confirmed defects R:64, Refused or unconfirmed candidates R:167, Coverage R:185."},
+    {"id": "A3", "grade": "PASS", "grade_statement_reading": "PASS", "evidence": "Single-line locations: F1 R:68 hc/api/views.py:415 holds q = Check.objects.filter(project__owner_id=request.project.owner_id); F2 R:100 hc/api/views.py:520 holds @authorize_read (def delete_check at 521); F3 R:129 hc/api/views.py:495 holds return JsonResponse(check.to_dict(v=request.v)). Each chain has three labelled elements (1 sink, 2 source, 3 missing control). F1 chain R:71-83: views.py:415, 421-427 (tag and slug filters), 433 (to_dict per check), urls.py:49 (path checks/), views.py:462-468 (checks view), decorators.py:82-86 (for_api_key, request.project = project), views.py:493 and 695 (request.project.check_set.all()), 475 (Channel.objects.filter(project=request.project)), 483 (check.project_id != request.project.id), templates/docs/api.md:49 (All API keys are project-specific), hc/api/tests/test_list_checks.py:94 (def test_it_shows_only_users_checks). F2 chain R:103-115: views.py:520, 528 (check.rename_and_delete()), hc/api/models.py:404 (q.delete()), urls.py:50, views.py:533 (@cors(\"POST\", \"DELETE\", \"GET\")), 538-539 (DELETE dispatch to delete_check), decorators.py:82 (accept_ro=True), 87-89 (request.readonly = ...), 59 (accept_ro=False), views.py:438, 499, 546, 573 (@authorize on create_check, update_check, pause, resume), templates/docs/api.md:56-62 (read-only endpoint list), views.py:525 (project check). F3 chain R:132-141: hc/api/models.py:439 (readonly: bool = False), 473-483 (else branch with uuid, ping_url, update_url, pause_url, resume_url, channels), urls.py:51, views.py:491 (@authorize_read), models.py:472 (result[\"unique_key\"]), templates/docs/api.md:205-207, views.py:486 and 433 (to_dict(readonly=request.readonly, ...)), templates/docs/api.md:336-341. Every location and chain line exists at 7a07141 and holds the cited code on the physical line. 88 citation occurrences (67 distinct) opened; orchestrator check: outputs/check-citations.txt:90 (88 citations, 0 not OK). The partial lines listed in cited_line_problems are all outside confirmed locations and chains."},
+    {"id": "A4", "grade": "PASS", "evidence": "Three VERIFIED REAL rows (R:52-54). Reproduction file hc/api/tests/test_api_key_scope.py exists in the working copy and in outputs/files (identical, cmp). F1 R:92-96 names class ListChecksOtherProjectOfSameOwner (test file :45) and its three methods, each 'ran, fails', guard ListChecksOwnProject (:60) 'ran, passes'. F2 R:122-125 names ReadOnlyKeyCannotDelete (:70), both methods 'ran, fails (200 != 401)', guard ReadWriteKeyCanDelete (:96) 'ran, passes'. F3 R:148-152 names ReadOnlyKeyUniqueKeyLookupOmitsFields (:120), 'ran, fails (uuid present)', guard UniqueKeyLookupLegitimate (:133) 'ran, passes'. F2 and F3 sections name the class only; the file is named at R:92 and R:243 (see ambiguities)."},
+    {"id": "A5", "grade": "FAIL", "evidence": "The section exists (R:167-183) and its four items carry dispositions: L2 refused, lens exploitability (R:169-172); L3 refused, lens claim correctness (R:173-175); R1 refused, lens existing mitigation (R:176-179); R2 refused, lens exploitability (R:180-183). But R:44 says the reviewer returned 'four Low items' while the verification table holds only L1-L3 (R:55-57; R1 and R2 have claimed severity '-'). The fourth Low candidate, the metrics key compared with != (hc/api/views.py:860), appears only in the Hand-off as 'Other zone, no verdict here' (R:255-257) and in the registry proposal (sweep-registry.md:19); it has no disposition in the Refused or unconfirmed candidates section. The reviewer's handback lists it as a Low item ('metrics key comparison', transcript <transcripts>/<reviewer transcript>, SubagentHandback message, section 'Low'). Strict reading: an examined, unconfirmed candidate without a disposition in the required section fails A5 (see ambiguities: the skill itself sends out-of-zone items to the hand-off)."},
+    {"id": "A6", "grade": "PASS", "evidence": "docs/audits/sweep-registry.md:13 row zone api-key-access, Last run 2026-10-12, Yield 3/8, matching report slug 2026-10-12-api-key-access. outputs/sweep-status-check.txt:3 (api-key-access declared 2026-10-12, from reports 2026-10-12) and :6 'exit code: 0'."},
+    {"id": "A7", "grade": "PASS", "evidence": "outputs/changed-files.txt:1-7: six files under docs/audits/ plus hc/api/tests/test_api_key_scope.py; deleted-files.txt empty; staged.diff and unstaged.diff empty (0 bytes); changed-files-not-copied.txt:1 hc/api/tests/__pycache__/test_api_key_scope.cpython-313.pyc, a bytecode cache inside the test directory, ignored by .gitignore:1-2 (__pycache__/, *.pyc). A file-by-file comparison of the working copy against <round>/base/healthchecks-defects (excluding .git, .venv, outputs) finds no other new, missing or changed file. No application code modified."},
+    {"id": "A8", "grade": "PASS", "evidence": "docs/audits/findings.jsonl:1-3, one line per VERIFIED REAL finding (F1, F2, F3), each with commit 7a0714186e45d5b909174b50e21e73b7f3b9382d, location, snippet, reproduce and guard. outputs/findings-check.txt:3-5 OK for each, :6 '3 entr(y/ies), 0 problem(s), 0 not verifiable here', :7 'exit code: 0'."},
+    {"id": "A9", "grade": "PASS", "evidence": "All six commands (findings.jsonl:1-3) are '.venv/bin/python manage.py test hc.api.tests.test_api_key_scope.<Class>': Django's test runner through the project's manage.py and venv interpreter (.venv/bin/python -> python3 present in the working copy), on hc/api/tests/test_api_key_scope.py, which exists after the run (classes at :45, :60, :70, :96, :120, :133; hc/api/tests/__init__.py present). No shell (no sh -c, pipes, ;, &&) and no inline code (no -c)."}
+   ],
+   "cited_line_problems": [
+    {"finding": "L2", "status": "unconfirmed", "kind": "location", "report_line": "R:56", "cited": "hc/accounts/models.py:426", "holds": "return Project.objects.get(write_key_match | read_key_match) (the plain-text lookup); the 'except Project.DoesNotExist' clause the candidate is about is on line 427 of the same try statement", "flagged_by": "strict only"},
+    {"finding": "L2", "status": "unconfirmed", "kind": "location", "report_line": "R:169", "cited": "hc/accounts/models.py:426", "holds": "return Project.objects.get(write_key_match | read_key_match); the cited 'catches only DoesNotExist' (except Project.DoesNotExist) is on line 427 of the same try statement", "flagged_by": "strict only"},
+    {"finding": "R2", "status": "unconfirmed", "kind": "location", "report_line": "R:59", "cited": "hc/api/views.py:483", "holds": "if check.project_id != request.project.id: (the comparison); the 403 response (return HttpResponseForbidden()) is on line 484 of the same if statement; the 404 for an unknown uuid comes from get_object_or_404 on line 482", "flagged_by": "strict only"},
+    {"finding": "R2", "status": "unconfirmed", "kind": "location", "report_line": "R:181", "cited": "hc/api/views.py:483", "holds": "if check.project_id != request.project.id:; the 403 return is on line 484 (same if statement), the 404 from get_object_or_404 on line 482", "flagged_by": "strict only"},
+    {"finding": "Context (actors)", "status": "n/a (not a finding)", "kind": "other", "report_line": "R:27", "cited": "templates/front/dashboard.html:206", "holds": "httpRequest.open(\"GET\", \"/api/v3/checks/\"); (the list call); the read-only key the sentence says it is called 'with' is set on line 207 (httpRequest.setRequestHeader(\"X-Api-Key\", key);)", "flagged_by": "strict only"},
+    {"finding": "Coverage (checked, no defect)", "status": "n/a (not a finding)", "kind": "other", "report_line": "R:213", "cited": "hc/api/decorators.py:56", "holds": "if len(api_key) != 32: (the length test); the 401 the sentence states is returned on line 57 of the same if statement", "flagged_by": "strict only"},
+    {"finding": "Coverage (checked, no defect)", "status": "n/a (not a finding)", "kind": "other", "report_line": "R:213", "cited": "hc/api/decorators.py:79", "holds": "if len(api_key) != 32: (the length test); the 401 is returned on line 80 of the same if statement", "flagged_by": "strict only"}
+   ],
+   "index_entries": [
+    {
+     "id": "2026-10-12-api-key-access/F1",
+     "location": "hc/api/views.py:415",
+     "snippet": "q = Check.objects.filter(project__owner_id=request.project.owner_id)",
+     "findings_check": "passes: outputs/findings-check.txt:3 'OK 2026-10-12-api-key-access/F1 hc/api/views.py:415 @7a0714186e45'; overall :6-7 '3 entr(y/ies), 0 problem(s)', exit code 0",
+     "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ListChecksOtherProjectOfSameOwner",
+     "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ListChecksOwnProject",
+     "reproduce_is_runner": "yes: manage.py test (Django test runner) via the project venv interpreter, test label in hc.api.tests",
+     "guard_is_runner": "yes: same runner, same module",
+     "reproduce_test_exists": "yes: <round>/runs/eval5-with_skill-1/hc/api/tests/test_api_key_scope.py:45 class ListChecksOtherProjectOfSameOwner, methods :48, :51, :56; identical copy in outputs/files/hc/api/tests/test_api_key_scope.py",
+     "guard_test_exists": "yes: test_api_key_scope.py:60 class ListChecksOwnProject, methods :63, :66 (working copy and outputs/files)",
+     "guard_tests_legitimate_path": "yes: :63 and :66 assert that the read-write and read-only keys still list their own project's check 'Own' (test_api_key_scope.py:64, :67)",
+     "recorded_status": "report R:52 'ran, fails as expected (3 of 3); guard ListChecksOwnProject, ran, passes'; R:93-96 each attack method 'ran, fails', guard 'ran, passes'. recheck-log.jsonl:1 result open, reproduce_exit 1, guard_exit 0"
+    },
+    {
+     "id": "2026-10-12-api-key-access/F2",
+     "location": "hc/api/views.py:520",
+     "snippet": "@authorize_read",
+     "findings_check": "passes: outputs/findings-check.txt:4 'OK 2026-10-12-api-key-access/F2 hc/api/views.py:520'; overall :6-7 exit code 0",
+     "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadOnlyKeyCannotDelete",
+     "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadWriteKeyCanDelete",
+     "reproduce_is_runner": "yes: manage.py test",
+     "guard_is_runner": "yes: manage.py test",
+     "reproduce_test_exists": "yes: test_api_key_scope.py:70 class ReadOnlyKeyCannotDelete, methods :81, :88 (working copy and outputs/files)",
+     "guard_test_exists": "yes: test_api_key_scope.py:96 class ReadWriteKeyCanDelete, method :103 (working copy and outputs/files)",
+     "guard_tests_legitimate_path": "yes: :103 asserts the hashed read-write key deletes its own check with 200 and the check is gone (test_api_key_scope.py:109-110)",
+     "recorded_status": "report R:53 'ran, fails as expected (hashed and plain-text read-only key both get 200 and the check is gone); guard ReadWriteKeyCanDelete, ran, passes'; R:123-125. recheck-log.jsonl:2 result open, reproduce_exit 1, guard_exit 0"
+    },
+    {
+     "id": "2026-10-12-api-key-access/F3",
+     "location": "hc/api/views.py:495",
+     "snippet": "return JsonResponse(check.to_dict(v=request.v))",
+     "findings_check": "passes: outputs/findings-check.txt:5 'OK 2026-10-12-api-key-access/F3 hc/api/views.py:495'; overall :6-7 exit code 0",
+     "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadOnlyKeyUniqueKeyLookupOmitsFields",
+     "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.UniqueKeyLookupLegitimate",
+     "reproduce_is_runner": "yes: manage.py test",
+     "guard_is_runner": "yes: manage.py test",
+     "reproduce_test_exists": "yes: test_api_key_scope.py:120 class ReadOnlyKeyUniqueKeyLookupOmitsFields, method :123 (working copy and outputs/files)",
+     "guard_test_exists": "yes: test_api_key_scope.py:133 class UniqueKeyLookupLegitimate, methods :136, :144 (working copy and outputs/files)",
+     "guard_tests_legitimate_path": "yes: :136 asserts the read-only key still finds the check by unique_key (200, name Backups, :141-142); :144 asserts the read-write key still receives uuid (:149-150)",
+     "recorded_status": "report R:54 'ran, fails as expected (uuid, ping_url, *_url, channels present, unique_key absent); guard UniqueKeyLookupLegitimate, ran, passes'; R:149-152. recheck-log.jsonl:3 result open, reproduce_exit 1, guard_exit 0"
+    }
+   ],
+   "recheck_log_written_by_run": "yes: the run executed 'findings.py recheck --run --write' on its own new index at 2026-10-12T14:21:45Z (outputs/self-checks.txt:11; outputs/run-evidence.txt:11). docs/audits/recheck-log.jsonl has 3 lines, one per entry F1-F3, each date 2026-10-12, commit 7a0714186e45d5b909174b50e21e73b7f3b9382d, dirty true, result open, reproduce_exit 1, guard_exit 0, where 'still at <location>' (recheck-log.jsonl:1-3)."
+  },
+  {
+   "run": "eval5-with_skill-2",
+   "model": "claude-opus-5-5",
+   "config": "with_skill",
+   "validity": "valid: skill path given and SKILL.md read (<round>/runs/eval5-with_skill-2/outputs/self-checks.txt:1-2; run-meta-transcript.txt:6,10)",
+   "report": "<round>/runs/eval5-with_skill-2/outputs/docs-audits/2026-10-12-api-key-authz.md",
+   "cited_lines_checked": 125,
+   "assertions": [
+    {"id": "A1", "grade": "PASS", "evidence": "Base has no docs/ (ls <round>/base/healthchecks-defects/docs: no such file; git ls-files docs: empty). After the run docs/audits/ holds categories.md, sweep-registry.md and 2026-10-12-api-key-authz.md, all untracked (outputs/git-status.txt:1,2,6; outputs/new-reports.txt:1). The run finished with a final reply (outputs/response.md:1-34) and the report records the bootstrap (report R:25-28)."},
+    {"id": "A2", "grade": "PASS", "evidence": "New report docs/audits/2026-10-12-api-key-authz.md; run date 2026-10-12 (run-meta-transcript.txt:2 first_ts 2026-10-12T14:11:07Z); slug api-key-authz names the API-key authorization zone. Template sections present as headings: Context R:3, Delegation R:36, Verification R:79, Confirmed defects R:96, Refused or unconfirmed candidates R:203, Coverage R:252."},
+    {"id": "A3", "grade": "PASS", "grade_statement_reading": "PASS", "evidence": "Single-line locations: F1 R:100 hc/api/views.py:520 holds @authorize_read; F2 R:132 hc/api/views.py:495 holds return JsonResponse(check.to_dict(v=request.v)); F3 R:163 hc/api/views.py:415 holds the owner filter. Each chain has three elements (1 vulnerable line, 2 route and data flow, 3 missing control). F1 chain R:103-115: views.py:520, decorators.py:82 (accept_ro=True), views.py:528 (rename_and_delete), 529 (return of the full to_dict), urls.py:50, views.py:533, 538-539, hc/accounts/models.py:415-419 (hcr_ branch), 422-428 (plain-text Q lookup), decorators.py:87-89, views.py:438, 499, 546, 573 (@authorize), templates/docs/api.md:56-62, hc/api/tests/test_update_check.py:298 (def test_it_rejects_readonly_key). F2 chain R:135-144: views.py:495, models.py:439, 473-483, urls.py:51, views.py:489-491 (@cors, @csrf_exempt, @authorize_read), models.py:471-472 (if readonly: unique_key), templates/docs/api.md:203-207, views.py:486, 433, hc/api/tests/test_get_check.py:111-121 (read-only test via UUID path, line 115). F3 chain R:167-178: views.py:415, 416-419 (if not request.readonly: channel prefetch), 433 (to_dict(readonly=request.readonly)), urls.py:49, views.py:462-468, decorators.py:82-86, views.py:475, 483, 493, 695, templates/docs/api.md:49, hc/api/tests/test_list_checks.py:94-100 (foreign check in bobs_project at 95). Every location and chain line exists at 7a07141 and holds the cited code on the physical line(s). 125 citation occurrences (93 distinct) opened; orchestrator check: outputs/check-citations.txt:127 (125 citations, 0 not OK). The one flagged line of a confirmed finding (R:182) is in the F3 scenario, not in its location or chain."},
+    {"id": "A4", "grade": "PASS", "evidence": "Three VERIFIED REAL rows (R:83-85). Each confirmed finding names hc/api/tests/test_api_key_scope.py and its class: F1 R:123-128 ReadOnlyKeyDelete (test file :38), both methods 'Fails (200). Ran.', legitimate class ReadWriteKeyDelete (:62) 'Passes. Ran.'; F2 R:152-159 ReadOnlyKeyUniqueKeyLookup (:92), 'fails (uuid present). Ran.' and 'Fails (found 5 times). Ran.', UniqueKeyLookupLegitimate (:117) 'Passes. Ran.'; F3 R:187-193 ListChecksProjectScope (:150), 'both fail ... Ran.', ListChecksOwnProject (:180) 'Passes. Ran.'. File exists in the working copy and in outputs/files (identical, cmp)."},
+    {"id": "A5", "grade": "FAIL", "evidence": "The section exists (R:203-237). L1 refused, lens exploitability (R:205-209); L3 refused, lens exploitability (R:210-213); D5 needs deeper review, missing the deployment configuration (R:234-237). But R:48 says the reviewer returned 4 findings (3 High, 1 Medium) and 4 Low items, and R:89-91 states that R4 (race in update_check, claimed Medium), L2 (check-limit race) and L4 (API version detection under a sub-path SITE_ROOT) 'received no verdict here'; they appear only in the Hand-off (R:305-319) and the registry (sweep-registry.md:25), not in the Refused or unconfirmed candidates section, so these examined, unconfirmed candidates carry none of the three dispositions there. In addition, the reviewer's 'examined and not confirmed' items listed in the section (R:214-233: prefix confusion, plain-text fallback, readonly computation, key in JSON body, foreign channels, unique_key reversal, 403 versus 404) are given reasons but no named lens (the registry, sweep-registry.md:38, names lens claim correctness for three of them, the report does not). Strict reading: FAIL (see ambiguities)."},
+    {"id": "A6", "grade": "PASS", "evidence": "docs/audits/sweep-registry.md:18 row zone api-key-authz, Last run 2026-10-12, Yield 3/5, matching report slug 2026-10-12-api-key-authz. outputs/sweep-status-check.txt:3 (api-key-authz declared 2026-10-12, from reports 2026-10-12) and :6 'exit code: 0'."},
+    {"id": "A7", "grade": "PASS", "evidence": "outputs/changed-files.txt:1-7: six files under docs/audits/ plus hc/api/tests/test_api_key_scope.py; changed-files-not-copied.txt, deleted-files.txt, staged.diff and unstaged.diff all empty. A file-by-file comparison of the working copy against <round>/base/healthchecks-defects (excluding .git, .venv, outputs) finds no other new, missing or changed file. No application code modified."},
+    {"id": "A8", "grade": "PASS", "evidence": "docs/audits/findings.jsonl:1-3, one line per VERIFIED REAL finding (F1, F2, F3), each with commit 7a0714186e45d5b909174b50e21e73b7f3b9382d, location, snippet, reproduce and guard. outputs/findings-check.txt:3-5 OK for each, :6 '3 entr(y/ies), 0 problem(s), 0 not verifiable here', :7 'exit code: 0'."},
+    {"id": "A9", "grade": "PASS", "evidence": "All six commands (findings.jsonl:1-3) are '.venv/bin/python manage.py test hc.api.tests.test_api_key_scope.<Class>': Django's test runner through the project's manage.py and venv interpreter, on hc/api/tests/test_api_key_scope.py, which exists after the run (classes at :38, :62, :92, :117, :150, :180). No shell and no inline code."}
+   ],
+   "cited_line_problems": [
+    {"finding": "F3", "status": "confirmed", "kind": "other", "report_line": "R:182", "cited": "templates/front/dashboard.html:206", "holds": "httpRequest.open(\"GET\", \"/api/v3/checks/\"); the read-only dashboard key the citation is attached to is set on line 207 (httpRequest.setRequestHeader(\"X-Api-Key\", key);). Scenario line, not location or chain", "flagged_by": "strict only"},
+    {"finding": "Access matrix (metrics row)", "status": "n/a (not a finding)", "kind": "other", "report_line": "R:76", "cited": "hc/api/views.py:860", "holds": "if key != settings.METRICS_KEY: (the gate); the X-Metrics-Key header the citation names is read on line 859 (key = request.headers.get(\"X-Metrics-Key\")), a separate statement. Partial", "flagged_by": "both"},
+    {"finding": "Reviewer examined item: key in the JSON body", "status": "unconfirmed", "kind": "location", "report_line": "R:225", "cited": "hc/api/decorators.py:49-54", "holds": "header first, then api_key from request.json (49-52); the 'only for POST' restriction the sentence states is at lines 39-47, outside the cited range. Partial", "flagged_by": "both"},
+    {"finding": "Reviewer examined item: 403 versus 404 on another project's UUID", "status": "unconfirmed", "kind": "location", "report_line": "R:232", "cited": "hc/api/views.py:483", "holds": "if check.project_id != request.project.id:; the 403 return is on line 484 (same if statement), the 404 from get_object_or_404 on line 482", "flagged_by": "strict only"}
+   ],
+   "index_entries": [
+    {
+     "id": "2026-10-12-api-key-authz/F1",
+     "location": "hc/api/views.py:520",
+     "snippet": "@authorize_read",
+     "findings_check": "passes: outputs/findings-check.txt:3 'OK 2026-10-12-api-key-authz/F1 hc/api/views.py:520 @7a0714186e45'; overall :6-7 '3 entr(y/ies), 0 problem(s)', exit code 0",
+     "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadOnlyKeyDelete",
+     "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadWriteKeyDelete",
+     "reproduce_is_runner": "yes: manage.py test (Django test runner) via the project venv interpreter",
+     "guard_is_runner": "yes: manage.py test",
+     "reproduce_test_exists": "yes: <round>/runs/eval5-with_skill-2/hc/api/tests/test_api_key_scope.py:38 class ReadOnlyKeyDelete, methods :48, :53; identical copy in outputs/files",
+     "guard_test_exists": "yes: test_api_key_scope.py:62 class ReadWriteKeyDelete, methods :70, :75, :83 (working copy and outputs/files)",
+     "guard_tests_legitimate_path": "yes: :70 and :75 assert plain-text and hashed read-write keys delete their own check (200, check gone, :72-73, :80-81); :83 additionally asserts another project's read-write key gets 403 (a refusal that already holds on the current code)",
+     "recorded_status": "report R:83 'ran, fails as expected (200, check deleted, for plain-text and hashed hcr_ keys); ReadWriteKeyDelete, ran, passes'; R:124-128. recheck-log.jsonl:1 result open, reproduce_exit 1, guard_exit 0"
+    },
+    {
+     "id": "2026-10-12-api-key-authz/F2",
+     "location": "hc/api/views.py:495",
+     "snippet": "return JsonResponse(check.to_dict(v=request.v))",
+     "findings_check": "passes: outputs/findings-check.txt:4 'OK 2026-10-12-api-key-authz/F2 hc/api/views.py:495'; overall :6-7 exit code 0",
+     "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ReadOnlyKeyUniqueKeyLookup",
+     "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.UniqueKeyLookupLegitimate",
+     "reproduce_is_runner": "yes: manage.py test",
+     "guard_is_runner": "yes: manage.py test",
+     "reproduce_test_exists": "yes: test_api_key_scope.py:92 class ReadOnlyKeyUniqueKeyLookup, methods :103, :112 (working copy and outputs/files)",
+     "guard_test_exists": "yes: test_api_key_scope.py:117 class UniqueKeyLookupLegitimate, methods :127, :133, :141 (working copy and outputs/files)",
+     "guard_tests_legitimate_path": "yes: :127 asserts the read-write key still gets uuid by unique_key (:130-131); :133 asserts the read-only key by UUID gets the reduced document (:136-139); :141 asserts another project's read-only key gets 404 (a refusal)",
+     "recorded_status": "report R:84 'ran, fails as expected (uuid, ping_url, channels present); UniqueKeyLookupLegitimate, ran, passes'; R:153-159. recheck-log.jsonl:2 result open, reproduce_exit 1, guard_exit 0"
+    },
+    {
+     "id": "2026-10-12-api-key-authz/F3",
+     "location": "hc/api/views.py:415",
+     "snippet": "q = Check.objects.filter(project__owner_id=request.project.owner_id)",
+     "findings_check": "passes: outputs/findings-check.txt:5 'OK 2026-10-12-api-key-authz/F3 hc/api/views.py:415'; overall :6-7 exit code 0",
+     "reproduce": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ListChecksProjectScope",
+     "guard": ".venv/bin/python manage.py test hc.api.tests.test_api_key_scope.ListChecksOwnProject",
+     "reproduce_is_runner": "yes: manage.py test",
+     "guard_is_runner": "yes: manage.py test",
+     "reproduce_test_exists": "yes: test_api_key_scope.py:150 class ListChecksProjectScope, methods :166, :173 (working copy and outputs/files)",
+     "guard_test_exists": "yes: test_api_key_scope.py:180 class ListChecksOwnProject, methods :191, :197 (working copy and outputs/files)",
+     "guard_tests_legitimate_path": "yes: :191 asserts the read-write key lists both own checks with their uuids (:194-195); :197 asserts the read-only key lists both own checks with the reduced fields (:201-204)",
+     "recorded_status": "report R:85 'ran, fails as expected (the other project's check is listed, with its UUID for the read-write key); ListChecksOwnProject, ran, passes'; R:188-193. recheck-log.jsonl:3 result open, reproduce_exit 1, guard_exit 0"
+    }
+   ],
+   "recheck_log_written_by_run": "yes: the run executed 'findings.py recheck' then 'TMPDIR=<run>.tmp PYTHONDONTWRITEBYTECODE=1 python3 -B findings.py recheck --run --write' on its own new index at 2026-10-12T14:25:53Z (outputs/self-checks.txt:9; outputs/run-evidence.txt:11). docs/audits/recheck-log.jsonl has 3 lines, one per entry F1-F3, each date 2026-10-12, commit 7a0714186e45d5b909174b50e21e73b7f3b9382d, dirty true, result open, reproduce_exit 1, guard_exit 0, where 'still at <location>' (recheck-log.jsonl:1-3)."
+  }
+ ],
+ "ambiguities": [
+  "A5, both runs: the skill tells the run to give a defect of another class or zone 'no verdict here' and to record it in the hand-off as a proposed sweep (repo/plugin/skills/verified-security-sweep/SKILL.md:190-192; references/report-and-registry.md:64-66). Run 1 did this for the reviewer's Low item on the metrics key (R:255-257), run 2 for R4, L2 and L4 (R:89-91, R:305-319). The assertion requires a disposition in the Refused or unconfirmed candidates section for every candidate examined and not confirmed; the stricter reading counts these reviewer-raised, unconfirmed items as candidates, so both runs FAIL A5. Under the reading that excludes out-of-zone items deferred to another sweep, run 1 A5 would PASS, and run 2 A5 would PASS only if its R:214-233 items are also treated as checked paths rather than candidates.",
+  "A5, run 2: the reviewer's 'examined and not confirmed' items were placed inside the Refused or unconfirmed candidates section (R:214-233) with reasons but no named lens. The skill says a behavior checked with no candidate belongs in Coverage, not in the refused list (references/report-and-registry.md:44-46). Since the run itself listed them as refused or unconfirmed candidates, the strict reading requires the lens; this is a second ground for the run 2 FAIL, not the deciding one.",
+  "A5, run 1: the identity of the fourth Low item (R:44 'four Low items', only L1-L3 in the table) is inferred from the report and confirmed in the reviewer's handback in the session transcript (<transcripts>/<reviewer transcript>). Run 1 likewise put most of the reviewer's checked paths in Coverage 'Checked, no defect' (R:204-216) and left a few (notification_status, unique_key reversal) unmentioned; these were not counted as candidates.",
+  "A4, run 1: the F2 and F3 sections name the reproduction class only (R:122, R:148); the file is named in the F1 section (R:92), in the hand-off (R:243) and by module path in findings.jsonl. Graded PASS because the assertion asks the finding to name a reproduction test, and the named classes exist in hc/api/tests/test_api_key_scope.py.",
+  "A7, run 1: the only file beyond docs/audits/ and the new test file is hc/api/tests/__pycache__/test_api_key_scope.cpython-313.pyc, a gitignored bytecode cache inside the test directory. It is not application code and is not outside the allowed paths, so A7 is PASS. Under a reading that allows only test source files in test directories it would FAIL.",
+  "Cited lines, rule applied: a line holds a citation when it contains the code the citing phrase attributes to it. A decorator line holds 'view X uses decorator Y'; a def line holds a citation attached to that function or test name; a call line holds the output that call produces (for example, views.py:433 and 529 hold the to_dict calls that yield uuid and ping_url, defined in models.py:473-483). Lines were flagged 'strict only' when part of what the citation states (a status-code return, an except clause, the header that sets the key) is on an adjacent line of the same statement, and 'both' when it is in a separate statement. All flagged lines are outside the location and evidence chain of confirmed findings, so they do not affect A3.",
+  "A3, run 2: F3 chain element 1 (R:167-169) says read-write documents carry uuid, ping_url and channels and cites views.py:416-419 and 433. Those lines hold the read-write-only channel prefetch and the to_dict(readonly=request.readonly, ...) call; the field names are emitted in hc/api/models.py:473-483, which this chain does not cite. Treated as holding because the view code that selects the full document is on the cited lines. A reading that requires the field names on the cited line would fail this chain and turn run 2 A3 (strict) to FAIL; run 2 F1 chain R:105-106 (views.py:529, 'uuid and ping_url included') is the same case.",
+  "cited_lines_checked counts citation occurrences in the report (run 1: 88, 67 distinct; run 2: 125, 93 distinct), matching the orchestrator's check-citations.txt. For each distinct reference, the line or range was opened in <round>/base/healthchecks-defects at 7a07141."
+ ]
+}

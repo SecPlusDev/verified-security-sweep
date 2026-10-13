@@ -1,0 +1,19 @@
+# Generic shapes that must never appear in this repository (docs/BUILD.md, section 1), checked
+# by .github/scripts/leakage_check.py against every file except this one. The terms tied to the
+# project the skill was distilled from are not in the repository: they come from the file named
+# by LEAKAGE_TERMS_FILE (a repository secret in CI, an ignored local file for the owner), in the
+# same format. A hashed list of short names would be recovered by guessing, so it is not public.
+#
+# regex:<ERE>   a generic shape, matched case-insensitively.
+# sha256:<hex>  a term of at most three tokens, stored as the SHA-256 of its normalized form
+#               (lower-case, [a-z0-9] runs joined); used in the private file only. Make one with:
+#               python3 .github/scripts/leakage_check.py --hash "term"
+
+# Local paths and network addresses: shapes only, never real values
+regex:/home/[a-z]+/
+regex:/Users/[a-z]+/
+# The same paths as Claude Code writes them in its projects folder (-home-<user>-...)
+regex:-home-[a-z]+-
+regex:-Users-[a-z]+-
+regex:[A-Z]:\\Users\\
+regex:\b([0-9]{1,3}\.){3}[0-9]{1,3}\b

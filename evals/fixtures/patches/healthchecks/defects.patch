@@ -1,0 +1,31 @@
+diff --git a/hc/api/views.py b/hc/api/views.py
+index 9c344e0..5a7e0b3 100644
+--- a/hc/api/views.py
++++ b/hc/api/views.py
+@@ -412,7 +412,7 @@ def _update(check: Check, spec: Spec, v: int) -> None:
+ 
+ @authorize_read
+ def get_checks(request: ApiRequest) -> JsonResponse:
+-    q = Check.objects.filter(project=request.project)
++    q = Check.objects.filter(project__owner_id=request.project.owner_id)
+     if not request.readonly:
+         # Use QuerySet.only() and Prefetch() to prefetch channel codes only:
+         channel_q = Channel.objects.only("code")
+@@ -492,7 +492,7 @@ def get_check(request: ApiRequest, code: UUID) -> HttpResponse:
+ def get_check_by_unique_key(request: ApiRequest, unique_key: str) -> HttpResponse:
+     for check in request.project.check_set.all():
+         if check.unique_key == unique_key:
+-            return JsonResponse(check.to_dict(readonly=request.readonly, v=request.v))
++            return JsonResponse(check.to_dict(v=request.v))
+     return HttpResponseNotFound()
+ 
+ 
+@@ -517,7 +517,7 @@ def update_check(request: ApiRequest, code: UUID) -> HttpResponse:
+     return JsonResponse(check.to_dict(v=request.v))
+ 
+ 
+-@authorize
++@authorize_read
+ def delete_check(request: ApiRequest, code: UUID) -> HttpResponse:
+     # Don't acquire lock right away, first see if the check exists
+     # and matches the API key

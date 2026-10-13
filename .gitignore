@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+*.skill
+
+# Evaluation fixtures: cloned by evals/fixtures/setup.sh, never committed
+evals/fixtures/*
+!evals/fixtures/setup.sh
+!evals/fixtures/README.md
+!evals/fixtures/patches/
+
+.github/leakage-terms.local

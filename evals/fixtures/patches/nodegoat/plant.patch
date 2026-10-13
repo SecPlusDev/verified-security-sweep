@@ -1,0 +1,169 @@
+diff --git a/app/routes/index.js b/app/routes/index.js
+index a9e5542..62b8953 100644
+--- a/app/routes/index.js
++++ b/app/routes/index.js
+@@ -51,13 +51,9 @@ const index = (app, db) => {
+     app.get("/contributions", isLoggedIn, contributionsHandler.displayContributions);
+     app.post("/contributions", isLoggedIn, contributionsHandler.handleContributionsUpdate);
+ 
+-    // Benefits Page
+-    app.get("/benefits", isLoggedIn, benefitsHandler.displayBenefits);
+-    app.post("/benefits", isLoggedIn, benefitsHandler.updateBenefits);
+-    /* Fix for A7 - checks user role to implement  Function Level Access Control
+-     app.get("/benefits", isLoggedIn, isAdmin, benefitsHandler.displayBenefits);
+-     app.post("/benefits", isLoggedIn, isAdmin, benefitsHandler.updateBenefits);
+-     */
++    // Benefits Page: admin only (docs/audits/2026-10-03-access-control.md, AC-1)
++    app.get("/benefits", isLoggedIn, isAdmin, benefitsHandler.displayBenefits);
++    app.post("/benefits", isLoggedIn, isAdmin, benefitsHandler.updateBenefits);
+ 
+     // Allocations Page
+     app.get("/allocations/:userId", isLoggedIn, allocationsHandler.displayAllocations);
+diff --git a/docs/audits/2026-10-03-access-control.md b/docs/audits/2026-10-03-access-control.md
+new file mode 100644
+index 0000000..0e35b75
+--- /dev/null
++++ b/docs/audits/2026-10-03-access-control.md
+@@ -0,0 +1,43 @@
++# Defensive audit sweep: access-control, 2026-10-03
++
++## Context
++Scope: route wiring and the middleware that gates it (`app/routes/index.js`,
++`app/routes/session.js`) and the handler behind `/benefits`. Trigger: first sweep on this zone;
++the registry had no row for it. No changes in the zone since the pinned upstream commit.
++
++## Delegation
++One reviewer in a fresh session, with the brief from the skill. Pre-read: `README.md`,
++`docs/audits/categories.md`. No previous reports existed; the registry was bootstrapped in this
++run.
++
++## Verification
++| Finding | Zone | Verdict | Claimed | Verified | Reservations | Proof |
++|---|---|---|---|---|---|---|
++| AC-1 `/benefits` reachable by any signed-in user; the handler edits other users' benefit start dates | access-control | VERIFIED REAL | High | High | none | `test/e2e/integration/benefits_access_guard_spec.js` |
++| AC-2 `isAdminUserMiddleware` redirects to `/login` instead of answering 403, revealing that the route exists | access-control | OVER-RATED | Low | Info | the route list is public through the navigation menu; nothing is revealed | not applicable |
++
++## Confirmed defects
++
++### AC-1: function-level access control missing on `/benefits` (FIXED in this change)
++- Location: `app/routes/index.js:55` and `app/routes/index.js:56`, before the fix.
++- Class: missing function-level authorization.
++- Evidence chain: (1) both routes were mounted with `isLoggedIn` only; (2) `req.body.userId`
++  flows straight into `BenefitsDAO.updateBenefits` (`app/data/benefits-dao.js:23`) with no
++  ownership check; (3) `isAdminUserMiddleware` exists in `app/routes/session.js:25` and was not
++  wired on these routes.
++- Scenario: any authenticated employee posts `userId=<colleague>&benefitStartDate=2099-01-10`
++  to `/benefits` and changes a colleague's benefits start date.
++- Fix: wire the existing `isAdmin` middleware on both routes, the pattern the codebase already
++  defines for admin-only paths. Applied in this change.
++- Reproduction and guard: `test/e2e/integration/benefits_access_guard_spec.js`, both halves.
++  `test/e2e/integration/benefits_spec.js` updated: the non-admin case now expects the redirect.
++
++## Refused or unconfirmed candidates
++- AC-2, OVER-RATED (lens: claim correctness). Informational at most; kept out of the headline
++  count and out of the registry yield.
++
++## Coverage
++Read: `app/routes/index.js`, `app/routes/session.js`, `app/routes/benefits.js`,
++`app/data/benefits-dao.js`. Skipped: every other handler under `app/routes/` and every other
++DAO under `app/data/` (other zones). Lenses applied: exploitability, claim correctness, existing
++mitigation.
+diff --git a/docs/audits/categories.md b/docs/audits/categories.md
+new file mode 100644
+index 0000000..cf8f60d
+--- /dev/null
++++ b/docs/audits/categories.md
+@@ -0,0 +1,12 @@
++# Audit categories
++
++Categories, not patterns. A new pattern lands under an existing category. "Covered by" names the
++control in this project; the last column says whether a test asserts it.
++
++| Category | Covered by | Enforced mechanically? |
++|---|---|---|
++| Authentication and sessions | `isLoggedInMiddleware` in `app/routes/session.js`; server-side session store | partly: the e2e login specs |
++| Authorization per route | `isAdminUserMiddleware` in `app/routes/session.js`, wired per route in `app/routes/index.js` | yes for `/benefits` (`benefits_access_guard_spec.js`); no for the rest |
++| Input validation | per-handler checks, no shared validator | no |
++| Database query construction | MongoDB driver calls in `app/data/*-dao.js` | no |
++| Outbound requests | `needle` in `app/routes/research.js` | no |
+diff --git a/docs/audits/sweep-registry.md b/docs/audits/sweep-registry.md
+new file mode 100644
+index 0000000..99a326a
+--- /dev/null
++++ b/docs/audits/sweep-registry.md
+@@ -0,0 +1,23 @@
++# Sweep registry: what exists, what ran, what it is worth
++
++Proposals for sweeps are written here, not in conversation. The `Last run` column is derived
++from report filenames by `scripts/sweep_status.py`; the other columns are written by hand.
++
++## Candidates
++
++| Zone | Argument | Last run | Yield |
++|---|---|---|---|
++| `access-control` | Route wiring and the middleware that gates it. One guard test now covers `/benefits`; the other routes rely on the middleware being wired by hand. | 2026-10-03 | 1/2 |
++
++## Proposed, not yet run
++
++| Zone | Argument | Premise to re-verify before starting |
++|---|---|---|
++| `input-handling` | Form fields and query parameters that reach a database query or an outbound request. No validator layer exists. | that the handlers under `app/routes/` were not rewritten since 2026-10-03 |
++
++## Candidates verified and refused
++
++Written here so they are not rediscovered. A refused candidate without a written reason comes back.
++
++- `isAdminUserMiddleware` redirecting to `/login` instead of answering 403: informational, see
++  the 2026-10-03 access-control report, AC-2.
+diff --git a/test/e2e/integration/benefits_access_guard_spec.js b/test/e2e/integration/benefits_access_guard_spec.js
+new file mode 100644
+index 0000000..d6b6235
+--- /dev/null
++++ b/test/e2e/integration/benefits_access_guard_spec.js
+@@ -0,0 +1,29 @@
++/// <reference types="Cypress" />
++
++// Guard for the invariant "the benefits page is admin-only"
++// (docs/audits/2026-10-03-access-control.md, finding AC-1). Both halves matter: a guard that
++// checks only the blocked path lets an over-restrictive fix through unnoticed.
++describe("guard: /benefits is admin-only", () => {
++  "use strict";
++
++  before(() => {
++    cy.dbReset();
++  });
++
++  afterEach(() => {
++    cy.visitPage("/logout");
++  });
++
++  it("blocks the attack path: a signed-in non-admin user is sent to login", () => {
++    cy.userSignIn();
++    cy.visitPage("/benefits");
++    cy.url().should("include", "login");
++  });
++
++  it("lets the legitimate path through: an admin sees the benefits table", () => {
++    cy.adminSignIn();
++    cy.visitPage("/benefits");
++    cy.url().should("include", "benefits");
++    cy.get("table tr");
++  });
++});
+diff --git a/test/e2e/integration/benefits_spec.js b/test/e2e/integration/benefits_spec.js
+index 8733200..5a6080c 100644
+--- a/test/e2e/integration/benefits_spec.js
++++ b/test/e2e/integration/benefits_spec.js
+@@ -22,10 +22,10 @@ describe("/login behaviour", () => {
+     cy.url().should("include", "benefits");
+   });
+ 
+-  it("Should be accesible if the user is not an admin", () => {
++  it("Should redirect a non-admin user to login", () => {
+     cy.userSignIn();
+     cy.visitPage("/benefits");
+-    cy.url().should("include", "benefits");
++    cy.url().should("include", "login");
+   });
+ 
+   it("Should be a table with rows", () => {

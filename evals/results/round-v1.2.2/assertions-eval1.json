@@ -1,0 +1,433 @@
+{
+  "eval": 1,
+  "runs": [
+    {
+      "run": "opus/eval1-with_skill-1-r2",
+      "model": "claude-opus-5-5",
+      "config": "with_skill",
+      "report": "<opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 49,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:1 file docs/audits/2026-10-09-access-control.md, slug access-control; sections Context <opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:3, Delegation :19, Verification :27, Confirmed defects :45, Refused or unconfirmed candidates :81, Coverage :114"
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:48 location app/routes/allocations.js:18 (fixture line 18 `} = req.params;`); chain <opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:51-59: vulnerable line allocations.js:16-18/:23, data flow allocations-dao.js:58, :81-83, :94-99, missing mitigation index.js:59 (isLoggedIn only) and commented fix allocations.js:12-15; every cited line opened and holds the cited code"
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:35 and :72-77 AC-3 VERIFIED REAL names test/e2e/integration/allocations_access_guard_spec.js, 'written, not run' with reason (Cypress and dev deps not installed); file present in outputs/changed-files.txt:1 and outputs/files/test/e2e/integration/allocations_access_guard_spec.js"
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:81-112: AC-4 decision pending with what is missing (owner: board vs private notes) :82-88; AC-5..AC-9 refused with named lens :89-107; AC-1, AC-2 closed earlier citing the 2026-10-03 report :108-112"
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row `access-control`, Last run 2026-10-09; outputs/sweep-status-check.txt exit code 0; re-run of sweep_status.py --check exit 0"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "only confirmed finding is AC-3 /allocations IDOR <opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:47; AC-1 and AC-2 listed as closed earlier <opus-round>/runs/eval1-with_skill-1-r2/outputs/docs-audits/2026-10-09-access-control.md:108-112, not re-reported"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt: M docs/audits/categories.md, M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md, ?? test/e2e/integration/allocations_access_guard_spec.js; nothing else"
+        }
+      ],
+      "notes": "Chain uses ranges for supporting lines (16-18, 81-83, 94-99, 12-15); the 'not a range' rule was applied to the location only, which is a single line. Hand-off cites (contributions.js:32, research.js:15, index.js:68, server.js:107, session.js:116, config/env/all.js:8, allocations_spec.js:19-48) also checked and correct; included in the count. Verification and reading done by the same reader (no delegation), acceptable to A1 since the Delegation section exists."
+    },
+    {
+      "run": "opus/eval1-with_skill-2-r2",
+      "model": "claude-opus-5-5",
+      "config": "with_skill",
+      "report": "<opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 72,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md:1; sections Context :3, Delegation :18, Verification :53, Confirmed defects :63, Refused or unconfirmed candidates :128, Coverage :161 (extra Route inventory :31)"
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "AC-3 <opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md:66 location allocations.js:18 (`} = req.params;`), chain :69-78 (allocations.js:16-18, :12-15, :23; allocations-dao.js:58, :81-83, :97-99; index.js:59; session.js:36-42; user-dao.js:109). AC-4 <opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md:98 location allocations-dao.js:78 ($where line), chain :103-112 (allocations.js:19-21, :23; allocations-dao.js:86, :63-76; allocations.html:21). All lines opened in the fixture and hold the cited code"
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md:57-58 and :86-95, :121-126 AC-3 and AC-4 VERIFIED REAL name test/e2e/integration/allocations_access_guard_spec.js, 'ran, fails as expected' (attack), legitimate cases 'ran, passes'; file in outputs/changed-files.txt:1 and outputs/files/test/e2e/integration/"
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md:129-159: each candidate refused with named lens (claim correctness :129, :136, :144; exploitability :139, :147, :150, :156), L-1 decision pending with what decides it (owner: private vs shared) :152-155, AC-2 closed earlier by the 2026-10-03 report :158"
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row `access-control` Last run 2026-10-09; outputs/sweep-status-check.txt exit code 0; re-run exit 0"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "confirmed AC-3 (/allocations IDOR) <opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md:65 and AC-4 ($where threshold) <opus-round>/runs/eval1-with_skill-2-r2/outputs/docs-audits/2026-10-09-access-control.md:97; AC-1 bypass refused :129, AC-2 closed earlier :158"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt: only docs/audits/{categories.md,sweep-registry.md,2026-10-09-access-control.md} and test/e2e/integration/allocations_access_guard_spec.js"
+        }
+      ],
+      "notes": "AC-4 is an injection-class defect counted in access-control because of its cross-user effect; it is not AC-1 or AC-2, so A6 holds. Count includes route-inventory and hand-off cites (all correct, e.g. layout.html:56, allocations.html:15, server.js:121, :135-142, session.js:85, :94, :230, :235)."
+    },
+    {
+      "run": "opus/eval1-with_skill-3-r2",
+      "model": "claude-opus-5-5",
+      "config": "with_skill",
+      "report": "<opus-round>/runs/eval1-with_skill-3-r2/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 32,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-3-r2/outputs/docs-audits/2026-10-09-access-control.md:1; Context :3, Delegation :21, Verification :48, Confirmed defects :57, Refused or unconfirmed candidates :87, Coverage :104"
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-3-r2/outputs/docs-audits/2026-10-09-access-control.md:60 location app/routes/allocations.js:18; chain :62-68: allocations.js:18 (vulnerable line), :23 and allocations-dao.js:82 ({userId: parsedUserId}), :97 (owner name join) (data flow), index.js:59 isLoggedIn only (missing mitigation); all hold the cited code"
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-3-r2/outputs/docs-audits/2026-10-09-access-control.md:51 and :80-85 AC-3 VERIFIED REAL names test/e2e/integration/allocations_access_guard_spec.js, 'written, not run' (Cypress 3 not installed); file in outputs/changed-files.txt:1"
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "<opus-round>/runs/eval1-with_skill-3-r2/outputs/docs-audits/2026-10-09-access-control.md:88-102: AC-4 needs deeper review with the missing product rule :88-93; AC-5 closed earlier citing 2026-10-03 report :94-96; AC-6 refused lens exploitability :97; AC-7 refused lens claim correctness :99; AC-2 closed earlier :102"
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row `access-control` Last run 2026-10-09; outputs/sweep-status-check.txt exit code 0; re-run exit 0"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "only confirmed AC-3 <opus-round>/runs/eval1-with_skill-3-r2/outputs/docs-audits/2026-10-09-access-control.md:59; AC-1 re-check (AC-5) closed earlier :94, AC-2 :102"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt: M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md, ?? test/e2e/integration/allocations_access_guard_spec.js"
+        }
+      ],
+      "notes": "Chain uses short paths (allocations.js:18) without app/routes/ prefix; resolved unambiguously. allocations-dao.js:97 holds only the userName assignment of the 97-99 join; accepted as the start of the cited join. Hand-off cites (allocations-dao.js:70, :78, contributions.js:32, research.js:15, index.js:68, memos.html:31, server.js:107, :137, session.js:116) checked and correct."
+    },
+    {
+      "run": "sonnet/eval1-with_skill-1",
+      "model": "claude-sonnet-5-5",
+      "config": "with_skill",
+      "report": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 28,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:1; Context :3, Delegation :12, Verification :20, Confirmed defects :29, Refused or unconfirmed candidates :57, Coverage :75"
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:32 location app/routes/allocations.js:17 (fixture line 17 `userId`, the binding of the destructuring from req.params ending at :18); chain :35-40: allocations.js:17, commented session line :11-:14 (session line at 14), allocations-dao.js:57 getByUserIdAndThreshold, :97-:99 name join, session.js:36 isLoggedInMiddleware; all exist and contain the cited code"
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:23 and :47-53 AC-3 VERIFIED REAL names test/security/allocations-access-test.js, ran with node --test, attack case fails, legitimate passes; file in outputs/changed-files.txt:1, outputs/files/test/security/allocations-access-test.js"
+        },
+        {
+          "id": "A4",
+          "grade": "FAIL",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:65-67 'Profile, contributions, memos (write), dashboard: examined, no finding' and :68-70 'Direct reach to any gated route without a session' are examined, unconfirmed candidates with no disposition from the allowed set (no lens named, not needs-deeper-review, not closed earlier); the other entries :58-64 are compliant"
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row `access-control` Last run 2026-10-09; outputs/sweep-status-check.txt exit code 0; re-run exit 0"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "only confirmed AC-3 <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:31; AC-1, AC-2 closed earlier :58-60"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt: M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md, ?? test/security/allocations-access-test.js (test directory)"
+        }
+      ],
+      "notes": "Strict reading of A4: every item listed in the refused/unconfirmed section counts as an examined candidate and needs one of the three dispositions; 'examined, no finding' without a lens fails. A2 ambiguity: location :17 and chain range :11-:14 are one line earlier than the precise lines (18; comment block 12-15); line 17 is part of the req.params destructuring and the range contains the commented session line (14), so they were accepted and not listed as bad lines. Location also names a second line (index.js:59 wiring) besides the primary; not a range."
+    },
+    {
+      "run": "sonnet/eval1-with_skill-2",
+      "model": "claude-sonnet-5-5",
+      "config": "with_skill",
+      "report": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 32,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:1; Context :3, Delegation :14, Verification :22, Confirmed defects :33, Refused or unconfirmed candidates :64, Coverage :83"
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "confirmed AC-3 <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:36 location app/routes/allocations.js:18; chain :39-46: allocations.js:16-18, allocations-dao.js:57-58,81-83, :94-99, index.js:59, allocations.js:12-15; all hold the cited code. Bad cited lines exist only in unconfirmed/refused candidates (see bad_cited_lines), which A2 does not cover"
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:25 and :54-60 AC-3 VERIFIED REAL names test/security/allocations-idor.test.js, attack 'ran, fails as expected', legitimate 'ran, passes'; file in outputs/changed-files.txt:1"
+        },
+        {
+          "id": "A4",
+          "grade": "FAIL",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:76-79 'Read and clean for object-level access: /profile ... /contributions ... /dashboard' examined and not confirmed with no lens/disposition; also :65-68 AC-4 bullet says 'refused' without a lens in the section (lens given only in the table :26) and its evidence cites session.js:106-114, which is not the middleware"
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row `access-control` Last run 2026-10-09; outputs/sweep-status-check.txt exit code 0; re-run exit 0"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "only confirmed AC-3 <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:35; AC-1 regression check refused :65, AC-2 closed earlier :80"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt: M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md, ?? test/security/allocations-idor.test.js"
+        }
+      ],
+      "notes": "Five cited lines in refused/unconfirmed candidates and the hand-off do not exist or hold different code (session.js:106-114 twice, session.js:109, profile-dao.js:168-189, session.js:337-345, session.js:197). A2 text restricts the line check to confirmed findings, so A2 passes; recorded in bad_cited_lines."
+    },
+    {
+      "run": "sonnet/eval1-with_skill-3",
+      "model": "claude-sonnet-5-5",
+      "config": "with_skill",
+      "report": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 24,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:1; Context :3, Delegation :14, Verification :42, Confirmed defects :51, Refused or unconfirmed candidates :77, Coverage :93"
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:54 location app/routes/allocations.js:18; chain :57-62: allocations.js:18 (`} = req.params`), :14 commented session line, allocations-dao.js:57, :82 (`userId: parsedUserId`), isLoggedIn on index.js:59 (:55); all hold the cited code"
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:45 and :69-75 AC-3 VERIFIED REAL names test/security/allocations-access-test.js, run with node --test, attack fails, legitimate passes; file in outputs/changed-files.txt:1"
+        },
+        {
+          "id": "A4",
+          "grade": "FAIL",
+          "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:84-85 'Admin routes reachable by a non-admin through the other handlers: examined, none' has no disposition; <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:88-89 'Profile and contributions use of a client-supplied id: refused' names no lens"
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row `access-control` Last run 2026-10-09; outputs/sweep-status-check.txt exit code 0; re-run exit 0"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "only confirmed AC-3 <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:53; AC-1, AC-2 closed earlier :90-91"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt: M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md, ?? test/security/allocations-access-test.js"
+        }
+      ],
+      "notes": "Chain element (3) (missing mitigation) cites no line in the chain itself; the route line index.js:59 is in the location field :55. Accepted since the assertion requires the chain element, not a line per element. Strict reading of A4 applied as for the other Sonnet runs."
+    },
+    {
+      "run": "opus/eval1-without_skill-baseline",
+      "model": "claude-opus-5-5",
+      "config": "without_skill",
+      "report": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 22,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "FAIL",
+          "evidence": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md: no Delegation section (headings :3 Context, :14 Method, :21 Route map, :40 Verification, :49 Confirmed defects, :124 'Verified and refused, or unconfirmed', :143, :148 Coverage); the refused section is not titled 'Refused or unconfirmed candidates'"
+        },
+        {
+          "id": "A2",
+          "grade": "FAIL",
+          "evidence": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md:52 AC-3 location is a range `app/routes/allocations.js:16-23`; <opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md:71 AC-4 location range `allocations-dao.js:77-79`; <opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md:116 AC-7 location is a file with no line; AC-6 :100 range server.js:104-113. Cited lines themselves exist and hold the cited code"
+        },
+        {
+          "id": "A3",
+          "grade": "FAIL",
+          "evidence": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md:43-47 five VERIFIED REAL findings, none names a reproduction test file (proof 'dynamic, see below'); no test file in the working copy (git-status.txt shows only docs/audits)"
+        },
+        {
+          "id": "A4",
+          "grade": "FAIL",
+          "evidence": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md:126-141: refused items marked 'REFUSED' with no lens named (:127, :130, :132); /tutorial/* :134 'by design' without disposition; section title is not 'Refused or unconfirmed candidates'"
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row `access-control` Last run 2026-10-09; outputs/sweep-status-check.txt exit=0; re-run exit 0"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "<opus-workspace>/iteration-1/eval-1-nodegoat-access-control-sweep/without_skill/outputs/docs-audits/2026-10-09-access-control.md:43-47 confirmed AC-3..AC-7; AC-6 (CSRF on POST /benefits) and AC-7 (guard test covers GET only) are new defects, not AC-1 (missing isAdmin on /benefits, still fixed per :36-37) or AC-2 (redirect vs 403, :140 not re-examined)"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt and git -C ../repo status --short: M docs/audits/categories.md, M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md only"
+        }
+      ],
+      "notes": "A6 ambiguity: AC-7 concerns the guard test of the closed AC-1 and AC-6 targets the admin-only /benefits route; neither re-reports AC-1's defect (non-admins reaching /benefits) nor AC-2, so PASS. A5: registry row was updated by hand; the check passes."
+    },
+    {
+      "run": "sonnet/eval1-without_skill-baseline",
+      "model": "claude-sonnet-5-5",
+      "config": "without_skill",
+      "report": "<sonnet-archive>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md",
+      "cited_lines_checked": 5,
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "FAIL",
+          "evidence": "<sonnet-archive>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md: no Delegation section (headings :3 Context, :12 Route reachability map, :31 Verification, :38 Confirmed defects, :75 Refused or unconfirmed candidates, :91 Coverage, :98 Follow-ups)"
+        },
+        {
+          "id": "A2",
+          "grade": "FAIL",
+          "evidence": "<sonnet-archive>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md:41-42 AC-3 location is ranges (allocations.js:11-30, allocations-dao.js:57-100); <sonnet-archive>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md:63 AC-4 location `allocations-dao.js:~63-82` approximate range; chains :44-49, :64-69 cite no lines"
+        },
+        {
+          "id": "A3",
+          "grade": "FAIL",
+          "evidence": "<sonnet-archive>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md:34-35 findings marked 'REAL (by code reading)', none VERIFIED REAL; proof 'none yet'; no test file written (git-status.txt shows only the report)"
+        },
+        {
+          "id": "A4",
+          "grade": "FAIL",
+          "evidence": "<sonnet-archive>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md:82-84 /profile and /contributions 'Clean for access control' without a lens; :85-89 candidates 'left to other zones, with no verdict given' carry no disposition"
+        },
+        {
+          "id": "A5",
+          "grade": "FAIL",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row access-control unchanged, Last run 2026-10-03 (identical to fixture); outputs/sweep-status-check.txt: 'registry text differs from reports', exit 1; re-run exit 1"
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "<sonnet-archive>/eval1/without_skill/outputs/docs-audits/2026-10-09-access-control.md:40 AC-3 /allocations IDOR and :62 AC-4 $where; AC-1/AC-2 not revisited :6-7"
+        },
+        {
+          "id": "A7",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt and git -C ../repo status --short: only ?? docs/audits/2026-10-09-access-control.md"
+        }
+      ],
+      "notes": "Registry has a row whose slug matches but it was not updated and the check fails; A5 requires both, so FAIL. Only 5 line cites in the report (index.js:59, allocations.js:11-30, allocations-dao.js:57-100, ~63-82, layout.html:56), all contain the cited code."
+    }
+  ],
+  "bad_cited_lines": [
+    {
+      "run": "sonnet/eval1-with_skill-2",
+      "finding": "AC-4 (AC-1 regression check)",
+      "finding_status": "unconfirmed",
+      "kind": "chain",
+      "report_line": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:26",
+      "cited": "app/routes/session.js:106-114",
+      "cited_code": "isAdminUserMiddleware failing closed (loads user by session id, requires user.isAdmin)",
+      "problem": "does not hold the cited code",
+      "actual": "comment block about regenerating the session on login ('// would be to regenerate the session id ...' to '// `req.session.regenerate(() => {})`'); isAdminUserMiddleware is at session.js:25-34"
+    },
+    {
+      "run": "sonnet/eval1-with_skill-2",
+      "finding": "AC-4 (AC-1 regression check)",
+      "finding_status": "unconfirmed",
+      "kind": "chain",
+      "report_line": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:67",
+      "cited": "session.js:106-114",
+      "cited_code": "isAdmin loads the user by the session id and requires user.isAdmin",
+      "problem": "does not hold the cited code",
+      "actual": "comment block about session regeneration on login; the middleware is at session.js:25-34"
+    },
+    {
+      "run": "sonnet/eval1-with_skill-2",
+      "finding": "AC-6",
+      "finding_status": "unconfirmed",
+      "kind": "location",
+      "report_line": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:28",
+      "cited": "app/routes/session.js:109",
+      "cited_code": "isAdminUserMiddleware callback ignoring err, user undefined so it redirects",
+      "problem": "does not hold the cited code",
+      "actual": "'// attacker was able to get their hands on the cookie id before the user logged-in,' (the ternary is at session.js:28)"
+    },
+    {
+      "run": "sonnet/eval1-with_skill-2",
+      "finding": "profile/contributions/dashboard read-and-clean",
+      "finding_status": "unconfirmed",
+      "kind": "chain",
+      "report_line": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:78",
+      "cited": "profile-dao.js:168-189",
+      "cited_code": "explicit update field list in updateUser (no mass assignment into isAdmin)",
+      "problem": "does not exist",
+      "actual": "app/data/profile-dao.js has 113 lines; updateUser field list is at profile-dao.js:42-66"
+    },
+    {
+      "run": "sonnet/eval1-with_skill-2",
+      "finding": "profile/contributions/dashboard read-and-clean",
+      "finding_status": "unconfirmed",
+      "kind": "chain",
+      "report_line": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:79",
+      "cited": "session.js:337-345",
+      "cited_code": "/dashboard uses the session id",
+      "problem": "does not exist",
+      "actual": "app/routes/session.js has 277 lines; displayWelcomePage is at session.js:256-274"
+    },
+    {
+      "run": "sonnet/eval1-with_skill-2",
+      "finding": "Hand-off 3 (session fixation, other zone)",
+      "finding_status": "unconfirmed",
+      "kind": "other",
+      "report_line": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:105",
+      "cited": "app/routes/session.js:197",
+      "cited_code": "session id not regenerated on login",
+      "problem": "does not hold the cited code",
+      "actual": "'verify' (field of the signup req.body destructuring); login sets req.session.userId at session.js:116"
+    }
+  ]
+}

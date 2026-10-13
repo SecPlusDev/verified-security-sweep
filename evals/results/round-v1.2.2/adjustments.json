@@ -1,0 +1,20 @@
+{
+  "note": "Orchestrator adjustments applied on top of the grader files, under the rule 'if a rule is ambiguous, apply the stricter reading and record the ambiguity'. Grader files are left unchanged.",
+  "adjustments": [
+    {
+      "file": "assertions-eval1.json",
+      "run": "sonnet/eval1-with_skill-1",
+      "assertion": "A2",
+      "grader_grade": "PASS",
+      "final_grade": "FAIL",
+      "reason": "Location of the confirmed finding is app/routes/allocations.js:17, cited as 'userId taken from req.params'. Line 17 at 9e832da holds only `userId` (the middle line of a destructuring that spans 16-18); `req.params` is on line 18. The grader accepted it as part of the statement; the stricter reading is that the cited line does not hold the cited code. Evidence: <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:32, fixture app/routes/allocations.js:16-18.",
+      "added_bad_cited_line": {
+        "run": "sonnet/eval1-with_skill-1", "finding_status": "confirmed", "kind": "location",
+        "report_line": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:32",
+        "cited": "app/routes/allocations.js:17", "cited_code": "userId taken from req.params",
+        "problem": "does not hold the cited code", "actual": "`userId` only; `} = req.params;` is line 18"
+      },
+      "not_adjusted": "The chain range :11-:14 contains the commented session line (14) and is kept; ranges are allowed in the chain by the assertion text."
+    }
+  ]
+}

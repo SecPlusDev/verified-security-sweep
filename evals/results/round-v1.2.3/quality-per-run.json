@@ -1,0 +1,252 @@
+{
+ "sonnet/eval1-with_skill-2": {
+  "eval": 1,
+  "letter": "A",
+  "items": 18,
+  "confirmed": 1,
+  "confirmed_real": 1,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "GT-1"
+  ],
+  "gt_found_only_unconfirmed": [
+   "GT-2"
+  ],
+  "recall_confirmed": 0.5,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "A-1"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 17,
+  "unconfirmed_real": [
+   "A-11",
+   "A-12",
+   "A-13",
+   "A-14",
+   "A-15",
+   "A-16",
+   "A-17",
+   "A-18"
+  ],
+  "planted_prior_confirmed": []
+ },
+ "opus/eval1-with_skill-1": {
+  "eval": 1,
+  "letter": "B",
+  "items": 17,
+  "confirmed": 2,
+  "confirmed_real": 2,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "GT-1",
+   "GT-2"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 1.0,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "B-1",
+   "B-2"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 15,
+  "unconfirmed_real": [
+   "B-11",
+   "B-12",
+   "B-13",
+   "B-14",
+   "B-15",
+   "B-16",
+   "B-17"
+  ],
+  "planted_prior_confirmed": []
+ },
+ "sonnet/eval1-with_skill-1": {
+  "eval": 1,
+  "letter": "C",
+  "items": 16,
+  "confirmed": 1,
+  "confirmed_real": 1,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "GT-1"
+  ],
+  "gt_found_only_unconfirmed": [
+   "GT-2"
+  ],
+  "recall_confirmed": 0.5,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "C-1"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 15,
+  "unconfirmed_real": [
+   "C-9",
+   "C-10",
+   "C-11",
+   "C-12",
+   "C-13",
+   "C-14",
+   "C-15",
+   "C-16"
+  ],
+  "planted_prior_confirmed": []
+ },
+ "sonnet/eval1-with_skill-3": {
+  "eval": 1,
+  "letter": "D",
+  "items": 15,
+  "confirmed": 1,
+  "confirmed_real": 1,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "GT-1"
+  ],
+  "gt_found_only_unconfirmed": [
+   "GT-2"
+  ],
+  "recall_confirmed": 0.5,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "D-1"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 14,
+  "unconfirmed_real": [
+   "D-9",
+   "D-10",
+   "D-11",
+   "D-12",
+   "D-13",
+   "D-14",
+   "D-15"
+  ],
+  "planted_prior_confirmed": []
+ },
+ "opus/eval5-with_skill-1": {
+  "eval": 5,
+  "letter": "A",
+  "items": 18,
+  "confirmed": 3,
+  "confirmed_real": 3,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "P-1",
+   "P-2",
+   "P-3"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 1.0,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "A-1",
+   "A-2",
+   "A-3"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 15,
+  "unconfirmed_real": [],
+  "planted_prior_confirmed": []
+ },
+ "sonnet/eval5-with_skill-2": {
+  "eval": 5,
+  "letter": "B",
+  "items": 11,
+  "confirmed": 2,
+  "confirmed_real": 2,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "P-1",
+   "P-2"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 0.67,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "B-1",
+   "B-2"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 9,
+  "unconfirmed_real": [],
+  "planted_prior_confirmed": []
+ },
+ "sonnet/eval5-with_skill-1": {
+  "eval": 5,
+  "letter": "C",
+  "items": 7,
+  "confirmed": 3,
+  "confirmed_real": 3,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "P-1",
+   "P-2",
+   "P-3"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 1.0,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "C-1",
+   "C-2",
+   "C-3"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 4,
+  "unconfirmed_real": [
+   "C-7"
+  ],
+  "planted_prior_confirmed": []
+ },
+ "sonnet/eval5-with_skill-3": {
+  "eval": 5,
+  "letter": "D",
+  "items": 7,
+  "confirmed": 3,
+  "confirmed_real": 3,
+  "confirmed_not_real": [],
+  "confirmed_undecided": [],
+  "precision": 1.0,
+  "gt_found_confirmed": [
+   "P-1",
+   "P-2",
+   "P-3"
+  ],
+  "gt_found_only_unconfirmed": [],
+  "recall_confirmed": 1.0,
+  "confirmed_real_outside_gt": [],
+  "confirmed_real_out_of_zone": [],
+  "exact_location": [
+   "D-1",
+   "D-2",
+   "D-3"
+  ],
+  "location_not_exact": [],
+  "unconfirmed": 4,
+  "unconfirmed_real": [],
+  "planted_prior_confirmed": []
+ }
+}

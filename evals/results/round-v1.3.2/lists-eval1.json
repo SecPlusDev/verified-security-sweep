@@ -1,0 +1,187 @@
+{
+  "eval": 1,
+  "reviews": {
+    "A": [
+      {
+        "id": "A-1",
+        "claim": "Access to /benefits, previously found open to any signed-in user, is now limited to admins: the route chains the login and admin checks, the admin check reads isAdmin from the user document, stops the request on every branch and redirects when the database lookup fails, and live GET and POST requests from a regular user were redirected to login without changing another user's benefit start date.",
+        "location": "app/routes/index.js:55-56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-2",
+        "claim": "When a signed-in non-admin requests an admin-only page, the admin check redirects to the login page instead of answering with a 403 status; this was previously judged harmless and was not looked at again.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-3",
+        "claim": "The /allocations/:userId handler takes the user id from the URL segment and the route only checks that a session exists, so any signed-in user, including a newly registered account, can read any other user's name and allocation percentages by changing the sequential numeric id in the URL.",
+        "location": "app/routes/allocations.js:18",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-4",
+        "claim": "The existing end-to-end access test for /benefits only checks a regular user's GET request; nothing tests that a regular user's POST to /benefits stays blocked, and adding a POST case is proposed.",
+        "location": "test/e2e/integration/benefits_access_guard_spec.js:19",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-5",
+        "claim": "The end-to-end allocations test visits /allocations/1 as a regular user and expects the page to load, so the test suite treats the cross-user allocations read as expected behaviour; it keeps passing if a fix ignores the URL id but must change if the fix answers 403.",
+        "location": "test/e2e/integration/allocations_spec.js:21",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-6",
+        "claim": "Memos are stored without an author and every signed-in user sees every memo; the board is shared and anonymous by design, so no user-owned data reaches another user and only attribution is missing, which is left as an owner decision.",
+        "location": "app/data/memos-dao.js:18-21",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-7",
+        "claim": "Anyone can create an account through the public signup page, so every route that only requires sign-in is effectively reachable by any visitor; this is documented as intended, and whether it fits an employee-only deployment is left to the owner.",
+        "location": "README.md:24",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-8",
+        "claim": "GET and POST /profile take the user identity from the session and the data layer filters by that id, and the update sets only seven named fields, so a user cannot read or change another user's profile or set isAdmin, _id or userId from the request.",
+        "location": "app/routes/profile.js:16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-9",
+        "claim": "GET and POST /contributions take the user identity from the session, and the upsert filter and the stored userId both come from the session, so a user can only read and change their own contributions.",
+        "location": "app/routes/contributions.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-10",
+        "claim": "The threshold query parameter on /allocations is inserted into a MongoDB $where clause, so an input such as 1'; return 1 == '1 matches every row and would let a regular user read all users' allocations even after the URL id problem is fixed; this was not tested.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-11",
+        "claim": "Signup builds the new user record from a fixed list of fields that does not include isAdmin and takes the _id from a server-side sequence, so a registering user cannot make themselves an admin or choose their own id.",
+        "location": "app/data/user-dao.js:20-31",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-12",
+        "claim": "Each route is protected as it is wired: login, signup and logout are open to anyone; dashboard, profile, contributions, allocations, memos, learn and research require a signed-in session; /benefits requires an admin; and every page except allocations limits reads and writes to the signed-in user.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-13",
+        "claim": "The root path has no middleware, but its handler checks the session itself, redirecting anonymous visitors to login and showing a signed-in user only their own dashboard.",
+        "location": "app/routes/session.js:259",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-14",
+        "claim": "GET /dashboard requires sign-in and shows only the signed-in user's own data.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-15",
+        "claim": "POST /contributions passes the request field preTax, and the fields on the next two lines, to eval, so any signed-in user, and therefore anyone through open signup, could run code on the server, which would override every access boundary; this was not tested.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-16",
+        "claim": "The tutorial pages are reachable without signing in; they are static pages and public access is intended, as the README indicates.",
+        "location": "app/routes/index.js:75",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-17",
+        "claim": "Static files under app/assets are served to anyone without sign-in, but they are only images, CSS and third-party JavaScript.",
+        "location": "server.js:121",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-18",
+        "claim": "On login the session user id is set from the database _id after the password check, and signup does the same, so a client cannot choose which user its session belongs to.",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-19",
+        "claim": "Sessions use the default server-side store, so there is no client-side session data a user could forge.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-20",
+        "claim": "The navigation template decides whether to show admin links from user.isAdmin, but handlers other than benefits pass the user document's fields at the top level, so the admin sees the non-admin menu on the dashboard; this only affects display because the server enforces the admin check.",
+        "location": "app/views/layout.html:48",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-21",
+        "claim": "Memo Markdown is rendered with template autoescaping turned off on a page the admin also reads, which could give a user a way to act as the admin on /benefits; this was not tested.",
+        "location": "app/views/memos.html:31",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-22",
+        "claim": "/learn takes a url query parameter and redirects to any URL; this was not tested.",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-23",
+        "claim": "The userName value from a JSON login body reaches the database query without checks; the only effect reported is that usernames can be enumerated, because the password comparison is strict; this was not tested.",
+        "location": "app/data/user-dao.js:92",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-24",
+        "claim": "The session id is not regenerated on login; this was not tested.",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-25",
+        "claim": "CSRF protection is commented out, so forms such as the admin's POST /benefits are unprotected; this was not tested.",
+        "location": "server.js:107",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-26",
+        "claim": "The session cookie options are commented out, so the cookie has no secure flag; this was not tested.",
+        "location": "server.js:95",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-27",
+        "claim": "The session cookie does carry the HttpOnly flag, because express-session sets it by default, so a claim that the cookie lacks HttpOnly is wrong.",
+        "location": "server.js:95",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-28",
+        "claim": "Passwords are stored in plaintext; this was not tested.",
+        "location": "app/data/user-dao.js:25",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-29",
+        "claim": "Login returns separate messages for an invalid username and an invalid password; this was not tested.",
+        "location": "app/routes/session.js:85",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-30",
+        "claim": "Every route except /benefits relies on middleware wired by hand with nothing testing each route's middleware chain; a unit test that checks every route's chain against a declared table of public, signed-in and admin routes is proposed, though it would not catch handlers that take the user id from the request.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ]
+  }
+}

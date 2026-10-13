@@ -1,0 +1,409 @@
+{
+  "eval": 1,
+  "reviews": {
+    "A": [
+      {
+        "id": "A-1",
+        "claim": "Any signed-in user can read any other user's allocation record and name by changing the user id in the /allocations/:userId path, because the handler uses the path id without comparing it to the session user and ids are sequential.",
+        "location": "app/routes/allocations.js:23",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-2",
+        "claim": "A non-admin signed-in user could reach the /benefits admin pages if the admin gate were missing; the gate is still wired.",
+        "location": "app/routes/index.js:55",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-3",
+        "claim": "A non-admin user denied access to an admin route receives a redirect instead of a 403 response.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-4",
+        "claim": "Any signed-in user can read every memo posted by any user, because the memo listing returns all memos with no owner filter.",
+        "location": "app/routes/memos.js:25",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-5",
+        "claim": "An unauthenticated visitor can reach the /tutorial pages because they have no login check.",
+        "location": "app/routes/index.js:75",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-6",
+        "claim": "A demoted admin could keep admin access if the admin middleware trusted a stale admin flag.",
+        "location": "app/routes/session.js:25",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-7",
+        "claim": "A new user could make themselves admin by sending an isAdmin field at signup (mass assignment).",
+        "location": "app/data/user-dao.js:20",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-8",
+        "claim": "A signed-in user could read or change another user's profile, contributions or dashboard data through these routes.",
+        "location": "app/routes/profile.js:16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-9",
+        "claim": "A caller of POST /benefits controls the target userId in the request body and can change any user's benefits record.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-10",
+        "claim": "An admin can view any other user's allocations through /allocations/:userId; whether admins should keep this is undecided.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-11",
+        "claim": "Memo content posted by one user may execute as script in other users' browsers (stored cross-site scripting).",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-12",
+        "claim": "Any caller can be sent to an attacker-chosen external URL through /learn (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-13",
+        "claim": "Any signed-in user can execute arbitrary server-side code because request-body fields are passed to eval.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-14",
+        "claim": "A signed-in user can inject a NoSQL $where expression through the threshold parameter, which also bypasses the per-user filter.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-15",
+        "claim": "An attacker can fix a victim's session id before login because the session is not regenerated at login.",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-16",
+        "claim": "Anyone who obtains the user store can read every password because passwords are stored in plaintext.",
+        "location": "app/data/user-dao.js:25",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-17",
+        "claim": "The session cookie can be read by scripts or sent over plain HTTP and does not expire, because it lacks httpOnly, secure and maxAge.",
+        "location": "server.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-18",
+        "claim": "A cross-site page can make state-changing requests on behalf of a signed-in user because CSRF protection is disabled.",
+        "location": "server.js:107",
+        "status": "unconfirmed"
+      }
+    ],
+    "B": [
+      {
+        "id": "B-1",
+        "claim": "Any signed-in user can read any other user's allocations and names by changing the user id in the /allocations/:userId path, because the handler uses the path id without comparing it to the session user and ids are sequential.",
+        "location": "app/routes/allocations.js:18",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-2",
+        "claim": "An attacker who plants a pre-login session cookie in a victim's browser gains the victim's (including an admin's) authenticated session, because login does not regenerate the session id.",
+        "location": "app/routes/session.js:116",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-3",
+        "claim": "The admin middleware ignores a database error when loading the user, which could affect the admin access decision.",
+        "location": "app/routes/session.js:28",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-4",
+        "claim": "A non-admin signed-in user could bypass the /benefits admin gate and read or change benefits data.",
+        "location": "app/routes/index.js:55",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-5",
+        "claim": "A non-admin user denied access to an admin route receives a redirect instead of a 403 response.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-6",
+        "claim": "A new user could make themselves admin through signup by supplying an admin flag.",
+        "location": "app/data/user-dao.js:20",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-7",
+        "claim": "A signed-in user could make themselves admin through a profile update by supplying an admin field.",
+        "location": "app/data/profile-dao.js:45",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-8",
+        "claim": "Any signed-in user can read every memo because memos are returned to all users with no owner.",
+        "location": "app/data/memos-dao.js:18",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-9",
+        "claim": "An unauthenticated visitor can reach / because the route has no middleware.",
+        "location": "app/routes/index.js:30",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-10",
+        "claim": "An unauthenticated visitor can reach the /tutorial pages because they have no login check.",
+        "location": "app/routes/index.js:75",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-11",
+        "claim": "Any signed-in user can execute arbitrary server-side code because contribution fields are passed to eval.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-12",
+        "claim": "A signed-in user can inject into a $where expression via threshold and widen the allocations query beyond one user.",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-13",
+        "claim": "A signed-in user can make the server send requests to arbitrary destinations via the url and symbol parameters (SSRF).",
+        "location": "app/routes/research.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-14",
+        "claim": "Any caller can be sent to an attacker-chosen external URL through /learn (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-15",
+        "claim": "Anyone who obtains the user store can read every password because passwords are stored and compared in plaintext.",
+        "location": "app/data/user-dao.js:61",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-16",
+        "claim": "A cross-site page can make state-changing requests on behalf of a signed-in user because the CSRF middleware is commented out.",
+        "location": "server.js:107",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-17",
+        "claim": "An unauthenticated caller can learn which usernames exist because login returns distinct error messages.",
+        "location": "app/routes/session.js:85",
+        "status": "unconfirmed"
+      }
+    ],
+    "C": [
+      {
+        "id": "C-1",
+        "claim": "Any signed-in user can read any other user's allocations and names by changing the user id in the /allocations/:userId path, because the handler uses the path id without consulting the session user and ids are small sequential integers.",
+        "location": "app/routes/allocations.js:23",
+        "status": "confirmed"
+      },
+      {
+        "id": "C-2",
+        "claim": "A non-admin signed-in user could reach the /benefits admin pages if the admin gate were missing; the gate is now wired.",
+        "location": "app/routes/index.js:55",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-3",
+        "claim": "Any signed-in user can read every memo posted by any user because the memo listing returns all memos and memos have no author.",
+        "location": "app/routes/memos.js:25",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-4",
+        "claim": "An unauthenticated visitor can reach the /tutorial pages because they have no login check.",
+        "location": "app/routes/tutorial.js:8",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-5",
+        "claim": "The admin middleware ignores a database error when loading the user, which could affect the admin access decision.",
+        "location": "app/routes/session.js:27",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-6",
+        "claim": "A new user could make themselves admin by sending an isAdmin field at signup.",
+        "location": "app/data/user-dao.js:20",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-7",
+        "claim": "A signed-in user could read or write another user's profile or contributions through these routes.",
+        "location": "app/routes/profile.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-8",
+        "claim": "A non-admin user denied access to an admin route receives a redirect instead of a 403 response.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-9",
+        "claim": "Any signed-in user can execute arbitrary server-side code because request fields are passed to eval.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-10",
+        "claim": "A signed-in user can inject into a $where expression built from the threshold parameter (NoSQL injection).",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-11",
+        "claim": "A signed-in user can make the server send requests to a user-supplied URL (SSRF).",
+        "location": "app/routes/research.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-12",
+        "claim": "Any caller can be sent to an attacker-chosen external URL (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-13",
+        "claim": "Memo content posted by one user can execute as script in other users' browsers because template autoescaping is off when memos render (stored XSS).",
+        "location": "server.js:137",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-14",
+        "claim": "Anyone who obtains the user store can read every password because passwords are compared in plaintext.",
+        "location": "app/data/user-dao.js:61",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-15",
+        "claim": "An attacker can fix a victim's session id before login because the session is not regenerated at login.",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-16",
+        "claim": "The session cookie can be read by scripts or sent insecurely because it is set without security flags.",
+        "location": "server.js:78",
+        "status": "unconfirmed"
+      }
+    ],
+    "D": [
+      {
+        "id": "D-1",
+        "claim": "Any signed-in user can read any other user's allocations and names by changing the user id in the /allocations/:userId path, because the handler uses the path id without comparing it to the session user and ids are sequential.",
+        "location": "app/routes/allocations.js:23",
+        "status": "confirmed"
+      },
+      {
+        "id": "D-2",
+        "claim": "A non-admin signed-in user could reach /benefits or self-promote to admin through the session; the gate is wired and the admin flag is read from the database on each request.",
+        "location": "app/routes/index.js:55",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-3",
+        "claim": "A non-admin user denied access to an admin route receives a redirect instead of a 403 response.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-4",
+        "claim": "Any signed-in user can read every user's memos because the memo listing returns all memos with no owner filter.",
+        "location": "app/data/memos-dao.js:18",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-5",
+        "claim": "A new user could make themselves admin by sending an isAdmin field at signup (mass assignment).",
+        "location": "app/data/user-dao.js:20",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-6",
+        "claim": "An unauthenticated visitor can reach the /tutorial pages because they have no login check.",
+        "location": "app/routes/tutorial.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-7",
+        "claim": "A signed-in user could read or write another user's profile or contributions through these routes.",
+        "location": "app/routes/profile.js:16",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-8",
+        "claim": "An unauthenticated visitor could reach /dashboard or / data, but the shared handler re-checks the session.",
+        "location": "app/routes/session.js:259",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-9",
+        "claim": "Any caller can be sent to an attacker-chosen external URL through /learn (open redirect).",
+        "location": "app/routes/index.js:68",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-10",
+        "claim": "Any signed-in user can execute arbitrary server-side code because the request body is passed to eval.",
+        "location": "app/routes/contributions.js:32",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-11",
+        "claim": "A signed-in user can make the server send requests to a client-supplied URL (SSRF).",
+        "location": "app/routes/research.js:15",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-12",
+        "claim": "A signed-in user can inject into a $where expression built from the threshold parameter (NoSQL injection).",
+        "location": "app/data/allocations-dao.js:78",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-13",
+        "claim": "An attacker can fix a victim's session id before login because the session is not regenerated at login.",
+        "location": "app/routes/session.js:116",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-14",
+        "claim": "Anyone who obtains the user store can read every password because passwords are stored in plaintext.",
+        "location": "app/data/user-dao.js:25",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-15",
+        "claim": "A cross-site page can make state-changing requests on behalf of a signed-in user because CSRF protection is commented out.",
+        "location": "server.js:7",
+        "status": "unconfirmed"
+      }
+    ]
+  }
+}

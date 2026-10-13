@@ -1,0 +1,998 @@
+{
+  "eval": 5,
+  "notes": {
+    "A-1": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        47,
+        62,
+        63
+      ],
+      "original_status_wording": "VERIFIED REAL / Confirmed defects F1"
+    },
+    "A-2": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        48,
+        75,
+        76
+      ],
+      "original_status_wording": "VERIFIED REAL / Confirmed defects F2"
+    },
+    "A-3": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        49,
+        88,
+        89
+      ],
+      "original_status_wording": "VERIFIED REAL / Confirmed defects F3"
+    },
+    "A-4": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        50,
+        100
+      ],
+      "original_status_wording": "NEEDS DEEPER REVIEW; decision pending"
+    },
+    "A-5": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        51,
+        102
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability"
+    },
+    "A-6": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        52,
+        103
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens existing mitigation"
+    },
+    "A-7": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        53,
+        104
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability"
+    },
+    "A-8": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        54,
+        105
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens existing mitigation"
+    },
+    "A-9": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        55,
+        106
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "A-10": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        107,
+        108
+      ],
+      "original_status_wording": "read ... No finding"
+    },
+    "A-11": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        130,
+        131
+      ],
+      "original_status_wording": "Proposed sweeps (no verdict, not counted)",
+      "also": "A/response.md:19"
+    },
+    "A-12": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        131
+      ],
+      "original_status_wording": "Proposed sweeps (no verdict, not counted)"
+    },
+    "A-13": {
+      "file": "A/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        132
+      ],
+      "original_status_wording": "Proposed sweeps (no verdict, not counted)",
+      "also": "A/response.md:19"
+    },
+    "B-1": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        61,
+        80,
+        82
+      ],
+      "original_status_wording": "VERIFIED REAL / F1, High"
+    },
+    "B-2": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        62,
+        106,
+        108
+      ],
+      "original_status_wording": "VERIFIED REAL / F2, High"
+    },
+    "B-3": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        63,
+        132,
+        134
+      ],
+      "original_status_wording": "VERIFIED REAL / F3, Medium"
+    },
+    "B-4": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        64,
+        162
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "B-5": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        65,
+        166
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens claim correctness"
+    },
+    "B-6": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        66,
+        172
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens existing mitigation"
+    },
+    "B-7": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        176
+      ],
+      "original_status_wording": "refused, scoped by project=project"
+    },
+    "B-8": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        67,
+        177
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, lens exploitability"
+    },
+    "B-9": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        68,
+        180
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, by design"
+    },
+    "B-10": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        183,
+        184
+      ],
+      "original_status_wording": "not a defect"
+    },
+    "B-11": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        185,
+        186
+      ],
+      "original_status_wording": "no authorization difference"
+    },
+    "B-12": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        187,
+        188
+      ],
+      "original_status_wording": "No confusion found"
+    },
+    "B-13": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        220,
+        221
+      ],
+      "original_status_wording": "Adjacent zones to sweep next (no verdict here)"
+    },
+    "B-14": {
+      "file": "B/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        221,
+        222
+      ],
+      "original_status_wording": "Adjacent zones to sweep next (no verdict here)"
+    },
+    "C-1": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        49,
+        73
+      ],
+      "original_status_wording": "F1: High"
+    },
+    "C-2": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        53,
+        98
+      ],
+      "original_status_wording": "F2: High"
+    },
+    "C-3": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        54,
+        116
+      ],
+      "original_status_wording": "F3: Medium"
+    },
+    "C-4": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        67,
+        69
+      ],
+      "original_status_wording": "spot-checked and is scoped by project_id"
+    },
+    "C-5": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        129,
+        131
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-6": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        132,
+        134
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-7": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        135,
+        136
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-8": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        137,
+        139
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-9": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        140,
+        141
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-10": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        142,
+        144
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-11": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        145,
+        146
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-12": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        147,
+        149
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-13": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        150
+      ],
+      "original_status_wording": "Checked and found OK"
+    },
+    "C-14": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        151,
+        152
+      ],
+      "original_status_wording": "Checked and found OK; acceptable"
+    },
+    "C-15": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        156,
+        158
+      ],
+      "original_status_wording": "Minor notes (not security-relevant now); harmless"
+    },
+    "C-16": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        159,
+        160
+      ],
+      "original_status_wording": "Minor notes (not security-relevant now)"
+    },
+    "C-17": {
+      "file": "C/record-api-key-access-review.md",
+      "lines": [
+        161,
+        162
+      ],
+      "original_status_wording": "Minor notes (not security-relevant now); fine on pinned Django"
+    },
+    "D-1": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        23,
+        31,
+        32
+      ],
+      "original_status_wording": "VERIFIED REAL / AUD-1 (High)"
+    },
+    "D-2": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        24,
+        51,
+        52
+      ],
+      "original_status_wording": "VERIFIED REAL / AUD-2 (High)"
+    },
+    "D-3": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        25,
+        71
+      ],
+      "original_status_wording": "FALSE POSITIVE (as a candidate); refused"
+    },
+    "D-4": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        26,
+        72
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused, exploitability"
+    },
+    "D-5": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        27,
+        73,
+        74
+      ],
+      "original_status_wording": "FALSE POSITIVE; refused"
+    },
+    "D-6": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        75,
+        78
+      ],
+      "original_status_wording": "O1 decision pending ... not a defect"
+    },
+    "D-7": {
+      "file": "D/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        79,
+        80
+      ],
+      "original_status_wording": "O2 refused as defect; decision pending"
+    },
+    "E-1": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        24,
+        36,
+        37
+      ],
+      "original_status_wording": "F1 (High)"
+    },
+    "E-2": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        20,
+        40,
+        41
+      ],
+      "original_status_wording": "F2 (High)"
+    },
+    "E-3": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        25,
+        44,
+        45
+      ],
+      "original_status_wording": "F3 (Medium/High)"
+    },
+    "E-4": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        49
+      ],
+      "original_status_wording": "Lower-severity observations (not blocking); accepted risk, noted"
+    },
+    "E-5": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        50
+      ],
+      "original_status_wording": "Lower-severity observations; Documented behaviour"
+    },
+    "E-6": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        51
+      ],
+      "original_status_wording": "Lower-severity observations; normal for a token-header API"
+    },
+    "E-7": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        52
+      ],
+      "original_status_wording": "Lower-severity observations (not blocking); 'Minor; use hmac.compare_digest'",
+      "also": "E/response.md:10 ('low-severity notes')"
+    },
+    "E-8": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        53
+      ],
+      "original_status_wording": "Lower-severity observations; harmless ... likely a typo"
+    },
+    "E-9": {
+      "file": "E/record-2026-10-api-key-authorization.md",
+      "lines": [
+        54
+      ],
+      "original_status_wording": "Lower-severity observations; low risk, not verified against data"
+    },
+    "F-1": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        31,
+        41
+      ],
+      "original_status_wording": "FINDING 1 / 1. HIGH"
+    },
+    "F-2": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        27,
+        47
+      ],
+      "original_status_wording": "FINDING 2 / 2. HIGH"
+    },
+    "F-3": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        32,
+        57
+      ],
+      "original_status_wording": "FINDING 3 / 3. MEDIUM"
+    },
+    "F-4": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        66,
+        67
+      ],
+      "original_status_wording": "Checked, no issue found"
+    },
+    "F-5": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        67,
+        68
+      ],
+      "original_status_wording": "Checked, no issue found; left as is"
+    },
+    "F-6": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        69,
+        70
+      ],
+      "original_status_wording": "Checked, no issue found"
+    },
+    "F-7": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        71,
+        72
+      ],
+      "original_status_wording": "Checked, no issue found"
+    },
+    "F-8": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        73
+      ],
+      "original_status_wording": "Checked, no issue found"
+    },
+    "F-9": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        74
+      ],
+      "original_status_wording": "Checked, no issue found"
+    },
+    "F-10": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        77,
+        78
+      ],
+      "original_status_wording": "Notes / not changed; documented behavior, left as is"
+    },
+    "F-11": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        79
+      ],
+      "original_status_wording": "Notes / not changed; acceptable"
+    },
+    "F-12": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        80,
+        81
+      ],
+      "original_status_wording": "Notes; confirm that is intended product behavior (safe direction)"
+    },
+    "F-13": {
+      "file": "F/record-2026-10-api-keys.md",
+      "lines": [
+        37
+      ],
+      "original_status_wording": "ok (exposes badge_key by design)"
+    },
+    "G-1": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        38,
+        50,
+        52
+      ],
+      "original_status_wording": "VERIFIED REAL / F1 (High)"
+    },
+    "G-2": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        39,
+        70,
+        72
+      ],
+      "original_status_wording": "VERIFIED REAL / F2 (High)"
+    },
+    "G-3": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        40,
+        95,
+        97
+      ],
+      "original_status_wording": "VERIFIED REAL / F3 (High)"
+    },
+    "G-4": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        41,
+        117
+      ],
+      "original_status_wording": "VERIFIED REAL (Low); not in headline count",
+      "also": "G/response.md:10 ('One Low item, not counted above')"
+    },
+    "G-5": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        123,
+        129
+      ],
+      "original_status_wording": "refused, lens claim correctness"
+    },
+    "G-6": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        130,
+        131
+      ],
+      "original_status_wording": "refused, lens exploitability"
+    },
+    "G-7": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        132,
+        135
+      ],
+      "original_status_wording": "refused, lens existing mitigation"
+    },
+    "G-8": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        136,
+        138
+      ],
+      "original_status_wording": "refused, lens existing mitigation"
+    },
+    "G-9": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        139,
+        140
+      ],
+      "original_status_wording": "refused"
+    },
+    "G-10": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        141,
+        142
+      ],
+      "original_status_wording": "refused, they use @authorize"
+    },
+    "G-11": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        143,
+        144
+      ],
+      "original_status_wording": "refused, lens exploitability"
+    },
+    "G-12": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        145,
+        147
+      ],
+      "original_status_wording": "refused, by design"
+    },
+    "G-13": {
+      "file": "G/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        148
+      ],
+      "original_status_wording": "returns a constant, nothing to authorize"
+    },
+    "H-1": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        22,
+        31,
+        32
+      ],
+      "original_status_wording": "VERIFIED REAL / F1"
+    },
+    "H-2": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        23,
+        44,
+        45
+      ],
+      "original_status_wording": "VERIFIED REAL / F2"
+    },
+    "H-3": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        24,
+        54,
+        55
+      ],
+      "original_status_wording": "VERIFIED REAL / F3"
+    },
+    "H-4": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        25,
+        65
+      ],
+      "original_status_wording": "FALSE POSITIVE (as defect); refused, claim correctness"
+    },
+    "H-5": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        66,
+        67
+      ],
+      "original_status_wording": "refused, existing mitigation"
+    },
+    "H-6": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        68,
+        93
+      ],
+      "original_status_wording": "not pursued; owner decision pending",
+      "also": "H/response.md:14 ('open question ... I did not pursue it')"
+    },
+    "H-7": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        69
+      ],
+      "original_status_wording": "OK"
+    },
+    "H-8": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        70
+      ],
+      "original_status_wording": "OK"
+    },
+    "H-9": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        71
+      ],
+      "original_status_wording": "OK"
+    },
+    "H-10": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        72,
+        73
+      ],
+      "original_status_wording": "OK"
+    },
+    "H-11": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        74
+      ],
+      "original_status_wording": "by design"
+    },
+    "H-12": {
+      "file": "H/record-2026-10-09-api-key-scope.md",
+      "lines": [
+        75
+      ],
+      "original_status_wording": "Refused"
+    },
+    "I-1": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        24
+      ],
+      "original_status_wording": "doesn't work (tested)"
+    },
+    "I-2": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        36,
+        55
+      ],
+      "original_status_wording": "F-1 (High)"
+    },
+    "I-3": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        40,
+        68
+      ],
+      "original_status_wording": "F-2 (High)"
+    },
+    "I-4": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        41,
+        75
+      ],
+      "original_status_wording": "F-3 (Medium)"
+    },
+    "I-5": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        89
+      ],
+      "original_status_wording": "Notes (not blocking); by design"
+    },
+    "I-6": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        90
+      ],
+      "original_status_wording": "Notes (not blocking) N-2; 'timing risk is low ... cheap hardening'",
+      "also": "I/response.md:17 ('Minor notes, not blocking')"
+    },
+    "I-7": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        91
+      ],
+      "original_status_wording": "Notes N-3; intentional ... harmless"
+    },
+    "I-8": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        92
+      ],
+      "original_status_wording": "Notes N-4; correct today"
+    },
+    "I-9": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        100
+      ],
+      "original_status_wording": "control tests pass"
+    },
+    "I-10": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        100
+      ],
+      "original_status_wording": "control tests pass"
+    },
+    "I-11": {
+      "file": "I/record-api-key-authz-review.md",
+      "lines": [
+        100
+      ],
+      "original_status_wording": "control tests pass"
+    },
+    "J-1": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        40,
+        49,
+        51
+      ],
+      "original_status_wording": "VERIFIED REAL / F1 (High)"
+    },
+    "J-2": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        41,
+        61,
+        63
+      ],
+      "original_status_wording": "VERIFIED REAL / F2 (High)"
+    },
+    "J-3": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        42,
+        73,
+        75
+      ],
+      "original_status_wording": "VERIFIED REAL / F3 (High)"
+    },
+    "J-4": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        43,
+        98
+      ],
+      "original_status_wording": "OVER-RATED; listed under Refused or unconfirmed candidates, kept as Low, not in headline count",
+      "also": "J/response.md:9 ('Low, not counted ... optional hardening')"
+    },
+    "J-5": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        102,
+        106
+      ],
+      "original_status_wording": "Examined and found correctly guarded"
+    },
+    "J-6": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        107,
+        109
+      ],
+      "original_status_wording": "Examined and found correctly guarded"
+    },
+    "J-7": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        110
+      ],
+      "original_status_wording": "Not constant-time ... not reported"
+    },
+    "J-8": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        111
+      ],
+      "original_status_wording": "Examined and found correctly guarded"
+    },
+    "J-9": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        114
+      ],
+      "original_status_wording": "Examined and found correctly guarded"
+    },
+    "J-10": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        115
+      ],
+      "original_status_wording": "Examined and found correctly guarded"
+    },
+    "J-11": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        116,
+        127
+      ],
+      "original_status_wording": "Examined and found correctly guarded"
+    },
+    "J-12": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        128,
+        132
+      ],
+      "original_status_wording": "Examined and found correctly guarded"
+    },
+    "J-13": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        133
+      ],
+      "original_status_wording": "scoped ... Only the field exposure is wrong (F3)"
+    },
+    "J-14": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        134,
+        138
+      ],
+      "original_status_wording": "Not key-based, out of this zone; by design"
+    },
+    "J-15": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        139
+      ],
+      "original_status_wording": "Not a finding"
+    },
+    "J-16": {
+      "file": "J/record-2026-10-09-api-key-authz.md",
+      "lines": [
+        149
+      ],
+      "original_status_wording": "It uses the read-only key and is scoped by project"
+    }
+  }
+}

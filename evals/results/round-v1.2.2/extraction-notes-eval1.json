@@ -1,0 +1,471 @@
+{
+  "eval": 1,
+  "items": {
+    "A-1": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "51,59-85; response 3-8",
+      "original_status_wording": "VERIFIED REAL / Confirmed defects (High)"
+    },
+    "A-2": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "52,88-93; response 18",
+      "original_status_wording": "NEEDS DEEPER REVIEW / decision pending"
+    },
+    "A-3": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "53,94-96",
+      "original_status_wording": "closed earlier; re-checked, still closed"
+    },
+    "A-4": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "54,97-98; response 12",
+      "original_status_wording": "FALSE POSITIVE / refused, lens exploitability"
+    },
+    "A-5": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "55,99-101",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "A-6": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "132-139; response 21",
+      "original_status_wording": "Defects of other zones seen during the run (no verdict here, not counted)"
+    },
+    "A-7": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "140-141; response 22",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "A-8": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "142; response 23",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "A-9": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "143; response 24",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "A-10": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "144-145; response 25",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "A-11": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "146; response 26",
+      "original_status_wording": "other zones, no verdict (proposed sessions-csrf)"
+    },
+    "A-12": {
+      "file": "A/record-2026-10-09-access-control.md",
+      "lines": "146-149; response 26",
+      "original_status_wording": "other zones, no verdict (proposed sessions-csrf)"
+    },
+    "B-1": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "57,65-95; response 15-18",
+      "original_status_wording": "VERIFIED REAL (High)"
+    },
+    "B-2": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "58,97-126; response 19-22",
+      "original_status_wording": "VERIFIED REAL (High)"
+    },
+    "B-3": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "59,129-135; response 25",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "B-4": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "60,152-155; response 31",
+      "original_status_wording": "decision pending"
+    },
+    "B-5": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "61,156-157",
+      "original_status_wording": "FALSE POSITIVE / refused, lens exploitability (fails closed)"
+    },
+    "B-6": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "136-138; response 28",
+      "original_status_wording": "refused, lens claim correctness"
+    },
+    "B-7": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "139-143",
+      "original_status_wording": "refused, lens exploitability"
+    },
+    "B-8": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "144-146",
+      "original_status_wording": "refused, lens claim correctness"
+    },
+    "B-9": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "147-149",
+      "original_status_wording": "refused, lens exploitability within this zone"
+    },
+    "B-10": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "150-151",
+      "original_status_wording": "refused, lens exploitability"
+    },
+    "B-11": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "158-159",
+      "original_status_wording": "closed earlier by the 2026-10-03 report; re-checked and unchanged"
+    },
+    "B-12": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "198-200; response 42",
+      "original_status_wording": "Defects of other zones, no verdict, not counted"
+    },
+    "B-13": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "201-203",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-14": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "204-205; response 43",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-15": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "206; response 43",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-16": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "207; response 43",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-17": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "208; response 44",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-18": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "209",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-19": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "209-210; response 44",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-20": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "210; response 44",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-21": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "211; response 44",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-22": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "212-213",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "B-23": {
+      "file": "B/record-2026-10-09-access-control.md",
+      "lines": "214",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "C-1": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "23,31-55; response 3",
+      "original_status_wording": "VERIFIED REAL (High)"
+    },
+    "C-2": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "24,58-60; response 10",
+      "original_status_wording": "closed earlier; re-checked, still closed"
+    },
+    "C-3": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "25,61; response 14",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "C-4": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "26,62-63; response 15",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "C-5": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "27,64; response 16",
+      "original_status_wording": "FALSE POSITIVE / refused, lens exploitability"
+    },
+    "C-6": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "65-67; response 17",
+      "original_status_wording": "examined, no finding"
+    },
+    "C-7": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "68-70",
+      "original_status_wording": "examined (no finding stated)"
+    },
+    "C-8": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "71-73",
+      "original_status_wording": "Decision pending (owner) ... already recorded as informational in AC-2, no new action"
+    },
+    "C-9": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "93-94; response 24",
+      "original_status_wording": "Seen during the run, other classes or zones, no verdict"
+    },
+    "C-10": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "95-96; response 25",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "C-11": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "97-98; response 26",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "C-12": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "98; response 27",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "C-13": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "99; response 28",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "C-14": {
+      "file": "C/record-2026-10-09-access-control.md",
+      "lines": "99-100; response 29",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "D-1": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "35,47-79; response 7-11",
+      "original_status_wording": "VERIFIED REAL (High)"
+    },
+    "D-2": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "36,82-88; response 16",
+      "original_status_wording": "NEEDS DEEPER REVIEW / decision pending"
+    },
+    "D-3": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "37,89-93; response 19",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "D-4": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "38,94-99; response 20",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "D-5": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "39,100-102; response 21",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "D-6": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "40,103-105; response 22",
+      "original_status_wording": "FALSE POSITIVE / refused, lens existing mitigation"
+    },
+    "D-7": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "41,106-107; response 22",
+      "original_status_wording": "FALSE POSITIVE / refused, lens exploitability"
+    },
+    "D-8": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "42,108-111; response 23",
+      "original_status_wording": "closed earlier; re-checked live, still closed"
+    },
+    "D-9": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "43,112",
+      "original_status_wording": "closed earlier (re-check row, 'not re-tested')"
+    },
+    "D-10": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "78-79,150-156; response 13",
+      "original_status_wording": "Not sufficient on its own / hand-off item 2: observed live, proposed for input-handling sweep; not counted (yield 1 confirmed)"
+    },
+    "D-11": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "157-161; response 26",
+      "original_status_wording": "Defects of other classes seen, no verdict here"
+    },
+    "D-12": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "162-163; response 27",
+      "original_status_wording": "other classes, no verdict"
+    },
+    "D-13": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "164; response 28",
+      "original_status_wording": "other classes, no verdict"
+    },
+    "D-14": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "165-167; response 29",
+      "original_status_wording": "other classes, no verdict; 'none was verified here'"
+    },
+    "D-15": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "167-168; response 30",
+      "original_status_wording": "other classes, no verdict"
+    },
+    "D-16": {
+      "file": "D/record-2026-10-09-access-control.md",
+      "lines": "168-170; response 31",
+      "original_status_wording": "other classes, no verdict"
+    },
+    "E-1": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "25,35-62; response 3",
+      "original_status_wording": "VERIFIED REAL (High)"
+    },
+    "E-2": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "26,65-68; response 8",
+      "original_status_wording": "FALSE POSITIVE / refused, still closed"
+    },
+    "E-3": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "27,69-72; response 12",
+      "original_status_wording": "NEEDS DEEPER REVIEW / decision pending"
+    },
+    "E-4": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "28,73-74",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "E-5": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "29,75; response 9",
+      "original_status_wording": "FALSE POSITIVE / refused, lens exploitability"
+    },
+    "E-6": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "76-79; response 10",
+      "original_status_wording": "Read and clean for object-level access"
+    },
+    "E-7": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "77-78; response 10",
+      "original_status_wording": "Read and clean (no mass assignment)"
+    },
+    "E-8": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "100-101; response 15",
+      "original_status_wording": "Seen during the run, other class or zone, no verdict"
+    },
+    "E-9": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "102; response 16",
+      "original_status_wording": "other zone, no verdict"
+    },
+    "E-10": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "103; response 17",
+      "original_status_wording": "other zone, no verdict"
+    },
+    "E-11": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "103-104; response 17",
+      "original_status_wording": "other zone, no verdict"
+    },
+    "E-12": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "105; response 18",
+      "original_status_wording": "other zone, no verdict"
+    },
+    "E-13": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "105-106; response 18",
+      "original_status_wording": "other zone, no verdict"
+    },
+    "E-14": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "106-107; response 18",
+      "original_status_wording": "other zone, no verdict"
+    },
+    "E-15": {
+      "file": "E/record-2026-10-09-access-control.md",
+      "lines": "108-109; response 19",
+      "original_status_wording": "other zone, no verdict"
+    },
+    "F-1": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "45,53-75; response 14-18",
+      "original_status_wording": "VERIFIED REAL (High)"
+    },
+    "F-2": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "46,78-81; response 22",
+      "original_status_wording": "NEEDS DEEPER REVIEW / decision pending"
+    },
+    "F-3": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "47,82-83; response 23",
+      "original_status_wording": "FALSE POSITIVE / refused, lens claim correctness"
+    },
+    "F-4": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "84-85",
+      "original_status_wording": "examined, none"
+    },
+    "F-5": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "86-87; response 24",
+      "original_status_wording": "refused, lens exploitability"
+    },
+    "F-6": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "88-89; response 24",
+      "original_status_wording": "refused"
+    },
+    "F-7": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "10-11,90-91; response 4",
+      "original_status_wording": "closed earlier; AC-1 re-checked, still closed"
+    },
+    "F-8": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "109-113; response 27",
+      "original_status_wording": "Defects of other zones seen, no verdict, not counted"
+    },
+    "F-9": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "114; response 28",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "F-10": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "115; response 29",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "F-11": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "116; response 30",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "F-12": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "117; response 31",
+      "original_status_wording": "other zones, no verdict"
+    },
+    "F-13": {
+      "file": "F/record-2026-10-09-access-control.md",
+      "lines": "117-118; response 32",
+      "original_status_wording": "other zones, no verdict"
+    }
+  },
+  "note": "'response N' line numbers refer to response.md lines; others refer to the record file."
+}

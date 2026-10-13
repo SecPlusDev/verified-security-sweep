@@ -1,0 +1,279 @@
+{
+  "eval": 5,
+  "reviews": {
+    "A": [
+      {
+        "id": "A-1",
+        "claim": "A read-only key could create, update, pause or resume checks, list pings, read ping bodies or list channels if those views accepted it; each of those views uses the decorator that accepts only read-write keys, so a read-only key gets 401 there.",
+        "location": "hc/api/decorators.py:59",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-2",
+        "claim": "The request flag that marks a read-only key is set for every read-only credential, hashed or legacy plain-text, and a legacy read-write key that happens to start with the read-only prefix would lose access rather than gain it.",
+        "location": "hc/api/decorators.py:87-89",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-3",
+        "claim": "List checks and get check by UUID pass the read-only flag when serializing, so a read-only key receives check documents without the UUID, ping URL, update, pause and resume URLs and channels.",
+        "location": "hc/api/views.py:486",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-4",
+        "claim": "GET /api/vN/checks/ (get_checks) filters checks by the owner of the key's project instead of by the project itself, so a read-write or read-only key of one project lists the checks of every other project with the same owner, with their UUIDs and ping URLs for a read-write key (update, delete, pause and resume of those checks still return 403).",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-5",
+        "claim": "Creating a check with POST /api/vN/checks/ could place the check in, or match an existing check of, another project if it were not scoped; the new check gets the key's project and the lookup of an existing check by its unique fields only searches that project.",
+        "location": "hc/api/views.py:451",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-6",
+        "claim": "A key could attach another project's notification channels to a check on create or update if channel names or ids were resolved across projects; they are resolved only among the channels of the check's own project.",
+        "location": "hc/api/views.py:323",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-7",
+        "claim": "Apart from list checks, every Management API view (single check read, update, delete, pause and resume, pings, ping body and flips by UUID, lookups and flips by unique_key, the channel list and the badge list) could reach another project's objects if it were not scoped; each one either compares the check's project with the key's project and returns 403, or queries only the key's project.",
+        "location": "hc/api/views.py:483",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-8",
+        "claim": "A read-only API key, hashed or legacy plain-text, can delete a check with DELETE /api/vN/checks/<uuid> because delete_check is decorated with authorize_read, which accepts read-only keys, and the view never consults the read-only flag; the response also returns the deleted check's UUID and ping URL.",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-9",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) serializes the check without the read-only flag, so a read-only key that takes unique_key values from the list endpoint receives each check's UUID, ping URL, update, pause and resume URLs and channels, and the UUID alone is enough to send success or failure pings to that check.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-10",
+        "claim": "The metrics and status endpoints take no API key: metrics is gated by a separate operator key in the X-Metrics-Key header and returns only global counters, and status runs only a trivial database query, so neither returns project data.",
+        "location": "hc/api/views.py:860",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-11",
+        "claim": "The metrics endpoint compares the operator-configured X-Metrics-Key header value with a plain string inequality instead of a constant-time comparison; the endpoint returns four global counters.",
+        "location": "hc/api/views.py:860",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-12",
+        "claim": "A comment in compare_api_key says a stored key hash is 72 characters while the stored value is 73 (8-character prefix, a dot separator and a 64-character hash); the code tests for the dot separator, not the length, so nothing depends on the comment.",
+        "location": "hc/accounts/models.py:587",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-13",
+        "claim": "update_check loads the check without a row lock and always recomputes and saves alert_after from that copy, so a ping that lands between the read and the save can be overwritten with alert_after set to NULL, and because the alert sender only considers checks with alert_after set, a later outage could go without an alert (Check.ping takes a row lock, the API update path does not).",
+        "location": "hc/api/views.py:501",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-14",
+        "claim": "create_check reads the plan's check limit and then creates the check without a lock, so concurrent create requests made with one's own key can exceed the plan's check limit.",
+        "location": "hc/api/views.py:448",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-15",
+        "claim": "The API version is detected with request.path_info.startswith(\"/api/v3/\") while a SITE_ROOT sub-path is placed into the URL patterns, so under a sub-path deployment every call may be treated as version 1, which regenerates slugs from names on update.",
+        "location": "hc/api/decorators.py:26",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-16",
+        "claim": "A hashed read-only key could pass the read-write check, or the other way round, if the hcw_ and hcr_ prefixes were confused; each hashed lookup branch runs only when its key type is accepted, the stored field is chosen by prefix, and the HMAC input includes the prefix.",
+        "location": "hc/accounts/models.py:409",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-17",
+        "claim": "A supplied key could match a stored hashed value through the legacy plain-text lookup; supplied keys must be exactly 32 characters long while stored hashes are 73 characters.",
+        "location": "hc/api/decorators.py:56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-18",
+        "claim": "An API key sent in the JSON body could bypass the header-based handling; only the read-write decorator reads a body key, only for POST and after the header, and the decorator that also accepts read-only keys reads the X-Api-Key header only.",
+        "location": "hc/api/decorators.py:49-54",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-19",
+        "claim": "A holder of a check's unique_key could try to recover its UUID; unique_key is a SHA-1 of the first half of the UUID's hex digits, so the other half cannot be derived from it.",
+        "location": "hc/api/models.py:433-434",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-20",
+        "claim": "Requesting another project's check by UUID returns 403 while an unknown UUID returns 404, which shows that the UUID exists; this response is documented and version-4 UUIDs cannot be guessed.",
+        "location": "hc/api/views.py:483",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-21",
+        "claim": "The API documentation promises a 429 response after 100 requests per minute, but the Management API code has no rate limiter; the limit may be applied by the hosted deployment's reverse proxy, whose configuration is not in the repository.",
+        "location": "templates/docs/api.md:85-88",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-22",
+        "claim": "The API documentation for v1, v2 and v3 says list checks returns the checks belonging to the user, while it also says all API keys are project-specific.",
+        "location": "templates/docs/api.md:94",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-23",
+        "claim": "The API documentation for the ping body endpoint lists response codes without 401, which the decorator returns for a missing or unknown key.",
+        "location": "templates/docs/api.md:1326-1338",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-24",
+        "claim": "The API documentation describes 403 as wrong API key across endpoints, while the code returns 401 for an unknown key and 403 for a valid key of another project.",
+        "location": "templates/docs/api.md:283-284",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-25",
+        "claim": "The Prometheus metrics endpoint in hc/integrations/prometheus/views.py also accepts read-only API keys, so what it returns to such a key is a further possible exposure outside hc/api.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "B": [
+      {
+        "id": "B-1",
+        "claim": "GET /api/vN/checks/ (get_checks) filters checks by the owner of the key's project instead of by the project itself, so a read-write or read-only key of one project lists the checks of every project with the same owner, including names, descriptions, tags, schedules and statuses, and with a read-write key their UUIDs and ping URLs (update, pause and delete of those checks still return 403).",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-2",
+        "claim": "A read-only API key, hashed or legacy plain-text, can delete a check with DELETE /api/vN/checks/<uuid> because delete_check is decorated with authorize_read, which accepts read-only keys, and the view never consults the read-only flag.",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) serializes the check without the read-only flag, so a read-only key that takes unique_key values from the list endpoint receives each check's UUID, ping URL, update, pause and resume URLs and channels, which allow sending pings to the check and supply the UUID needed to delete it.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-4",
+        "claim": "The v1 and v2 API documentation lists the fields hidden from read-only keys without the UUID, while the code hides the UUID from read-only keys in every API version, as the v3 documentation says.",
+        "location": "templates/docs/apiv2.md:195",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-5",
+        "claim": "The legacy plain-text key lookup catches only the not-found exception, so if two projects held the same legacy 32-character key the lookup would raise a multiple-results error and return 500 instead of 401; legacy keys are random, new keys are always hashed, and no user can choose a key value.",
+        "location": "hc/accounts/models.py:426",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-6",
+        "claim": "delete_check returns the full read-write document of the deleted check, so a read-only key that reaches it receives the UUID and URLs; this follows only from read-only keys reaching the view, and a read-write key may receive that body.",
+        "location": "hc/api/views.py:529",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-7",
+        "claim": "API responses carry Access-Control-Allow-Origin: *, while the API authenticates only with the X-Api-Key header or a key in the JSON body and accepts no cookie or other ambient credential, so a foreign web origin gains nothing it does not already hold.",
+        "location": "hc/api/decorators.py:112",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-8",
+        "claim": "Requesting another project's check by UUID returns 403 while an unknown UUID returns 404, which tells the caller that the UUID exists; only a caller already holding that random version-4 UUID, which itself is enough to send pings, can learn this, and the 403 is documented.",
+        "location": "hc/api/views.py:483",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-9",
+        "claim": "Apart from list checks, every Management API view (single check read, update, delete, pause and resume, pings, ping body and flips by UUID, lookups and flips by unique_key, the channel list and the badge list) could reach another project's objects if it were not scoped; each one either compares the check's project with the key's project and returns 403 or 404, or queries only the key's project.",
+        "location": "hc/api/views.py:483",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-10",
+        "claim": "The request flag that marks a read-only key is set correctly for all four key formats (hashed and legacy plain-text, read-write and read-only).",
+        "location": "hc/api/decorators.py:87-89",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-11",
+        "claim": "A read-only key could create, update, pause or resume checks, list pings, read ping bodies or list channels if those views accepted it; each of those views uses the decorator that accepts only read-write keys, so a read-only key gets 401 there.",
+        "location": "hc/api/decorators.py:59",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-12",
+        "claim": "List checks and get check by UUID pass the read-only flag when serializing, so a read-only key receives check documents without the UUID, ping URL, update, pause and resume URLs and channels.",
+        "location": "hc/api/views.py:486",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-13",
+        "claim": "Creating a check with POST /api/vN/checks/, including the upsert that matches an existing check by unique fields, could place the check in or match a check of another project if it were not scoped; the new check gets the key's project and the match only searches that project.",
+        "location": "hc/api/views.py:300",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-14",
+        "claim": "A key could attach another project's notification channels to a check on create or update if channel names or ids were resolved across projects; they are resolved only among the key's own project's channels.",
+        "location": "hc/api/views.py:330",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-15",
+        "claim": "A hashed read-only key could satisfy the read-write check if the stored key columns were confused; hashed keys are found by their 8-character prefix, the hcw_ or hcr_ prefix selects the column, and the HMAC comparison with hmac.compare_digest covers the whole key including the prefix.",
+        "location": "hc/accounts/models.py:409-440",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-16",
+        "claim": "A legacy plain-text read-only key could pass the read-write check if the plain-text fallback compared it against both key columns; when read-only keys are not accepted the fallback matches only the read-write api_key column.",
+        "location": "hc/accounts/models.py:431",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-17",
+        "claim": "An API key could be accepted from an unexpected place or in a malformed form; the read-write decorator reads the X-Api-Key header and then the JSON body for POST only, the decorator that also accepts read-only keys reads the header only, and keys of the wrong length get 401.",
+        "location": "hc/api/decorators.py:56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-18",
+        "claim": "An HTTP method could reach a view with the wrong key decorator if routes accepted methods they do not list; the CORS wrapper returns 405 for unlisted methods, and the only method whose view has a decorator that does not match the documented key permissions is DELETE on a single check.",
+        "location": "hc/api/decorators.py:110",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-19",
+        "claim": "Create check could count the plan's check limit against the wrong project; the limit is counted against the key's project.",
+        "location": "hc/api/views.py:448",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-20",
+        "claim": "The metrics endpoint compares the X-Metrics-Key header with a plain string inequality instead of the constant-time hmac.compare_digest that the API key lookup uses.",
+        "location": "hc/api/views.py:860",
+        "status": "unconfirmed"
+      }
+    ]
+  }
+}

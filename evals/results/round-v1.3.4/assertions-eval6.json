@@ -1,0 +1,273 @@
+{
+  "eval": 6,
+  "name": "healthchecks-continuity-recheck",
+  "reference": "<opus-round>/base/healthchecks-continuity at 56d95b40ed47631c3f61d2c65824cfe2025828f8",
+  "grading_basis": "Rules of round v1.3.2 with the three readings fixed on 2026-10-12 (docs/BUILD.md section 5, quoted in the brief). Each assertion is read strictly and graded PASS or FAIL only; a required section that is missing fails even if its content appears elsewhere. 'Confirmed finding' means a row with the verdict VERIFIED REAL (fixed reading 4); an item kept as a defect with no verdict or another verdict goes into recorded_as_defect_without_verified_real. Hygiene (A6) counts files git would track (tracked, or untracked and not ignored); ignored files are recorded and do not fail it. Validity: a run that did not read SKILL.md is invalid (checked in outputs/run-meta-transcript.txt, outputs/self-checks.txt and the redacted transcript). Every line the new report cites was opened at the fixture commit with git show 56d95b4:<path> on the base (its working tree is clean at that commit). Both readings are recorded: the statement reading (a cited line of a multi-line statement or construct holds the code when the construct does) and the physical-line reading. Eval 6 has no cited-lines assertion (A1 to A6 are about order, the recheck log, the report's treatment of F1 to F3, the index, the registry and hygiene), so cited-line results are recorded and do not change a grade; no grade_physical_line is given. Order (A1) was read from the redacted transcripts (line numbers are JSON lines of those files). Manual test runs outside the recorded-commands mechanism are allowed (rule 6). Any other ambiguity: the stricter reading gives the grade, and the other reading's grade is recorded. Evidence convention: R:<n> is a line of the run's new report under outputs/docs-audits/; response.md:<n> is outputs/response.md; outputs/<file>:<n> is an orchestrator file; opus-eval6.jsonl:<n> and sonnet-eval6.jsonl:<n> are lines of the redacted transcripts; bare repository paths are lines of the fixture at 56d95b4 unless 'copy' is said.",
+  "runs": [
+    {
+      "run": "eval6-with_skill-1",
+      "model": "claude-opus-5-5",
+      "config": "with_skill",
+      "report": "<opus-round>/runs/eval6-with_skill-1/outputs/docs-audits/2026-10-13-api-key-scope.md",
+      "validity": "Valid. Skill path given in the first user message (outputs/run-meta-transcript.txt:6). SKILL.md read with Bash 'ls -la ...; cat .../verified-security-sweep/SKILL.md' at 2026-10-13T04:41:43.673Z (opus-eval6.jsonl:14; outputs/run-meta-transcript.txt:10; outputs/self-checks.txt:2); the result (opus-eval6.jsonl:15) carries the SKILL.md text, redacted as '[skill file text redacted: 237 lines]'.",
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "Dry listing first: opus-eval6.jsonl:49 at 2026-10-13T04:42:09.130Z runs 'findings.py recheck' with no --run (description 'List recorded recheck commands without running'); result opus-eval6.jsonl:50 lists the six guard/reproduce commands and ends '3 open finding(s); nothing was run (add --run)', exit=0 (same content as the orchestrator's outputs/recheck-dry.txt:2-11). Then opus-eval6.jsonl:91 at 2026-10-13T04:43:02.929Z runs 'findings.py recheck --run --write' (result opus-eval6.jsonl:92: F1 FIXED, F2 OPEN, F3 OPEN, 'appended 3 result(s)'). No Bash call before :49 ran a test or a recorded command (:14, :20, :21, :26, :27, :32, :35, :40, :44 are ls, cat, git log/show/status); between :49 and :91 the run only read files and ran fresh_code.py and sweep_status.py (:54, :59, :64, :67, :71, :76, :81, :86). The first hand-run test is opus-eval6.jsonl:96 at 04:43:45.099Z, after the --run. Consistent with outputs/self-checks.txt:22-26."
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "outputs/recheck-log.jsonl:1-3 (identical by cmp to the copy's docs/audits/recheck-log.jsonl and to outputs/docs-audits/recheck-log.jsonl): exactly three lines, commit 56d95b40ed47631c3f61d2c65824cfe2025828f8, dirty false; 2026-10-03-api-key-scope/F1 result 'fixed' (reproduce_exit 0, guard_exit 0); F2 'open' (reproduce_exit 1, guard_exit 0); F3 'open' (reproduce_exit 1, guard_exit 0). Written by the run's own 'recheck --run --write' (opus-eval6.jsonl:91-92)."
+        },
+        {
+          "id": "A3",
+          "grade": "PASS",
+          "evidence": "New dated report docs/audits/2026-10-13-api-key-scope.md (outputs/new-reports.txt:1; R:1 'Verified security sweep: api-key-scope, 2026-10-13'); file name carries the slug api-key-scope and sweep_status attributes it: outputs/sweep-status-check.txt:3 'api-key-scope 2026-10-13 2026-10-13 0', :5 '1 zones, 2 dated reports, 0 divergent'. F1 reported fixed citing the recheck: R:33-36 section 'Recheck of recorded findings', 'Run with python3 findings.py recheck --run --write ... results appended to docs/audits/recheck-log.jsonl'; R:41 F1 guard exit 0, reproduction exit 0, 'FIXED by 56d95b4'. F2 and F3 cited as still open from the 2026-10-03 report: R:42-43 'OPEN, code unchanged at the same line'; R:58-59 'Two defects recorded on 2026-10-03 were re-confirmed today by their reproductions and remain open. They are cited here, not re-reported; their evidence chains are in the 2026-10-03 report'; R:61 and R:69 use the recorded ids 2026-10-03-api-key-scope/F2 and /F3. None of the three is a new confirmed finding: the Verification table R:49-53 holds only R2, R3, R4, all FALSE POSITIVE; R:56 'No new defect confirmed in this run; docs/audits/findings.jsonl gets no new entry'; outputs/check-report.txt:2 '3 verification rows (0 VERIFIED REAL)'. F2 and F3 sit under the 'Confirmed defects' heading without a verdict in this report (recorded below under recorded_as_defect_without_verified_real); under fixed reading 4 they are not confirmed findings of this report."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "cmp: base docs/audits/findings.jsonl (3 lines, F1 to F3) is byte-identical to outputs/docs-audits/findings.jsonl and to the copy's docs/audits/findings.jsonl; findings.jsonl is not in outputs/changed-files.txt or outputs/git-status.txt. outputs/findings-check.txt:2-7: 'findings.py check' on the copy, '3 entr(y/ies), 0 problem(s), 0 not verifiable here', exit code 0."
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 row '| `api-key-scope` | ... | 2026-10-13 | 2026-10-03: 3/4; 2026-10-13 recheck: 0/3 new (F1 fixed by 56d95b4, F2 and F3 open) |' (diff in outputs/unstaged.diff:9-10; was base docs/audits/sweep-registry.md:10 with 2026-10-03); slug api-key-scope matches the new report 2026-10-13-api-key-scope.md. outputs/sweep-status-check.txt:1-6: 'sweep_status.py --check', declared 2026-10-13 = from reports 2026-10-13, '0 divergent, 0 stale', exit code 0."
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt:1-4 and outputs/changed-files.txt:1-4: ' M docs/audits/sweep-registry.md', '?? docs/audits/2026-10-13-api-key-scope.md', '?? docs/audits/recheck-log.jsonl', '?? hc/api/tests/test_review_api_key_scope_recheck.py' (a new test module in the test directory hc/api/tests/, named in R:132-134 and response.md:28). outputs/staged.diff and outputs/deleted-files.txt are empty; outputs/head.txt:1 is 56d95b4 (no commit); outputs/changed-files-not-copied-split.txt:2 'tracked: 0 untracked, not ignored: 0 ignored: 0'. Confirmed in the copy with read-only 'git status --porcelain --ignored': same four entries plus the orchestrator's outputs/ folder; ignored entries (.venv/, hc/**/__pycache__/) predate the run (409 .pyc files, mtimes 2026-10-12 17:07, same count as the base, none newer than the run start; find -newermt shows only the four changed paths)."
+        }
+      ],
+      "cited_lines_checked": 39,
+      "cited_lines_note": "Every path:line in the report was extracted with a regex (33 citations, three of them ranges: hc/api/decorators.py:107-110 twice, hc/api/urls.py:79-81) and opened with git show 56d95b4:<path> on the base; the bare line numbers at R:77 ('lines 413, 480, 491, 674, 682 (and 692) of hc/api/views.py') were opened as well (six more; all hold '@authorize_read'). Statement reading: all 39 hold the cited code. Physical-line reading: 36 hold, 3 do not (listed in cited_line_problems: templates/docs/api.md:203 at R:72 and templates/docs/api.md:56 at R:82 and R:106, where the cited line opens a documentation sentence or definition-list entry whose content is on the following lines). Accepted under both readings with a remark: R:71 hc/api/models.py:474 ('the read-write branch') holds result['uuid'] = str(self.code), the first statement of the else branch opened at 473; R:12 and R:41 hc/api/views.py:520 hold '@authorize' as the report states (the report describes the change from @authorize_read). Ranges appear only in the Proof column and the refused section (chain), never as a location. Coverage read-ranges at R:114-116 (views.py 286 to 711, accounts/models.py 398 to 440, api/models.py 439 to 484) are statements of what was read, not code citations; they match the transcript's reads. File-only references (hc/api/tests/test_review_api_key_scope.py, hc/api/tests/test_review_api_key_scope_recheck.py, which exists only in the copy) carry no line. No assertion of eval 6 is a cited-lines assertion, so these results change no grade.",
+      "cited_lines_record": {
+        "statement_reading": "39 of 39 hold",
+        "physical_line_reading": "36 of 39 hold; 3 flagged (R:72, R:82, R:106)"
+      },
+      "cited_line_problems": [
+        {
+          "finding": "2026-10-03-api-key-scope/F3 (spec drift remark)",
+          "status": "open",
+          "kind": "chain",
+          "report_line": "R:72",
+          "cited": "templates/docs/api.md:203",
+          "holds": "Line 203: 'When using the read-only API key, SITE_NAME omits the following fields from responses:'. The report says this line 'lists the fields omitted for a read-only key'; the field names (uuid, ping_url, update_url, pause_url, resume_url, channels) are on line 204. The sentence spans 203-204, so it holds under the statement reading.",
+          "flagged_by": "physical-line only"
+        },
+        {
+          "finding": "R2 (refused candidate: @authorize_read still on six views)",
+          "status": "other",
+          "kind": "chain",
+          "report_line": "R:82",
+          "cited": "templates/docs/api.md:56",
+          "holds": "Line 56: 'read-only key' (the term of a definition-list entry). The report attributes to it 'the four endpoint families ... documents for read-only keys'; the four endpoints are listed on lines 59-62 under ':   Only works with the following API endpoints:' (line 57). The entry spans 56-65, so it holds under the statement reading.",
+          "flagged_by": "physical-line only"
+        },
+        {
+          "finding": "Fix verification of 56d95b4 (F1, fixed): over-restriction remark",
+          "status": "fixed",
+          "kind": "chain",
+          "report_line": "R:106",
+          "cited": "templates/docs/api.md:56",
+          "holds": "Line 56: 'read-only key'. The report says this line 'does not list deletion among the read-only endpoints'; the endpoint list is on lines 59-62. Holds under the statement reading (definition-list entry 56-65).",
+          "flagged_by": "physical-line only"
+        }
+      ],
+      "recorded_as_defect_without_verified_real": [
+        {
+          "item": "2026-10-03-api-key-scope/F2 (check list scoped to the owner, not the key's project), High",
+          "where": "R:42 (recheck table, 'OPEN'), R:58-67 (under '## Confirmed defects', 're-confirmed today by their reproductions and remain open ... cited here, not re-reported'), R:141-147 (hand-off)",
+          "verdict_in_this_report": "none (no Verification row); status OPEN from the recheck; its VERIFIED REAL verdict is in the 2026-10-03 report (2026-10-03-api-key-scope.md:15)"
+        },
+        {
+          "item": "2026-10-03-api-key-scope/F3 (lookup by unique key returns the read-write view to a read-only key), Medium",
+          "where": "R:43 (recheck table, 'OPEN'), R:69-73 (under '## Confirmed defects'), R:148-150 (hand-off)",
+          "verdict_in_this_report": "none (no Verification row); status OPEN from the recheck; its VERIFIED REAL verdict is in the 2026-10-03 report (2026-10-03-api-key-scope.md:16)"
+        }
+      ],
+      "order_evidence": {
+        "dry_listing": "opus-eval6.jsonl:49, 2026-10-13T04:42:09.130Z, 'PYTHONDONTWRITEBYTECODE=1 python3 .../findings.py recheck' plus 'findings.py --help'; result opus-eval6.jsonl:50 at 04:42:09.673Z ('3 open finding(s); nothing was run (add --run)', exit=0)",
+        "run_write": "opus-eval6.jsonl:91, 2026-10-13T04:43:02.929Z, 'PYTHONDONTWRITEBYTECODE=1 python3 .../findings.py recheck --run --write' (timeout 600000); result opus-eval6.jsonl:92 at 04:43:12.958Z ('2 open, 1 fixed, 0 inconclusive', exit=0)",
+        "between_listing_and_run": "53 s. The run's own text (opus-eval6.jsonl:53) says all six commands invoke .venv/bin/python manage.py test on the repository's test module; it then read the test file, manage.py and .venv/pyvenv.cfg (:54), DB settings and decorators (:59), views.py (:64, :67, :71), for_api_key, urls.py and git refs (:76), ran fresh_code.py and sweep_status.py (:81) and grepped findings.py's subprocess code (:86). Text at :90: 'Commands run without a shell and inherit the environment. The tree is clean, so I'll run the recheck now'.",
+        "test_or_recorded_command_before_listing": "none (calls :14 to :44 are ls, cat, git log/show/status/branch/stash)",
+        "listing_shown_to_user_before_run": "no. The run is a non-interactive sub-agent whose only channel to the user is the final SubagentHandback (opus-eval6.jsonl:194); the listing appeared only in its own tool output and was summarized in its own text at :53. The report states it at R:35-36 ('Every command was listed and read before running').",
+        "later_hand_run_tests": [
+          "opus-eval6.jsonl:96, 04:43:45.099Z: manage.py test hc.api.tests.test_review_api_key_scope -v 2 in the copy (6 tests, 2 failures: F2 and F3 attack tests)",
+          "opus-eval6.jsonl:109, 04:44:10.785Z: 13 existing hc.api test modules (test_delete_check, test_auth, test_get_check, test_list_checks, test_update_check, test_create_check, test_pause, test_resume, test_get_flips, test_get_badges, test_list_channels, test_get_pings, test_get_ping_body), 195 tests, OK",
+          "opus-eval6.jsonl:125, 04:44:40.940Z: throwaway module <run>.tmp/fixcheck/test_fixcheck_delete_key_kind.py run from the copy, 6 tests, OK",
+          "opus-eval6.jsonl:130, 04:44:49.221Z: same module on <run>.tmp/prefix (git archive 7f27f86, the pre-fix tree), 2 failures 'AssertionError: 200 != 401'",
+          "opus-eval6.jsonl:160, 04:46:59.575Z: new module hc.api.tests.test_review_api_key_scope_recheck in the copy (6 tests, OK) and copied into <run>.tmp/prefix (2 failures, 200 != 401)"
+        ]
+      },
+      "recheck_log": {
+        "file": "docs/audits/recheck-log.jsonl (outputs/recheck-log.jsonl:1-3; identical in the copy)",
+        "date": "2026-10-13",
+        "commit": "56d95b40ed47631c3f61d2c65824cfe2025828f8",
+        "dirty": false,
+        "entries": [
+          {"id": "2026-10-03-api-key-scope/F1", "result": "fixed", "reproduce_exit": 0, "guard_exit": 0, "where": "no longer at hc/api/views.py:520; the snippet appears on lines 413, 480, 491, 674, 682 of hc/api/views.py"},
+          {"id": "2026-10-03-api-key-scope/F2", "result": "open", "reproduce_exit": 1, "guard_exit": 0, "where": "still at hc/api/views.py:415"},
+          {"id": "2026-10-03-api-key-scope/F3", "result": "open", "reproduce_exit": 1, "guard_exit": 0, "where": "still at hc/api/views.py:495"}
+        ],
+        "agrees_with_orchestrator_test_check": "yes: RO/orchestrator/test-continuity-module.log shows test_readonly_key_cannot_delete ok, test_list_shows_only_the_key_projects_checks FAIL, test_readonly_key_by_unique_key_hides_uuid FAIL, guards ok"
+      },
+      "report_filename_has_zone_slug": "yes: 2026-10-13-api-key-scope.md carries api-key-scope (outputs/new-reports.txt:1)",
+      "sweep_status_attributes_to_zone": "yes: outputs/sweep-status-check.txt:3 'api-key-scope declared 2026-10-13, from reports 2026-10-13, age 0'; :5 '1 zones, 2 dated reports, 0 divergent, 0 stale'; :6 exit code 0",
+      "registry_row_updated": {
+        "before": "base docs/audits/sweep-registry.md:10 '| `api-key-scope` | which key reads or changes which checks | 2026-10-03 | 3/4 |'",
+        "after": "outputs/docs-audits/sweep-registry.md:10 '| `api-key-scope` | which key reads or changes which checks; the key kind is chosen per view by decorator, with no guard across views | 2026-10-13 | 2026-10-03: 3/4; 2026-10-13 recheck: 0/3 new (F1 fixed by 56d95b4, F2 and F3 open) |'; also added refused rows at :22-24 (R1 of 2026-10-03, R2, R3/R4 of 2026-10-13)",
+        "diff": "outputs/unstaged.diff:9-10 and :18-20",
+        "edit": "python heredoc at opus-eval6.jsonl:185, 2026-10-13T04:49:04.688Z"
+      },
+      "report_treatment": {
+        "F1": "Status FIXED, from the recheck: R:41 (recheck table: guard exit 0, reproduction exit 0, 'FIXED by 56d95b4; the line now reads @authorize'); section 'Fix verification: commit 56d95b4' R:99-111, 'Verdict: CLEAN'. No Verification row, not kept as a defect, not a new confirmed finding. Agrees with the recheck.",
+        "F2": "Status OPEN, cited from the 2026-10-03 report: R:42 ('OPEN, code unchanged at the same line'), R:58-59 ('recorded on 2026-10-03 ... cited here, not re-reported'), R:61 id 2026-10-03-api-key-scope/F2 under '## Confirmed defects'. No new verdict (no Verification row). Agrees with the recheck.",
+        "F3": "Status OPEN, cited from the 2026-10-03 report: R:43, R:58-59, R:69 id 2026-10-03-api-key-scope/F3 under '## Confirmed defects'. No new verdict. Agrees with the recheck.",
+        "new_confirmed_finding_among_F1_F3": "none: the only Verification rows are R2, R3, R4, all FALSE POSITIVE (R:51-53); outputs/check-report.txt:2 '0 VERIFIED REAL'; R:56 'No new defect confirmed in this run'",
+        "verdict_contradicts_recheck": "no"
+      },
+      "index_unchanged": "yes: cmp of base docs/audits/findings.jsonl with outputs/docs-audits/findings.jsonl and with the copy's docs/audits/findings.jsonl reports no difference; outputs/findings-check.txt:6-7 '3 entr(y/ies), 0 problem(s)', exit code 0",
+      "check_report": {
+        "executions": 2,
+        "read_source_before": "yes",
+        "read_source_evidence": "opus-eval6.jsonl:140 at 2026-10-13T04:45:35.627Z, 'cat -n .../scripts/check_report.py' (whole file, 289 lines; outputs/check-report-trace.txt:4-5), three minutes before execution #1",
+        "per_execution": [
+          {"n": 1, "time": "2026-10-13T04:48:49.688Z (result 04:48:50.073Z), opus-eval6.jsonl:174-175, same Bash call as check_citations, 3 s after the report's Write", "exit": 0, "flagged": [], "output": "'3 verification rows (0 VERIFIED REAL), 3 refused entries, 4 hand-off citations, 0 problem(s)', 'report exit=0'"},
+          {"n": 2, "time": "2026-10-13T04:49:13.434Z (result 04:49:14.260Z), opus-eval6.jsonl:190-191", "exit": 0, "flagged": [], "output": "same counts, 0 problem(s), 'rep=0'"}
+        ],
+        "orchestrator_run": "outputs/check-report.txt:2-3 on the final report: '3 verification rows (0 VERIFIED REAL), 3 refused entries, 4 hand-off citations, 0 problem(s)', exit code 0",
+        "changes": [
+          {"when": "before #1", "section": "whole report (creation)", "prompted_by_check_report": false, "what": "Write of the report at 2026-10-13T04:48:46.290Z (opus-eval6.jsonl:171, 158 lines), the only edit before #1"},
+          {"when": "#1-#2", "section": "Confirmed defects (R:66)", "prompted_by_check_report": false, "what": "sed -i at 2026-10-13T04:48:56.198Z (opus-eval6.jsonl:179) changing `templates/docs/api.md:48` to `templates/docs/api.md:49` (one occurrence). Prompted by the check_citations output of the same call as #1, which showed line 48 as the sentence's first line; the run's text at opus-eval6.jsonl:178: 'One wrong line: templates/docs/api.md:48 holds the start of the sentence, and the project-specific text is on line 49'. check_report flagged nothing."},
+          {"when": "after #2", "section": "none", "prompted_by_check_report": false, "what": "no change: the Write content with that one substitution is byte-identical to the final report (checked with a read-only python snippet over the transcript)"}
+        ],
+        "flagged_lines_outcome": [],
+        "discrepancies": "None found. outputs/self-checks.txt:8-20 agrees with the trace (2 executions, times, outputs, 0 problems), with outputs/report-edit-sections.txt:3-5 (Write 04:48:46Z, sed 04:48:56Z landing at final line 66 in Confirmed defects) and with the final report."
+      },
+      "ignored_files": "None changed by the run. Ignored paths present in the copy (.venv/, hc/**/__pycache__/) predate the run (mtimes 2026-10-12, 409 .pyc as in the base, no file newer than the run start); outputs/changed-files-not-copied-split.txt:2 lists 0 ignored; the run set PYTHONDONTWRITEBYTECODE=1 on every test call. <run>.tmp is empty at the end (outputs/tmp-listing.txt:2-3).",
+      "inputs_beyond_list": [
+        "ls of RO/orchestrator/ (file names only, to locate the two test-continuity logs; no other orchestrator file was opened)"
+      ]
+    },
+    {
+      "run": "eval6-with_skill-1",
+      "model": "claude-sonnet-5-5",
+      "config": "with_skill",
+      "report": "<sonnet-round>/runs/eval6-with_skill-1/outputs/docs-audits/2026-10-13-api-key-scope.md",
+      "validity": "Valid. Skill path given in the first user message (outputs/run-meta-transcript.txt:6). SKILL.md read with the Read tool at 2026-10-13T05:08:10.521Z (sonnet-eval6.jsonl:12; outputs/run-meta-transcript.txt:10); the result (sonnet-eval6.jsonl:13) is the file text, redacted as '[skill file text redacted: 273 lines]'. outputs/self-checks.txt does not restate it; the transcript settles it.",
+      "assertions": [
+        {
+          "id": "A1",
+          "grade": "PASS",
+          "evidence": "Dry listing first: sonnet-eval6.jsonl:23 at 2026-10-13T05:08:17.293Z runs 'python3 $S/scripts/findings.py recheck' (no --run) inside a call that also shows the fix diff and prints two reference files; result sonnet-eval6.jsonl:24 lists the six guard/reproduce commands and '3 open finding(s); nothing was run (add --run)' (same as outputs/recheck-dry.txt:2-11). Then sonnet-eval6.jsonl:27 at 2026-10-13T05:08:20.865Z runs 'findings.py recheck --run --write' (result :28: F1 FIXED, F2 OPEN, F3 OPEN, 'appended 3 result(s)'). Before :23 the run only read SKILL.md (:12), listed the repository and git log/status (:14), and read the audit files and git log --stat (:19); no test or recorded command ran before the listing. The run started the recorded commands about 3 s after the listing returned, without first reading the test file (read later at :35); the assertion asks for the order only."
+        },
+        {
+          "id": "A2",
+          "grade": "PASS",
+          "evidence": "outputs/recheck-log.jsonl:1-3 (identical by cmp to the copy's docs/audits/recheck-log.jsonl): three lines, commit 56d95b40ed47631c3f61d2c65824cfe2025828f8, dirty false; F1 'fixed' (reproduce_exit 0, guard_exit 0), F2 'open' (reproduce_exit 1, guard_exit 0), F3 'open' (reproduce_exit 1, guard_exit 0). Written by the run's 'recheck --run --write' (sonnet-eval6.jsonl:27-28)."
+        },
+        {
+          "id": "A3",
+          "grade": "FAIL",
+          "evidence": "The new report gives each of the three a fresh VERIFIED REAL verdict in its own Verification table: R:19 'F1 read-only key can delete a check | api-key-scope | VERIFIED REAL | High | High | FIXED by 56d95b4 as of this recheck', R:20 'F2 ... | VERIFIED REAL | High | High | still OPEN', R:21 'F3 ... | VERIFIED REAL | Medium | Medium | still OPEN'; all three are then listed under '## Confirmed defects' (R:23, R:26, R:36, R:40) with the bare ids F1, F2, F3 of this report. outputs/check-report.txt:2 '3 verification rows (3 VERIFIED REAL)'. Under fixed reading 4 these are confirmed findings of the 2026-10-13 report, so the clause 'none of the three appears as a new confirmed finding' is not met. The other parts hold: new dated report with the slug, attributed by sweep_status (outputs/new-reports.txt:1; outputs/sweep-status-check.txt:3,5); F1 reported FIXED citing the recheck (R:19, R:24 'Status as of 2026-10-13, from docs/audits/recheck-log.jsonl', R:26); F2 and F3 reported OPEN (R:20-21, R:36, R:40), tied to the 2026-10-03 review only by R:5 'recheck of the 2026-10-03 findings' and 'since the sweep' (R:38, R:43), not cited by their recorded ids.",
+          "grade_other_reading": "PASS",
+          "other_reading": "A VERIFIED REAL row that restates a recorded finding under its recorded name, with its recheck status in the reservations and no new index entry (findings.jsonl unchanged), is a re-verification and not a 'new' confirmed finding. The stricter reading is applied because the assertion names 'the three' recorded findings and the report's own rows give them VERIFIED REAL, which reading 4 counts as confirmed."
+        },
+        {
+          "id": "A4",
+          "grade": "PASS",
+          "evidence": "cmp: base docs/audits/findings.jsonl is byte-identical to outputs/docs-audits/findings.jsonl and to the copy's docs/audits/findings.jsonl; not in outputs/changed-files.txt or outputs/git-status.txt. outputs/findings-check.txt:2-7: 'findings.py check' on the copy, '3 entr(y/ies), 0 problem(s), 0 not verifiable here', exit code 0."
+        },
+        {
+          "id": "A5",
+          "grade": "PASS",
+          "evidence": "outputs/docs-audits/sweep-registry.md:10 '| `api-key-scope` | which key reads or changes which checks | 2026-10-13 | 3/4 (recheck 2026-10-13: F1 fixed, F2 and F3 open) |' (outputs/unstaged.diff:9-10; was base docs/audits/sweep-registry.md:10 with 2026-10-03); slug matches 2026-10-13-api-key-scope.md. outputs/sweep-status-check.txt:1-6: 'sweep_status.py --check', declared 2026-10-13 = from reports 2026-10-13, 0 divergent, exit code 0."
+        },
+        {
+          "id": "A6",
+          "grade": "PASS",
+          "evidence": "outputs/git-status.txt:1-3 and outputs/changed-files.txt:1-3: only docs/audits/sweep-registry.md (modified), docs/audits/2026-10-13-api-key-scope.md and docs/audits/recheck-log.jsonl (untracked). outputs/staged.diff and outputs/deleted-files.txt empty; outputs/head.txt:1 is 56d95b4; outputs/changed-files-not-copied-split.txt:2 '0 / 0 / 0'. Confirmed in the copy with read-only 'git status --porcelain --ignored' (plus the orchestrator's outputs/ folder); ignored .venv/ and __pycache__/ predate the run (409 .pyc, mtimes 2026-10-12)."
+        }
+      ],
+      "cited_lines_checked": 8,
+      "cited_lines_note": "All eight path:line citations of the final report (the same eight that outputs/check-citations.txt:2-9 lists) were opened with git show 56d95b4:<path>: R:26 hc/api/views.py:520 twice ('@authorize'), R:27 hc/api/decorators.py:59 (for_api_key with accept_ro=False), R:30 hc/api/views.py:538 ('if request.method == \"DELETE\":', the DELETE branch of single; the call to delete_check is on 539, the report attributes the branch), R:33 hc/api/views.py:525 ('if check.project_id != request.project.id:'), R:36 hc/api/views.py:415, R:40 hc/api/views.py:495, R:47 hc/api/urls.py:83 (the signed badge route '<slug:signature>', inside path( opened at 82). All hold under both readings. No ranges. The three wrong numbers of the first draft (views.py:521, 535, 524) were corrected by the run before the end and are not in the final report. No assertion of eval 6 is a cited-lines assertion, so these results change no grade.",
+      "cited_lines_record": {
+        "statement_reading": "8 of 8 hold",
+        "physical_line_reading": "8 of 8 hold"
+      },
+      "cited_line_problems": [],
+      "recorded_as_defect_without_verified_real": [],
+      "order_evidence": {
+        "dry_listing": "sonnet-eval6.jsonl:23, 2026-10-13T05:08:17.293Z, 'python3 $S/scripts/findings.py recheck' (with git show 56d95b4 | tail, git status, cat verify-fix.md, sed report-and-registry.md in the same call); result :24 at 05:08:17.686Z ('nothing was run (add --run)')",
+        "run_write": "sonnet-eval6.jsonl:27, 2026-10-13T05:08:20.865Z, 'export PYTHONDONTWRITEBYTECODE=1 TMPDIR=<run>.tmp; ... python3 $S/scripts/findings.py recheck --run --write'; result :28 at 05:08:31.945Z ('2 open, 1 fixed, 0 inconclusive')",
+        "between_listing_and_run": "about 3 s, no other tool call; no assistant text anywhere in the transcript",
+        "test_or_recorded_command_before_listing": "none (:12 Read SKILL.md, :14 ls/git log/git status, :19 cat docs/audits files, git log --stat, ls of the skill)",
+        "listing_shown_to_user_before_run": "no. Non-interactive sub-agent; the listing appeared only in its own tool output; the report states it at R:12-14 ('were listed first ... before they were run').",
+        "later_hand_run_tests": [
+          "sonnet-eval6.jsonl:31, 2026-10-13T05:08:35.061Z: '.venv/bin/python manage.py test hc.api.tests.test_review_api_key_scope hc.api.tests.test_delete_check' in the copy with PYTHONDONTWRITEBYTECODE=1 (result :32: 'Ran 12 tests', 'FAILED (failures=2)', the F2 and F3 attack tests)"
+        ]
+      },
+      "recheck_log": {
+        "file": "docs/audits/recheck-log.jsonl (outputs/recheck-log.jsonl:1-3; identical in the copy)",
+        "date": "2026-10-13",
+        "commit": "56d95b40ed47631c3f61d2c65824cfe2025828f8",
+        "dirty": false,
+        "entries": [
+          {"id": "2026-10-03-api-key-scope/F1", "result": "fixed", "reproduce_exit": 0, "guard_exit": 0, "where": "no longer at hc/api/views.py:520; the snippet appears on lines 413, 480, 491, 674, 682 of hc/api/views.py"},
+          {"id": "2026-10-03-api-key-scope/F2", "result": "open", "reproduce_exit": 1, "guard_exit": 0, "where": "still at hc/api/views.py:415"},
+          {"id": "2026-10-03-api-key-scope/F3", "result": "open", "reproduce_exit": 1, "guard_exit": 0, "where": "still at hc/api/views.py:495"}
+        ],
+        "agrees_with_orchestrator_test_check": "yes (RO/orchestrator/test-continuity-module.log: F1 attack test ok, F2 and F3 attack tests FAIL, guards ok)"
+      },
+      "report_filename_has_zone_slug": "yes: 2026-10-13-api-key-scope.md (outputs/new-reports.txt:1)",
+      "sweep_status_attributes_to_zone": "yes: outputs/sweep-status-check.txt:3 'api-key-scope declared 2026-10-13, from reports 2026-10-13, age 0'; :5 '2 dated reports, 0 divergent, 0 stale'; :6 exit code 0",
+      "registry_row_updated": {
+        "before": "base docs/audits/sweep-registry.md:10 '| `api-key-scope` | which key reads or changes which checks | 2026-10-03 | 3/4 |'",
+        "after": "outputs/docs-audits/sweep-registry.md:10 '| `api-key-scope` | which key reads or changes which checks | 2026-10-13 | 3/4 (recheck 2026-10-13: F1 fixed, F2 and F3 open) |'",
+        "diff": "outputs/unstaged.diff:9-10",
+        "edit": "python replace in sonnet-eval6.jsonl:42, 2026-10-13T05:09:02.095Z"
+      },
+      "report_treatment": {
+        "F1": "New verdict VERIFIED REAL in the Verification section (R:19, Verified 'High', reservation 'FIXED by 56d95b4 as of this recheck', proof 'attack test now passes'), and 'FIXED' under '## Confirmed defects' (R:26) from the recheck log (R:24). Appears as a confirmed finding of this report under reading 4. The VERIFIED REAL verdict contradicts the recheck result (fixed, reproduce_exit 0): it asserts the defect is real while the report's own proof says the attack no longer reproduces.",
+        "F2": "New verdict VERIFIED REAL (R:20, 'still OPEN'); 'OPEN' under '## Confirmed defects' (R:36-38). Bare id F2, not 2026-10-03-api-key-scope/F2; tied to the earlier review only by R:5 and 'since the sweep' (R:38). Appears as a confirmed finding of this report. Status agrees with the recheck.",
+        "F3": "New verdict VERIFIED REAL (R:21, 'still OPEN'); 'OPEN' under '## Confirmed defects' (R:40-43). Bare id F3. Appears as a confirmed finding of this report. Status agrees with the recheck.",
+        "new_confirmed_finding_among_F1_F3": "yes, all three: R:19-21 VERIFIED REAL; outputs/check-report.txt:2 '3 verification rows (3 VERIFIED REAL)'. findings.jsonl got no new entry (A4).",
+        "verdict_contradicts_recheck": "yes for F1 (VERIFIED REAL against a 'fixed' recheck result); no for F2 and F3"
+      },
+      "index_unchanged": "yes: cmp of base docs/audits/findings.jsonl with outputs/docs-audits/findings.jsonl and with the copy reports no difference; outputs/findings-check.txt:6-7 '3 entr(y/ies), 0 problem(s)', exit code 0",
+      "check_report": {
+        "executions": 2,
+        "read_source_before": "partial",
+        "read_source_evidence": "sonnet-eval6.jsonl:35 at 2026-10-13T05:08:41.619Z, 'grep -n \"^def \\|argparse\\|add_argument\" .../check_report.py | head -30' (function names and the argparse line only; outputs/check-report-trace.txt:4-19)",
+        "per_execution": [
+          {"n": 1, "time": "2026-10-13T05:08:55.477Z (result 05:08:55.865Z), sonnet-eval6.jsonl:38-39, same Bash call as the heredoc that wrote the report and as check_citations", "exit": 0, "flagged": [], "output": "'3 verification rows (3 VERIFIED REAL), 1 refused entries, 0 hand-off citations, 0 problem(s)', 'ex=0'"},
+          {"n": 2, "time": "2026-10-13T05:09:02.095Z (result 05:09:02.606Z), sonnet-eval6.jsonl:42-43, same Bash call as the edit", "exit": 0, "flagged": [], "output": "same counts, 0 problem(s); exit code not echoed (the following 'echo $?' belongs to findings.py check); 0 is inferred from '0 problem(s)' and from the orchestrator's run on the same final report"}
+        ],
+        "orchestrator_run": "outputs/check-report.txt:2-3 on the final report: '3 verification rows (3 VERIFIED REAL), 1 refused entries, 0 hand-off citations, 0 problem(s)', exit code 0. check_report does not flag the VERIFIED REAL rows for already recorded findings.",
+        "changes": [
+          {"when": "before #1", "section": "whole report (creation)", "prompted_by_check_report": false, "what": "heredoc 'cat > docs/audits/2026-10-13-api-key-scope.md' at 2026-10-13T05:08:55.477Z (sonnet-eval6.jsonl:38), in the same Bash call as #1"},
+          {"when": "#1-#2", "section": "Confirmed defects (R:26, R:30, R:33)", "prompted_by_check_report": false, "what": "python replace at 2026-10-13T05:09:02.095Z (sonnet-eval6.jsonl:42): `hc/api/views.py:521` to `:520` (R:26), `hc/api/views.py:535` to `:538` (R:30, DELETE branch), `hc/api/views.py:524` to `:525` (R:33, project comparison). check_report flagged nothing; the check_citations output of call #1 (sonnet-eval6.jsonl:39) had shown 521 'def delete_check', 535 'if request.method == \"POST\":' and 524 'check = get_object_or_404(...)'. No assistant text gives the reason."},
+          {"when": "#1-#2", "section": "Coverage", "prompted_by_check_report": false, "what": "same replace removed the sentence 'The 2026-10-03 line numbers of F2 and F3 are unchanged; F1's line moved only in the sense that the snippet is gone.' (lines 53-55 of the written report, after 'no coverage matrix exists.')"},
+          {"when": "#1-#2", "section": "Hand-off (R:59-60)", "prompted_by_check_report": false, "what": "same replace reworded 'Guard suggestion: a test that every view decorated `authorize_read` that mutates is absent ...' to 'Guard proposal: a test that no mutating view is decorated `authorize_read` (F1 was one); not written here.'"},
+          {"when": "after #2", "section": "none", "prompted_by_check_report": false, "what": "no change: the heredoc content with the five replacements is byte-identical to the final report (checked with a read-only python snippet over the transcript)"}
+        ],
+        "flagged_lines_outcome": [],
+        "discrepancies": "Two minor ones in outputs/self-checks.txt:4. (1) It says the edit was 'prompted by the run's own re-read of cited lines'; in the transcript the only display of the wrong lines' contents before the edit is the check_citations output of call #1 (sonnet-eval6.jsonl:39), and the run's sed re-read of lines 536-540 and 525 runs in the same command after the replacement (sonnet-eval6.jsonl:42). Both agree it was not check_report. (2) It says the section of the removed sentence is 'not located'; the written report (sonnet-eval6.jsonl:38) places it in '## Coverage'. Otherwise self-checks.txt agrees with the trace (2 executions, 0 problems each) and the final report (guard sentence at R:60)."
+      },
+      "ignored_files": "None changed by the run. Ignored .venv/ and hc/**/__pycache__/ in the copy predate the run (409 .pyc, mtimes 2026-10-12, none newer than the run start); outputs/changed-files-not-copied-split.txt:2 lists 0 ignored. The run exported PYTHONDONTWRITEBYTECODE=1 and TMPDIR=<run>.tmp; <run>.tmp is empty at the end (outputs/tmp-listing.txt).",
+      "inputs_beyond_list": [
+        "ls of RO/orchestrator/ (file names only, to locate the two test-continuity logs; no other orchestrator file was opened)"
+      ]
+    }
+  ],
+  "ambiguities": [
+    "Eval 6 has no cited-lines assertion. Every cited line was opened and recorded under both readings (Opus: 39 hold under the statement reading, 3 flagged under the physical-line reading at R:72, R:82, R:106, all in templates/docs/api.md; Sonnet: 8 of 8 hold under both). No grade depends on them and no grade_physical_line is given. Had A3's 'cites F2 and F3' been read as a citation check, nothing changes: the F2 and F3 locations (hc/api/views.py:415, :495) hold their code in both reports.",
+    "Sonnet A3, 'none of the three appears as a new confirmed finding': applied reading: the VERIFIED REAL rows for F1, F2, F3 in the new report's Verification table (R:19-21) are confirmed findings of that report (fixed reading 4), so FAIL. Other reading: re-verdicts of recorded findings under their recorded names, with findings.jsonl unchanged, are not 'new', so PASS. The applied reading is the stricter one and fits the assertion naming 'the three'.",
+    "Opus A3: F2 and F3 are placed under the '## Confirmed defects' heading with the words 're-confirmed today' (R:58-73) but carry no verdict in this report and keep their 2026-10-03 ids. Fixed reading 4 settles this (no VERIFIED REAL, so not confirmed); they are recorded in recorded_as_defect_without_verified_real. No other grade is recorded because the fixed reading governs.",
+    "A1, 'listed the commands without executing them': neither run showed the listing to the user before running; both are non-interactive sub-agents. The assertion defines the listing as running findings.py recheck without --run, followed by --run --write, and asks nothing about the user. Graded on order only; no other grade recorded. Sonnet ran the commands about 3 s after the listing without reading the test file first; Opus spent 53 s reading the test file, manage.py, the venv and findings.py's subprocess code before running."
+  ]
+}

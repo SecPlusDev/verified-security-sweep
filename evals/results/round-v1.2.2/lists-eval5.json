@@ -1,0 +1,775 @@
+{
+  "eval": 5,
+  "reviews": {
+    "A": [
+      {
+        "id": "A-1",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-4",
+        "claim": "The pings, ping body and channels endpoints reject the read-only key (authorize), which may deny read access the read-only key is meant to have.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-5",
+        "claim": "The SHA1Converter URL pattern [A-z0-9]{40} for unique_key accepts punctuation characters beyond alphanumerics.",
+        "location": "hc/api/urls.py:21",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-6",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-7",
+        "claim": "The plain-text key lookup Project.objects.get(Q(api_key)|Q(api_key_readonly)) can raise a server error if a key value collides between projects or columns.",
+        "location": "hc/accounts/models.py:422-428",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-8",
+        "claim": "The API sends Access-Control-Allow-Origin: * while allowing the X-Api-Key header, which could let a foreign origin make authenticated API requests.",
+        "location": "hc/api/decorators.py:112",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-9",
+        "claim": "A read-write or read-only key of one project can read or modify another project's check by uuid through the per-check endpoints (get, update, delete, pause, resume, pings, ping body, flips).",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-10",
+        "claim": "The hashed API key lookup and comparison (for_api_key 8-character prefix lookup, compare_api_key) could accept a wrong key or let a read-only key authenticate as read-write.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-11",
+        "claim": "The metrics endpoint compares the X-Metrics-Key header with METRICS_KEY using a non-constant-time comparison.",
+        "location": "hc/api/views.py:860",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-12",
+        "claim": "The notification_status and bounces endpoints are reachable without authentication.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-13",
+        "claim": "Check creation has a check-then-act race on the project's check quota, allowing the limit to be exceeded.",
+        "location": "views.py:448",
+        "status": "unconfirmed"
+      }
+    ],
+    "B": [
+      {
+        "id": "B-1",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-2",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "B-4",
+        "claim": "The decorator's determination of whether a key is read-only (hcr_ prefix or equality with the legacy plain read-only key) can misclassify a key.",
+        "location": "decorators.py:87-89",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-5",
+        "claim": "The hashed API key lookup and comparison (for_api_key 8-character prefix lookup, compare_api_key) could accept a wrong key or let a read-only key authenticate as read-write.",
+        "location": "hc/accounts/models.py:409-419",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-6",
+        "claim": "Creating or updating a check through the API can attach notification channels belonging to another project.",
+        "location": "views.py:315-342",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-7",
+        "claim": "The 'unique' upsert lookup on check creation (_lookup) can match and overwrite a check in another project.",
+        "location": "views.py:290",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-8",
+        "claim": "The API sends Access-Control-Allow-Origin: * while allowing the X-Api-Key header, which could let a foreign origin make authenticated API requests.",
+        "location": "decorators.py:112-113",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-9",
+        "claim": "The notification_status endpoint does not require an API key.",
+        "location": "views.py:814",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-10",
+        "claim": "The pings, ping body and channels endpoints reject the read-only key (authorize), which may deny read access the read-only key is meant to have.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-11",
+        "claim": "The API version (v1, v2, v3) changes authorization behavior of the key-protected endpoints.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-12",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header. This could cause key-source confusion between decorators.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-13",
+        "claim": "The Prometheus integration endpoint looks up projects by read-only key and may not scope its output to the key's project.",
+        "location": "hc/integrations/prometheus/views.py:50",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "B-14",
+        "claim": "The hc/front web views that take a project or check code may have the same project isolation problem as the check listing.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "C": [
+      {
+        "id": "C-1",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "C-2",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "C-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "C-4",
+        "claim": "The Prometheus integration endpoint, which accepts the read-only key, may not scope its data to the key's project.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-5",
+        "claim": "The hashed API key lookup and comparison (for_api_key 8-character prefix lookup, compare_api_key) could accept a wrong key or let a read-only key authenticate as read-write.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-6",
+        "claim": "An hcr_ read-only key, or a legacy plain read-only key, can be accepted by the read-write authorize decorator.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-7",
+        "claim": "The decorator's determination of whether a key is read-only (hcr_ prefix or equality with the legacy plain read-only key) can misclassify a key.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-8",
+        "claim": "Missing keys, keys of the wrong length, or empty stored key fields can authenticate.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-9",
+        "claim": "A read-only key sent in the POST JSON body is accepted by the read-write decorator.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-10",
+        "claim": "The 'unique' upsert lookup on check creation (_lookup) can match and overwrite a check in another project.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-11",
+        "claim": "Creating or updating a check through the API can attach notification channels belonging to another project.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-12",
+        "claim": "A read-write or read-only key of one project can read or modify another project's check by uuid through the per-check endpoints (get, update, delete, pause, resume, pings, ping body, flips). (including a sibling project of the same owner)",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-13",
+        "claim": "The /channels/ and /badges/ endpoints return data from projects other than the key's project.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-14",
+        "claim": "The API sends Access-Control-Allow-Origin: * while allowing the X-Api-Key header, which could let a foreign origin make authenticated API requests.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-15",
+        "claim": "The SHA1Converter URL pattern [A-z0-9]{40} for unique_key accepts punctuation characters beyond alphanumerics.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-16",
+        "claim": "Legacy plain-text API keys are matched by a database equality lookup that is not constant-time.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "C-17",
+        "claim": "update_check relies on Check.NotUpdated, which exists only in Django 6.0 and later.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "D": [
+      {
+        "id": "D-1",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "D-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "D-3",
+        "claim": "Per-check handlers other than the listing are missing the comparison of the check's project with the key's project.",
+        "location": "hc/api/views.py:483",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-4",
+        "claim": "A key of another project receives 403 instead of 404 for an existing check uuid, revealing that the uuid exists.",
+        "location": "hc/api/views.py:482",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-5",
+        "claim": "The plain-text key lookup .get(Q(rw)|Q(ro)) in for_api_key or the hashed key comparison lets a read-only key authenticate to write handlers or otherwise weakens key checks.",
+        "location": "hc/accounts/models.py:398-440",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-6",
+        "claim": "The pings, ping body and channels endpoints reject the read-only key (authorize), which may deny read access the read-only key is meant to have.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "D-7",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header. The key could end up in request-body logs.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "E": [
+      {
+        "id": "E-1",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "E-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "E-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "E-4",
+        "claim": "A key of another project receives 403 instead of 404 for an existing check uuid, revealing that the uuid exists.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-5",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header. Keys in bodies may end up in request logging.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-6",
+        "claim": "The API sends Access-Control-Allow-Origin: * while allowing the X-Api-Key header, which could let a foreign origin make authenticated API requests.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-7",
+        "claim": "The metrics endpoint compares the X-Metrics-Key header with METRICS_KEY using a non-constant-time comparison.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "E-8",
+        "claim": "The SHA1Converter URL pattern [A-z0-9]{40} for unique_key accepts punctuation characters beyond alphanumerics.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "E-9",
+        "claim": "The plain-text key lookup Project.objects.get(Q(api_key)|Q(api_key_readonly)) can raise MultipleObjectsReturned if two projects share a key value.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "F": [
+      {
+        "id": "F-1",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "F-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "F-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "F-4",
+        "claim": "A read-write or read-only key of one project can read or modify another project's check by uuid through the per-check endpoints (get, update, delete, pause, resume, pings, ping body, flips).",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-5",
+        "claim": "A key of another project receives 403 instead of 404 for an existing check uuid, revealing that the uuid exists.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-6",
+        "claim": "A check update (Spec) can move a check to another project or attach channels from another project.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-7",
+        "claim": "The hashed API key lookup and comparison (for_api_key 8-character prefix lookup, compare_api_key) could accept a wrong key or let a read-only key authenticate as read-write.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-8",
+        "claim": "The legacy plain-text key lookup accepts keys that are not an exact 32-character match.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-9",
+        "claim": "update_check mishandles the Check.NotUpdated case when the check is deleted concurrently.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-10",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header. Keys can end up in client-side logs.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-11",
+        "claim": "The API sends Access-Control-Allow-Origin: * while allowing the X-Api-Key header, which could let a foreign origin make authenticated API requests.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-12",
+        "claim": "The pings, ping body and channels endpoints reject the read-only key (authorize), which may deny read access the read-only key is meant to have.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "F-13",
+        "claim": "The badges endpoint exposes the badge_key to read-only keys.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "G": [
+      {
+        "id": "G-1",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "G-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "G-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "G-4",
+        "claim": "The metrics endpoint compares the X-Metrics-Key header with METRICS_KEY using a non-constant-time comparison.",
+        "location": "hc/api/views.py:860",
+        "status": "confirmed"
+      },
+      {
+        "id": "G-5",
+        "claim": "The decorator's determination of whether a key is read-only (hcr_ prefix or equality with the legacy plain read-only key) can misclassify a key. This could let a read-only key reach a read-write view.",
+        "location": "decorators.py:87-89",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-6",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-7",
+        "claim": "A read-write or read-only key of one project can read or modify another project's check by uuid through the per-check endpoints (get, update, delete, pause, resume, pings, ping body, flips).",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-8",
+        "claim": "Creating or updating a check through the API can attach notification channels belonging to another project.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-9",
+        "claim": "The 'unique' upsert lookup on check creation (_lookup) can match and overwrite a check in another project.",
+        "location": "views.py:300",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-10",
+        "claim": "The channels, pings and ping body endpoints are reachable with a read-only key.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-11",
+        "claim": "A check's unique_key can be guessed to access the check through the unique_key routes.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-12",
+        "claim": "The notification_status and bounces endpoints are reachable without authentication.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "G-13",
+        "claim": "The status endpoint has no authorization.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "H": [
+      {
+        "id": "H-1",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "H-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "H-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "H-4",
+        "claim": "The pings and ping body endpoints reject the read-only key, which may deny read access the read-only key is meant to have.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-5",
+        "claim": "A read-write or read-only key of one project can read or modify another project's check by uuid through the per-check endpoints (get, update, delete, pause, resume, pings, ping body, flips).",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-6",
+        "claim": "A key of another project receives 403 instead of 404 for an existing check uuid, revealing that the uuid exists.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-7",
+        "claim": "The unique_key lookups return checks from projects other than the key's project.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-8",
+        "claim": "Creating or updating a check through the API can attach notification channels belonging to another project.",
+        "location": "views.py:323-330",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-9",
+        "claim": "The 'unique' upsert lookup on check creation (_lookup) can match and overwrite a check in another project.",
+        "location": "views.py:300",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-10",
+        "claim": "The hashed API key lookup and comparison (for_api_key 8-character prefix lookup, compare_api_key) could accept a wrong key or let a read-only key authenticate as read-write.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-11",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "H-12",
+        "claim": "The API sends Access-Control-Allow-Origin: * while allowing the X-Api-Key header, which could let a foreign origin make authenticated API requests.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "I": [
+      {
+        "id": "I-1",
+        "claim": "Swapping the hcr_/hcw_ prefix on a key secret, or forging a key, is accepted by the key lookup.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "I-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "I-3",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "I-4",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "I-5",
+        "claim": "The API sends Access-Control-Allow-Origin: * while allowing the X-Api-Key header, which could let a foreign origin make authenticated API requests.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "I-6",
+        "claim": "The metrics endpoint compares the X-Metrics-Key header with METRICS_KEY using a non-constant-time comparison.",
+        "location": null,
+        "status": "confirmed"
+      },
+      {
+        "id": "I-7",
+        "claim": "The authorize decorator accepts the API key from the JSON request body on POST, in addition to the header.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "I-8",
+        "claim": "authorize_read decides read-only status from the key string rather than from which stored key column matched.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "I-9",
+        "claim": "A read-only key is accepted on read-write endpoints (create, update, pause, resume, pings, ping body, channels), via header or body.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "I-10",
+        "claim": "A read-write or read-only key of one project can read or modify another project's check by uuid through the per-check endpoints (get, update, delete, pause, resume, pings, ping body, flips).",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "I-11",
+        "claim": "Creating or updating a check through the API can attach notification channels belonging to another project.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ],
+    "J": [
+      {
+        "id": "J-1",
+        "claim": "A read-only API key can delete a check via DELETE /api/vN/checks/<uuid>, because delete_check accepts read-only keys (authorize_read).",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "J-2",
+        "claim": "The check listing endpoint GET /api/vN/checks/ (get_checks) filters by the project's owner instead of the key's project, so a key for one project lists checks (and, with a read-write key, their uuid and ping URLs) of the owner's other projects.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "J-3",
+        "claim": "GET /api/vN/checks/<unique_key> (get_check_by_unique_key) returns the full check details (uuid, ping_url, update/pause/resume URLs, channels) to a read-only key because it does not pass the read-only flag to to_dict.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "J-4",
+        "claim": "The metrics endpoint compares the X-Metrics-Key header with METRICS_KEY using a non-constant-time comparison.",
+        "location": "hc/api/views.py:860",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-5",
+        "claim": "API key extraction accepts keys from the query string, keys of the wrong length, or empty/revoked keys.",
+        "location": "decorators.py:56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-6",
+        "claim": "The hashed API key lookup and comparison (for_api_key 8-character prefix lookup, compare_api_key) could accept a wrong key or let a read-only key authenticate as read-write.",
+        "location": "hc/accounts/models.py:581-593",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-7",
+        "claim": "Legacy plain-text API keys are matched by database equality, which is not constant-time.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-8",
+        "claim": "The decorator's determination of whether a key is read-only (hcr_ prefix or equality with the legacy plain read-only key) can misclassify a key.",
+        "location": "decorators.py:87-89",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-9",
+        "claim": "The 'unique' upsert lookup on check creation (_lookup) can match and overwrite a check in another project.",
+        "location": "views.py:300",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-10",
+        "claim": "Creating or updating a check through the API can attach notification channels belonging to another project.",
+        "location": "views.py:323",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-11",
+        "claim": "The read-write-only endpoints (update, pause, resume, pings, ping body, channels) accept a read-only key or lack a project check.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-12",
+        "claim": "The read endpoints (get check by uuid, flips by uuid or unique_key, badges) are not scoped to the key's project or leak fields to read-only keys.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-13",
+        "claim": "GET /api/vN/checks/<unique_key> can return a check from another project.",
+        "location": "views.py:493",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-14",
+        "claim": "The public badge, check_badge, notification_status, bounces, ping and ping_by_slug endpoints are reachable without an API key.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-15",
+        "claim": "The API's wildcard CORS policy and csrf_exempt views allow cross-origin requests to use a victim's credentials.",
+        "location": "decorators.py:112-113",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "J-16",
+        "claim": "The Prometheus integration endpoint, which uses the read-only key, may not scope its data to the key's project.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ]
+  }
+}

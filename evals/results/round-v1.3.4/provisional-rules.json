@@ -1,0 +1,159 @@
+{
+  "a_guard_required": {
+    "claude-opus-5-5": {
+      "index_entries_written": 10,
+      "by_run": {
+        "eval1-with_skill-1": 2,
+        "eval5-with_skill-1": 8
+      },
+      "with_guard": 10,
+      "guards": [
+        {
+          "id": "2026-10-13-access-control/R1, /R2",
+          "guard": "node_modules/.bin/mocha test/security/allocations-own-user-only-test.js --grep \"legitimate path\"",
+          "selects": "test/security/allocations-own-user-only-test.js:103 and :109, the two 'lets the legitimate path through' cases",
+          "passing": "exit 0, 2 passing (transcript, 04:51:35Z), run with mocha from the run's tmp dependencies against its app on port 4791; node_modules/.bin/mocha is not in the copy"
+        },
+        {
+          "id": "2026-10-13-management-api/F1",
+          "guard_class": "hc/api/tests/test_api_key_scope.py:48 ReadWriteKeyCanDelete",
+          "note": "also holds test_readwrite_key_of_other_project_is_refused (:69), a refusal case"
+        },
+        {
+          "id": "2026-10-13-management-api/F2",
+          "guard_class": "hc/api/tests/test_api_key_scope.py:154 UniqueKeyLookupLegitimatePaths",
+          "note": "also holds test_readonly_key_by_uuid_is_redacted (:167), a redaction case"
+        },
+        {
+          "id": "2026-10-13-management-api/F3",
+          "guard_class": "hc/api/tests/test_api_key_scope.py:116 ListChecksReturnsOwnProject"
+        },
+        {
+          "id": "2026-10-13-management-api/L1",
+          "guard_class": "hc/api/tests/test_api_version_prefix.py:51 VersionLegitimatePaths"
+        },
+        {
+          "id": "2026-10-13-management-api/L2",
+          "guard_class": "hc/api/tests/test_api_docs_match_code.py:54 ListChecksExampleMatchesResponseShape",
+          "note": "checks another documentation example, not a code path"
+        },
+        {
+          "id": "2026-10-13-management-api/L3",
+          "guard_class": "hc/api/tests/test_api_docs_match_code.py:80 ListPingsResponseCodesList401",
+          "note": "checks another documentation section"
+        },
+        {
+          "id": "2026-10-13-management-api/L4",
+          "guard_class": "hc/api/tests/test_api_docs_match_code.py:116 ReadOnlyOmittedFieldsListedV3",
+          "note": "checks another documentation section"
+        },
+        {
+          "id": "2026-10-13-management-api/L5",
+          "guard_class": "hc/api/tests/test_check_limit_race.py:57 CheckLimitSequential"
+        }
+      ],
+      "guard_passing_eval5": "8 of 8: findings.py recheck --run without --write on the run's own index (04:57:12Z): '8 open, 0 fixed, 0 inconclusive'; the guard runs first and a failing guard gives inconclusive. No recheck-log.jsonl written.",
+      "fixture_index_eval6_eval7": "3 entries, each with a guard; eval 6 recheck log: guard_exit 0 for F1, F2, F3",
+      "recheck_logs_written": "1 run (eval 6), 3 lines: 1 fixed, 2 open, 0 inconclusive",
+      "runs_with_inconclusive_for_missing_guard": 0
+    },
+    "claude-sonnet-5-5": {
+      "index_entries_written": 4,
+      "by_run": {
+        "eval1-with_skill-1": 1,
+        "eval5-with_skill-1": 3
+      },
+      "with_guard": 4,
+      "guards": [
+        {
+          "id": "2026-10-13-access-control/AC-3",
+          "guard": "node --test test/access-control/allocations-own.test.js",
+          "selects": "test/access-control/allocations-own.test.js:10, 'legitimate path: a signed-in user reads their own allocations'",
+          "runner": "Node's built-in runner, not the project's mocha (eval 1 A9 FAIL on the strict reading)",
+          "passing": "# pass 1, # fail 0 (transcript, 05:10:01Z), in the copy against a stub database"
+        },
+        {
+          "id": "2026-10-13-api-key-scope/F1",
+          "guard": "hc/api/tests/test_review_scope.py:32 test_write_key_can_delete"
+        },
+        {
+          "id": "2026-10-13-api-key-scope/F2",
+          "guard": "hc/api/tests/test_review_scope.py:43 test_list_returns_own_checks"
+        },
+        {
+          "id": "2026-10-13-api-key-scope/F3",
+          "guard": "hc/api/tests/test_review_scope.py:57 test_unique_key_lookup_shows_unique_key_to_readonly_key"
+        }
+      ],
+      "guard_passing_eval5": "3 of 3: guard_exit 0 in the run's own recheck-log.jsonl, written by findings.py recheck --run --write (05:10:15Z, dirty true). The recorded commands carry no -B; the only file the round left that git ignores, hc/api/tests/__pycache__/test_review_scope.cpython-313.pyc, dates from that minute.",
+      "fixture_index_eval6_eval7": "3 entries, each with a guard; eval 6 recheck log: guard_exit 0 for F1, F2, F3",
+      "recheck_logs_written": "2 runs (eval 5, eval 6), 6 lines: 1 fixed, 5 open, 0 inconclusive",
+      "runs_with_inconclusive_for_missing_guard": 0
+    }
+  },
+  "b_command_refusal": {
+    "findings_py_executions_per_run": {
+      "claude-opus-5-5": {
+        "eval1-with_skill-1": [
+          "04:54:56Z check, recheck (dry)"
+        ],
+        "eval5-with_skill-1": [
+          "04:57:01Z check",
+          "04:57:08Z recheck --help, recheck (dry)",
+          "04:57:12Z recheck --run",
+          "04:58:05Z check"
+        ],
+        "eval6-with_skill-1": [
+          "04:42:09Z recheck (dry), --help",
+          "04:43:02Z recheck --run --write",
+          "04:49:04Z check",
+          "04:49:13Z sarif"
+        ],
+        "eval7-with_skill-1": [
+          "04:42:38Z recheck (dry), check",
+          "04:48:26Z check",
+          "04:48:36Z check"
+        ]
+      },
+      "claude-sonnet-5-5": {
+        "eval1-with_skill-1": [
+          "05:09:53Z check",
+          "05:10:08Z check"
+        ],
+        "eval5-with_skill-1": [
+          "05:10:15Z check, recheck --run --write"
+        ],
+        "eval6-with_skill-1": [
+          "05:08:17Z recheck (dry)",
+          "05:08:20Z recheck --run --write",
+          "05:09:02Z check"
+        ],
+        "eval7-with_skill-1": [
+          "05:08:18Z recheck (dry)",
+          "05:08:43Z check",
+          "05:09:02Z check",
+          "05:09:09Z check",
+          "05:09:14Z check"
+        ]
+      }
+    },
+    "refusal_lines_in_findings_py_output": "none in any of the 8 runs. Lines matching 'starts a shell', 'passes inline code', 'cannot parse' or 'inconclusive' in tool outputs are from reads of findings.py's own source or the summary line '0 inconclusive'.",
+    "findings_check_txt": "0 problems in all 8 runs",
+    "tool_errors": {
+      "claude-opus-5-5": [
+        "eval1 04:49:46Z: Bash exit 127, a docker exec held in a shell variable (re-run directly at 04:49:50Z)",
+        "eval5 04:45:29Z: Bash exit 2, ls of hc/*.sqlite that does not exist",
+        "eval7 04:45:46Z: Bash exit 2, ls of .repro-cache to confirm it is absent",
+        "eval6: none",
+        "reviewers (eval1, eval5): none"
+      ],
+      "claude-sonnet-5-5": [
+        "eval1 05:08:53Z: a call to a tool named 'bash' (lowercase), 'No such tool available'",
+        "eval1 05:09:44Z: check_report.py exit 1 (2 problems)",
+        "eval5, eval6, eval7: none"
+      ]
+    },
+    "permission_denials_or_refused_runner_commands": 0,
+    "command_not_run_because_of_what_it_is": "eval 7, both models: .venv/bin/python tools/repro_f2.py, read and not executed. findings.py check accepts the entry (it refuses only shells and inline code). Neither run ran the recorded commands of F1 and F3 through the recheck; both ran the review module hc.api.tests.test_review_api_key_scope by hand."
+  }
+}

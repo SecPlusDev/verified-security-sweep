@@ -1,0 +1,34 @@
+{
+  "A": {
+    "model": "claude-sonnet-5-5",
+    "run": "eval1-with_skill-2",
+    "sources": [
+      "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md",
+      "<sonnet-round>/runs/eval1-with_skill-2/outputs/response.md"
+    ]
+  },
+  "B": {
+    "model": "claude-opus-5-5",
+    "run": "eval1-with_skill-1",
+    "sources": [
+      "<opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md",
+      "<opus-round>/runs/eval1-with_skill-1/outputs/response.md"
+    ]
+  },
+  "C": {
+    "model": "claude-sonnet-5-5",
+    "run": "eval1-with_skill-1",
+    "sources": [
+      "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md",
+      "<sonnet-round>/runs/eval1-with_skill-1/outputs/response.md"
+    ]
+  },
+  "D": {
+    "model": "claude-sonnet-5-5",
+    "run": "eval1-with_skill-3",
+    "sources": [
+      "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md",
+      "<sonnet-round>/runs/eval1-with_skill-3/outputs/response.md"
+    ]
+  }
+}

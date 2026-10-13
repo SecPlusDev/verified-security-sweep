@@ -1,0 +1,11 @@
+{
+  "A": {
+    "model": "claude-opus-5-5",
+    "run": "eval5-with_skill-1",
+    "sources": [
+      "<round>/runs/eval5-with_skill-1/outputs/docs-audits/2026-10-12-api-key-authz.md",
+      "<round>/runs/eval5-with_skill-1/outputs/docs-audits/coverage-matrix.md",
+      "<round>/runs/eval5-with_skill-1/outputs/response.md"
+    ]
+  }
+}

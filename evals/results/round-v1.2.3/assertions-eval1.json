@@ -1,0 +1,471 @@
+{
+ "eval": 1,
+ "reference": "<opus-round>/base/nodegoat @ 9e832da",
+ "runs": [
+  {
+   "run": "sonnet/eval1-with_skill-1",
+   "model": "claude-sonnet-5-5",
+   "config": "with_skill",
+   "report": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md",
+   "cited_lines_checked": 27,
+   "assertions": [
+    {
+     "id": "A1",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:1 slug access-control; sections Context <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:3, Delegation <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:22, Verification <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:30, Confirmed defects <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:37, Refused or unconfirmed candidates <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:62, Coverage <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:77"
+    },
+    {
+     "id": "A2",
+     "grade": "FAIL",
+     "evidence": "Location <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:40 app/routes/allocations.js:23 is exact and holds the call (<opus-round>/base/nodegoat/app/routes/allocations.js:23). Chain <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:42 cites app/routes/allocations.js:18 for '`userId` is read from `req.params`', but <opus-round>/base/nodegoat/app/routes/allocations.js:18 is only `} = req.params;` (userId is on line 17). Chain <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:44 cites app/data/allocations-dao.js:58 for 'queries by that id only', but <opus-round>/base/nodegoat/app/data/allocations-dao.js:58 is `const parsedUserId = parseInt(userId);`, no query."
+    },
+    {
+     "id": "A3",
+     "grade": "PASS",
+     "evidence": "AC-3 VERIFIED REAL <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:33; test test/unit/allocations-access-test.js named <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:54, exists <sonnet-round>/runs/eval1-with_skill-1/test/unit/allocations-access-test.js; run status and result <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:33, <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:56-59 (ran with a minimal describe/it runner and stubs, attack case fails, legit case passes; not run under real mocha)"
+    },
+    {
+     "id": "A4",
+     "grade": "FAIL",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:73-74 'Profile and contributions read or write other users: refused;' names no lens (exploitability, claim correctness, existing mitigation). Other entries carry dispositions: <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:63-66 needs deeper review with what is missing, <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:67-72 refused with lens exploitability, <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:75 closed earlier citing the 2026-10-03 report."
+    },
+    {
+     "id": "A5",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/sweep-registry.md:10 row `access-control` (slug of <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md), Last run 2026-10-09; `python3 plugin/skills/defensive-audit-sweep/scripts/sweep_status.py --check --audits <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits --registry <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/sweep-registry.md` exit 0 (rerun by grader; also <sonnet-round>/runs/eval1-with_skill-1/outputs/sweep-status-check.txt:5)"
+    },
+    {
+     "id": "A6",
+     "grade": "PASS",
+     "evidence": "Only confirmed finding is AC-3 /allocations/:userId IDOR <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:39; AC-1 and AC-2 stated closed and not re-reported <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:27-28, <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:34, <sonnet-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:75"
+    },
+    {
+     "id": "A7",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-1/outputs/git-status.txt:1-3 (M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md, ?? test/unit/allocations-access-test.js); <sonnet-round>/runs/eval1-with_skill-1/outputs/changed-files.txt:1-3; <sonnet-round>/runs/eval1-with_skill-1/outputs/changed-files-not-copied.txt, <sonnet-round>/runs/eval1-with_skill-1/outputs/deleted-files.txt and <sonnet-round>/runs/eval1-with_skill-1/outputs/staged.diff empty; <sonnet-round>/runs/eval1-with_skill-1/outputs/unstaged.diff touches only docs/audits/sweep-registry.md; <sonnet-round>/runs/eval1-with_skill-1/outputs/head.txt:1 9e832da"
+    }
+   ],
+   "bad_cited_lines": [
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:42",
+     "cited": "app/routes/allocations.js:18",
+     "cited_code": "`userId` is read from `req.params`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.params;` (allocations.js:18); `userId` is on line 17 of the multi-line destructuring at app/routes/allocations.js:16-18"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:44",
+     "cited": "app/data/allocations-dao.js:58",
+     "cited_code": "getByUserIdAndThreshold queries by that id only",
+     "problem": "does not hold the cited code",
+     "actual": "`const parsedUserId = parseInt(userId);` (no query; the query criterion is on line 82)"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:51",
+     "cited": "app/routes/profile.js:15",
+     "cited_code": "`const { userId } = req.session;` (id taken from the session)",
+     "problem": "does not hold the cited code",
+     "actual": "`userId` only; `} = req.session;` is on line 16"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:51",
+     "cited": "app/routes/contributions.js:14",
+     "cited_code": "`const { userId } = req.session;` (id taken from the session)",
+     "problem": "does not hold the cited code",
+     "actual": "`userId` only; `} = req.session;` is on line 15"
+    },
+    {
+     "finding": "profile/contributions candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:74",
+     "cited": "app/routes/profile.js:15",
+     "cited_code": "take the id from the session",
+     "problem": "does not hold the cited code",
+     "actual": "`userId` only; `} = req.session;` is on line 16"
+    },
+    {
+     "finding": "profile/contributions candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:74",
+     "cited": "app/routes/profile.js:79",
+     "cited_code": "take the id from the session",
+     "problem": "does not hold the cited code",
+     "actual": "`userId` only; `} = req.session;` is on line 80"
+    },
+    {
+     "finding": "profile/contributions candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:74",
+     "cited": "app/routes/contributions.js:14",
+     "cited_code": "take the id from the session",
+     "problem": "does not hold the cited code",
+     "actual": "`userId` only; `} = req.session;` is on line 15"
+    }
+   ],
+   "notes": "Skill loaded: SKILL.md Read at <sonnet-round>/runs/eval1-with_skill-1/outputs/run-meta-transcript.txt:6. A2 fails on the multi-line destructuring rule (allocations.js:18) and on allocations-dao.js:58. Accepted as holding: allocations-dao.js:97 ('joins the user's name', holds alloc.userName = user.userName), session.js:27 (callback receiving err unused), user-dao.js:20 (start of the fixed-field literal), server.js:78 (session() config with cookie options absent), tutorial.js:8/31, memos.js:25, memos-dao.js:28 and all hand-off lines."
+  },
+  {
+   "run": "sonnet/eval1-with_skill-2",
+   "model": "claude-sonnet-5-5",
+   "config": "with_skill",
+   "report": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md",
+   "cited_lines_checked": 23,
+   "assertions": [
+    {
+     "id": "A1",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:1 slug access-control; sections Context <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:3, Delegation <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:11, Verification <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:19, Confirmed defects <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:28, Refused or unconfirmed candidates <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:52, Coverage <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:80"
+    },
+    {
+     "id": "A2",
+     "grade": "FAIL",
+     "evidence": "Location <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:31 app/routes/allocations.js:23 exact and holds the call. Chain <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:34 cites app/routes/allocations.js:18 for '`userId` comes from `req.params`', but <opus-round>/base/nodegoat/app/routes/allocations.js:18 is only `} = req.params;` (userId on line 17). Other chain lines hold: index.js:59, allocations-dao.js:57, allocations.js:14, user-dao.js:38."
+    },
+    {
+     "id": "A3",
+     "grade": "PASS",
+     "evidence": "AC-3 VERIFIED REAL <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:22; test test/security/allocations-access.test.js <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:46, exists <sonnet-round>/runs/eval1-with_skill-2/test/security/allocations-access.test.js; run with node --test and stubs, attack test fails, own-data test passes <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:47-48"
+    },
+    {
+     "id": "A4",
+     "grade": "FAIL",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:59-60 isAdminUserMiddleware stale-flag candidate has no lens (and 'stays closed as AC-2' does not cite the previous report); <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:63-64 profile/contributions/dashboard ends in 'OK.' with no disposition; <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:65-66 POST /benefits has no disposition or lens. Entries with a lens: <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:53-56, <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:57-58, <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:61-62."
+    },
+    {
+     "id": "A5",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/sweep-registry.md:10 row `access-control`, Last run 2026-10-09; sweep_status.py --check on <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits exit 0 (rerun by grader; <sonnet-round>/runs/eval1-with_skill-2/outputs/sweep-status-check.txt)"
+    },
+    {
+     "id": "A6",
+     "grade": "PASS",
+     "evidence": "Only confirmed finding AC-3 <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:30; AC-1/AC-2 stated closed and not re-reported <sonnet-round>/runs/eval1-with_skill-2/outputs/docs-audits/2026-10-09-access-control.md:15-17"
+    },
+    {
+     "id": "A7",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-2/outputs/git-status.txt:1-3 (docs/audits/sweep-registry.md, docs/audits/2026-10-09-access-control.md, test/security/allocations-access.test.js); <sonnet-round>/runs/eval1-with_skill-2/outputs/changed-files.txt:1-3; not-copied, deleted, staged.diff empty; <sonnet-round>/runs/eval1-with_skill-2/outputs/unstaged.diff only docs/audits/sweep-registry.md"
+    }
+   ],
+   "bad_cited_lines": [
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:34",
+     "cited": "app/routes/allocations.js:18",
+     "cited_code": "`userId` comes from `req.params`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.params;` (allocations.js:18); `userId` is on line 17 of the multi-line destructuring at app/routes/allocations.js:16-18"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:45",
+     "cited": "app/views/allocations.html:15",
+     "cited_code": "nav link and form already use the session user's id",
+     "problem": "does not hold the cited code",
+     "actual": "`<form action=\"/allocations/{{userId}}\" ...>`; on this page `userId` is the URL parameter rendered by app/routes/allocations.js:26, not the session id"
+    },
+    {
+     "finding": "profile/contributions/dashboard candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:64",
+     "cited": "app/routes/profile.js:16",
+     "cited_code": "identifier comes from `req.session.userId`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` is on line 15"
+    },
+    {
+     "finding": "profile/contributions/dashboard candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:64",
+     "cited": "app/routes/contributions.js:15",
+     "cited_code": "identifier comes from `req.session.userId`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` is on line 14"
+    }
+   ],
+   "notes": "Skill loaded: SKILL.md Read at <sonnet-round>/runs/eval1-with_skill-2/outputs/run-meta-transcript.txt:6. The Verification table also marks memos, tutorial, stale admin flag and signup FALSE POSITIVE ({r}:23-26) but the candidates section entries for the stale flag, profile/contributions and POST /benefits lack a lens. Accepted: allocations-dao.js:57 (method definition named), server.js:107 (commented-out csrf), server.js:78, user-dao.js:20/25/38, index.js:75."
+  },
+  {
+   "run": "sonnet/eval1-with_skill-3",
+   "model": "claude-sonnet-5-5",
+   "config": "with_skill",
+   "report": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md",
+   "cited_lines_checked": 30,
+   "assertions": [
+    {
+     "id": "A1",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:1 slug access-control; sections Context <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:3, Delegation <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:12, Verification <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:21, Confirmed defects <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:29, Refused or unconfirmed candidates <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:55, Coverage <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:78"
+    },
+    {
+     "id": "A2",
+     "grade": "PASS",
+     "evidence": "Location <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:32 app/routes/allocations.js:23 exact, holds `allocationsDAO.getByUserIdAndThreshold(userId, threshold, ...)`. Chain <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:34-41: index.js:59 (isLoggedIn only), session.js:36 (isLoggedInMiddleware definition), allocations.js:16-18 (whole destructuring from req.params), allocations-dao.js:86 (find), allocations-dao.js:97-99 (userName/firstName/lastName), allocations.js:12-15 (commented fix); all exist and hold the cited code at <opus-round>/base/nodegoat."
+    },
+    {
+     "id": "A3",
+     "grade": "PASS",
+     "evidence": "AC-3 VERIFIED REAL <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:24; test test/security/allocations-idor-test.js <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:48, exists <sonnet-round>/runs/eval1-with_skill-3/test/security/allocations-idor-test.js; ran, attack case FAIL, legitimate case PASS, exit 1 <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:48-52"
+    },
+    {
+     "id": "A4",
+     "grade": "FAIL",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:72-74 'Profile, contributions: no defect.' carries no disposition/lens; <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:75-76 /dashboard and / entry carries no disposition; <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:60 AC-2 'closed earlier' without citing the previous report in the entry. Entries with valid dispositions: <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:56-59, <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:61-64, <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:65-68, <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:69-71."
+    },
+    {
+     "id": "A5",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/sweep-registry.md:10 row `access-control`, Last run 2026-10-09; sweep_status.py --check on <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits exit 0 (rerun by grader)"
+    },
+    {
+     "id": "A6",
+     "grade": "PASS",
+     "evidence": "Only confirmed finding AC-3 <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:31; AC-1/AC-2 listed as closed earlier <sonnet-round>/runs/eval1-with_skill-3/outputs/docs-audits/2026-10-09-access-control.md:56-60, not re-reported"
+    },
+    {
+     "id": "A7",
+     "grade": "PASS",
+     "evidence": "<sonnet-round>/runs/eval1-with_skill-3/outputs/git-status.txt:1-3 (docs/audits/sweep-registry.md, docs/audits/2026-10-09-access-control.md, test/security/allocations-idor-test.js); <sonnet-round>/runs/eval1-with_skill-3/outputs/changed-files.txt:1-3; not-copied, deleted, staged.diff empty; <sonnet-round>/runs/eval1-with_skill-3/outputs/unstaged.diff only docs/audits/sweep-registry.md"
+    }
+   ],
+   "bad_cited_lines": [
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:45",
+     "cited": "app/routes/profile.js:16",
+     "cited_code": "read `userId` from `req.session`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` is on line 15"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:45",
+     "cited": "app/routes/contributions.js:15",
+     "cited_code": "read `userId` from `req.session`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` is on line 14"
+    },
+    {
+     "finding": "AC-4",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:62",
+     "cited": "app/data/memos-dao.js:18",
+     "cited_code": "memo document `{ memo, timestamp }`",
+     "problem": "does not hold the cited code",
+     "actual": "`const memos = {`; `memo,` and `timestamp:` are on lines 19-20"
+    },
+    {
+     "finding": "profile/contributions candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:73",
+     "cited": "app/routes/profile.js:16",
+     "cited_code": "use `req.session.userId`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 15"
+    },
+    {
+     "finding": "profile/contributions candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:73",
+     "cited": "app/routes/profile.js:80",
+     "cited_code": "use `req.session.userId`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 79"
+    },
+    {
+     "finding": "profile/contributions candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:73",
+     "cited": "app/routes/contributions.js:15",
+     "cited_code": "use `req.session.userId`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 14"
+    },
+    {
+     "finding": "profile/contributions candidate",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:73",
+     "cited": "app/routes/contributions.js:44",
+     "cited_code": "use `req.session.userId`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 43"
+    }
+   ],
+   "notes": "Skill loaded: SKILL.md Read at <sonnet-round>/runs/eval1-with_skill-3/outputs/run-meta-transcript.txt:6. Only run whose confirmed-finding chain uses the full range allocations.js:16-18, so A2 passes. Outside the report, the registry seeds ({o}/unstaged.diff:17) cite app/routes/contributions.js:177 and app/routes/research.js:211, which differ from the report's lines 32 and 15; not graded (registry, not report). server.js:7 (`// const csrf = require('csurf');`) accepted for 'CSRF commented out'; session.js:198 (`} = req.body;`) accepted for 'nothing from req.body is spread'."
+  },
+  {
+   "run": "opus/eval1-with_skill-1",
+   "model": "claude-opus-5-5",
+   "config": "with_skill",
+   "report": "<opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md",
+   "cited_lines_checked": 33,
+   "assertions": [
+    {
+     "id": "A1",
+     "grade": "PASS",
+     "evidence": "<opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:1 slug access-control; sections Context <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:3, Delegation <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:25, Verification <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:41, Confirmed defects <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:53, Refused or unconfirmed candidates <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:117, Coverage <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:146"
+    },
+    {
+     "id": "A2",
+     "grade": "FAIL",
+     "evidence": "AC-3 location <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:56 `app/routes/allocations.js:18`, 'where `userId` is taken from `req.params`': <opus-round>/base/nodegoat/app/routes/allocations.js:18 is `} = req.params;`, userId is on line 17. Chain <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:60-62 cites allocations-dao.js:82 for `{ userId: parseInt(userId) }` (line holds `userId: parsedUserId`) and allocations-dao.js:97 for userName, firstName and lastName (97 holds only userName); chain <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:97-98 cites session.js:27 for isLoggedIn and isAdmin (27 is inside isAdminUserMiddleware only). AC-4 location session.js:116 and chain server.js:84, session.js:234 hold."
+    },
+    {
+     "id": "A3",
+     "grade": "PASS",
+     "evidence": "AC-3 and AC-4 VERIFIED REAL <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:44-45; tests test/e2e/integration/allocations_owner_guard_spec.js and test/e2e/integration/login_session_rotation_guard_spec.js exist in <opus-round>/runs/eval1-with_skill-1/test/e2e/integration/; each 'written, not run: Cypress is not installed here' <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:80-81, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:112-113, plus live reproduction ran with result <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:77-79, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:109-111"
+    },
+    {
+     "id": "A4",
+     "grade": "PASS",
+     "evidence": "Every entry has a disposition: <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:118 refused exploitability, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:122 refused claim correctness (+closed by 2026-10-03 report), <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:127 and <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:130 refused claim correctness, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:136 refused claim correctness, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:140 refused existing mitigation, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:142 refused exploitability, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:144 AC-2 closed earlier, 2026-10-03 report"
+    },
+    {
+     "id": "A5",
+     "grade": "PASS",
+     "evidence": "<opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/sweep-registry.md:10 row `access-control`, Last run 2026-10-09; sweep_status.py --check on <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits exit 0 (rerun by grader)"
+    },
+    {
+     "id": "A6",
+     "grade": "PASS",
+     "evidence": "Confirmed AC-3 (<opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:55, allocations IDOR) and AC-4 (<opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:85, session fixation at session.js:116); neither is AC-1 (/benefits admin-only wiring) or AC-2 (redirect vs 403); AC-1 re-checked as still closed <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:19-23, <opus-round>/runs/eval1-with_skill-1/outputs/docs-audits/2026-10-09-access-control.md:122-126"
+    },
+    {
+     "id": "A7",
+     "grade": "PASS",
+     "evidence": "<opus-round>/runs/eval1-with_skill-1/outputs/git-status.txt:1-5 (M docs/audits/categories.md, M docs/audits/sweep-registry.md, ?? docs/audits/2026-10-09-access-control.md, ?? test/e2e/integration/allocations_owner_guard_spec.js, ?? test/e2e/integration/login_session_rotation_guard_spec.js); <opus-round>/runs/eval1-with_skill-1/outputs/changed-files.txt:1-5; not-copied, deleted, staged.diff empty; <opus-round>/runs/eval1-with_skill-1/outputs/unstaged.diff only docs/audits/*"
+    }
+   ],
+   "bad_cited_lines": [
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "location",
+     "report_line": "R:56",
+     "cited": "app/routes/allocations.js:18",
+     "cited_code": "`userId` is taken from `req.params`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.params;` (allocations.js:18); `userId` is on line 17 of the multi-line destructuring at app/routes/allocations.js:16-18"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:61",
+     "cited": "app/data/allocations-dao.js:82",
+     "cited_code": "`{ userId: parseInt(userId) }`",
+     "problem": "does not hold the cited code",
+     "actual": "`userId: parsedUserId` (parseInt is on line 58)"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:62",
+     "cited": "app/data/allocations-dao.js:97",
+     "cited_code": "copies `userName`, `firstName` and `lastName`",
+     "problem": "does not hold the cited code",
+     "actual": "`alloc.userName = user.userName;` only; firstName and lastName on lines 98-99"
+    },
+    {
+     "finding": "AC-4",
+     "finding_status": "confirmed",
+     "kind": "chain",
+     "report_line": "R:98",
+     "cited": "app/routes/session.js:27",
+     "cited_code": "`isLoggedIn` and `isAdmin` trust the session userId",
+     "problem": "does not hold the cited code",
+     "actual": "`return userDAO.getUserById(req.session.userId, (err, user) => {` inside isAdminUserMiddleware; isLoggedInMiddleware's check is line 37"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:73",
+     "cited": "app/routes/profile.js:16",
+     "cited_code": "read `userId` from `req.session`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 15"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:74",
+     "cited": "app/routes/contributions.js:15",
+     "cited_code": "read `userId` from `req.session`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 14"
+    },
+    {
+     "finding": "AC-3",
+     "finding_status": "confirmed",
+     "kind": "other",
+     "report_line": "R:74",
+     "cited": "app/routes/memos.js:23",
+     "cited_code": "read `userId` from `req.session`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 22"
+    },
+    {
+     "finding": "Admin via profile update",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:131",
+     "cited": "app/data/profile-dao.js:45",
+     "cited_code": "`updateUser` builds `$set` from a fixed key list",
+     "problem": "does not hold the cited code",
+     "actual": "`const user = {};` (key list on lines 46+, no $set on this line); also cited R:48"
+    },
+    {
+     "finding": "Admin via profile update",
+     "finding_status": "unconfirmed",
+     "kind": "other",
+     "report_line": "R:132",
+     "cited": "app/routes/profile.js:80",
+     "cited_code": "targets `req.session.userId`",
+     "problem": "does not hold the cited code",
+     "actual": "`} = req.session;`; `userId` on line 79"
+    }
+   ],
+   "notes": "Skill loaded: SKILL.md read via cat at <opus-round>/runs/eval1-with_skill-1/outputs/run-meta-transcript.txt:6. The run started MongoDB in a container and the app ({r}:35-39); noted for the evaluator, working tree unaffected. A2 fails primarily on the location line (allocations.js:18). Accepted: layout.html:56, session.js:28 (callback body ignoring err), session.js:37/116/234/259/85, server.js:71/84/107, index.js:30/75, user-dao.js:20/61, memos-dao.js:18 ('no owner field', no field quoted)."
+  }
+ ],
+ "ambiguities": [
+  "Multi-line destructuring `const {\\n userId\\n} = req.params|req.session;`: a citation of only the `} = req.X;` line (or only the `userId` line) for 'userId comes from req.X' was graded as not holding the cited code, per the rule that a line of a multi-line statement whose cited element is on another line does not hold it. This alone decides A2 FAIL for sonnet-1, sonnet-2 and opus-1 (allocations.js:18). Under a lenient reading (line holds the source `req.params`), sonnet-2 would pass A2; sonnet-1 would still fail on allocations-dao.js:58; opus-1 would still fail on allocations-dao.js:82/97 and session.js:27 under the strict token reading.",
+  "Lines that start an object literal or define a function (user-dao.js:20 `const user = {`, memos-dao.js:18 `const memos = {`, session.js:36 `this.isLoggedInMiddleware = ...`, allocations-dao.js:57 method definition) were accepted when the claim describes the construct as a whole, and flagged only when a specific token is quoted that sits on another line (memos-dao.js:18 with `{ memo, timestamp }` in sonnet-3, profile-dao.js:45 with `$set` in opus-1).",
+  "A4: entries in the refused section that give a lens name without the word 'refused' (sonnet-2 {memos, tutorial, signup}) were accepted as refused-with-lens; entries with neither a lens nor 'needs deeper review' nor 'closed earlier + report' (e.g. 'no defect', 'OK.') were failed.",
+  "A2 scope is location and evidence chain; bad lines cited in Fix/Context/candidates are listed in bad_cited_lines but do not decide A2.",
+  "cited_lines_checked counts distinct file:line (or file:range) citations in the report."
+ ]
+}

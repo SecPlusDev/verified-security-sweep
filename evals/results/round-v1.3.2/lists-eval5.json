@@ -1,0 +1,169 @@
+{
+  "eval": 5,
+  "reviews": {
+    "A": [
+      {
+        "id": "A-1",
+        "claim": "The list-checks endpoint (GET checks/) filters checks by the owner of the key's project instead of by the key's project, so any read-write or read-only key returns the checks of every project owned by the same account (with uuid, ping_url, update_url and channels for a read-write key); a team member of only one project can create that project's key and read the owner's other projects' checks, then use their ping URLs to raise false alerts or hide outages, while other owners' checks are not listed and per-check calls into the other project still return 403.",
+        "location": "hc/api/views.py:415",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-2",
+        "claim": "Every per-check endpoint (get by UUID or by unique key, update, delete, pause, resume, list pings, ping body, list flips) compares the check with the key's own project, so a key of another project, including a read-write key of another project owned by the same account, gets 403 or 404 for a check outside its project.",
+        "location": "hc/api/views.py:483",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-3",
+        "claim": "Getting a check by UUID with a read-only key passes the read-only flag, so the response omits uuid, ping_url, the update, pause and resume URLs and channels, as documented.",
+        "location": "hc/api/views.py:486",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-4",
+        "claim": "The get-check-by-unique-key endpoint accepts read-only keys but builds its response without the read-only flag, so a read-only key receives the check's uuid, ping_url and update, pause and resume URLs; its holder can list checks to get unique keys, look each one up to obtain UUIDs and ping URLs, send pings that change check status or trigger alerts, and use the UUIDs to delete checks, limited to the key's own project and without the ability to change check configuration.",
+        "location": "hc/api/views.py:495",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-5",
+        "claim": "Creating a check through the API puts the new check in the key's own project, and the lookup that updates an existing check matching the requested unique fields searches only the key's project.",
+        "location": "hc/api/views.py:300",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-6",
+        "claim": "Read-only keys of every kind (hashed and legacy) are rejected with 401 on create, update, pause, resume, list pings, ping body and list integrations, because those views use the read-write decorator, which calls the key lookup with read-only keys disallowed.",
+        "location": "hc/api/decorators.py:59",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-7",
+        "claim": "The delete-check endpoint (DELETE checks/<uuid>) uses the decorator that accepts read-only keys and never checks the read-only flag, so anyone holding a project's read-only key (the key embedded in shareable read-only dashboard links), hashed or legacy, who knows a check's UUID (for example from the unique-key lookup leak or a ping URL in a crontab) gets 200 and permanently deletes the check with its pings and flips; together with the unique-key lookup leak, a read-only key alone can find and delete every check of its project.",
+        "location": "hc/api/views.py:520",
+        "status": "confirmed"
+      },
+      {
+        "id": "A-8",
+        "claim": "The list-integrations and list-badges endpoints return only the integrations and badges of the key's own project.",
+        "location": "hc/api/views.py:475",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-9",
+        "claim": "The notification status, metrics, bounces and status endpoints do not use API-key authentication (they rely on the notification UUID, a metrics key header, a signed bounce id, or are public by design) and were not examined.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-10",
+        "claim": "Hashed API keys are matched by computing an HMAC over the full key and comparing it in constant time, so the 8-character prefix only narrows which stored keys are compared and a prefix collision cannot select the wrong project.",
+        "location": "hc/accounts/models.py:581-593",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-11",
+        "claim": "The request's read-only flag is set correctly for all four key types (hashed and legacy, read-write and read-only).",
+        "location": "hc/api/decorators.py:87-89",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-12",
+        "claim": "The wildcard CORS header on these API views is not a problem because the endpoints authenticate with a header key rather than cookies, and no bypass was seen.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-13",
+        "claim": "Creating a check through the API counts existing checks against the plan's check limit and inserts the check later with no lock or constraint in between, so parallel create requests by a read-write key holder can exceed the limit; the web UI has the same pattern, the over-limit date is never set in the repository, and whether the limit must hold under concurrent requests is left for the owner to decide.",
+        "location": "hc/api/views.py:448",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-14",
+        "claim": "The API documentation shows the list-flips response as a bare array, while the code and its tests return an object with a flips key.",
+        "location": "templates/docs/api.md:1417",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-15",
+        "claim": "The API documentation describes list checks as returning checks \"belonging to the user\" and delete as removing the check \"from the user's account\" (with the same wording in the v1 and v2 docs), which contradicts the documented rule that API keys are project-specific and should be reworded to \"the project's\" together with the list-checks fix; the wording is not taken to make the owner-wide listing intended.",
+        "location": "templates/docs/api.md:94",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-16",
+        "claim": "The API documentation for getting a ping's logged body omits the 401 response that the code returns for a missing, wrong or read-only key.",
+        "location": "templates/docs/api.md:1331",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-17",
+        "claim": "Returning 403 for another project's check UUID but 404 for an unknown UUID does not give a usable existence oracle, because the 403 is documented behaviour and check UUIDs are random version 4 values.",
+        "location": "hc/api/views.py:483",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-18",
+        "claim": "The ping-body endpoint not applying the 1000-item cap used by the list-pings endpoint is not a problem, because the cap bounds the size of a list response and the body endpoint returns a single ping of the key's own project within the ping log limit.",
+        "location": "hc/api/views.py:631-634",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-19",
+        "claim": "The unique-key URL converter's pattern [A-z0-9]{40} also admits the characters [ \\ ] ^ _ and backtick, but this is harmless because the value is only compared with the hex unique keys of the key's own project's checks, so the extra characters never match.",
+        "location": "hc/api/urls.py:21",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-20",
+        "claim": "The legacy plain-text API key lookup is a database equality rather than a constant-time comparison and is case-insensitive under some MySQL collations, but this is not exploitable because it would need remote timing of an indexed lookup over a 32-character random key, case folding still leaves well over 100 bits, and hashed keys use a constant-time comparison.",
+        "location": "hc/accounts/models.py:431",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-21",
+        "claim": "Key verification chooses the stored key column (read-write or read-only) from the key's prefix, so a key is never checked against the wrong column.",
+        "location": "hc/accounts/models.py:582-585",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-22",
+        "claim": "A legacy key cannot be matched against a hashed-key column and a blank key cannot match, because of the 32-character length gate in the decorators and a guard against the \".\" placeholder in the key comparison.",
+        "location": "hc/api/decorators.py:56",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-23",
+        "claim": "Sending the key in the header versus in the JSON body causes no problem: the body key is used only by the read-write decorator on POST requests, and the header takes precedence.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-24",
+        "claim": "Assigning integrations to a check when creating or updating it is limited to integrations of the check's own project.",
+        "location": "hc/api/views.py:323",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-25",
+        "claim": "The Check.NotUpdated exception referenced in the update path exists under the pinned Django 6.1.1, so the code does not fail there.",
+        "location": "hc/api/views.py:514",
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-26",
+        "claim": "Ping endpoints and ping URLs, ping_key and slug based URLs, the badge image endpoints and their signatures, and the dashboard URL that carries the read-only key were not examined and are proposed for a separate later examination of capability URLs.",
+        "location": null,
+        "status": "unconfirmed"
+      },
+      {
+        "id": "A-27",
+        "claim": "Creating, revoking and displaying API keys in the web UI (who can create, see and revoke keys) was not examined and is proposed for a separate later examination.",
+        "location": null,
+        "status": "unconfirmed"
+      }
+    ]
+  }
+}

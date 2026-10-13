@@ -1,0 +1,48 @@
+{
+  "note": "One orchestrator adjustment to a grade, one reading applied to the metrics where the extraction brief conflicted with the fixed reading, and the readings left as the graders applied them. Grader files are unchanged.",
+  "adjustments": [
+    {
+      "file": "assertions-eval1.json",
+      "run": "claude-opus-5-5/eval1-with_skill-1",
+      "assertion": "A2",
+      "grader_grade": "PASS",
+      "final_grade": "FAIL",
+      "grade_other_reading": "PASS",
+      "reason": "R:77 cites app/data/allocations-dao.js:73 for 'The intended parse-and-check sits commented out'. Line 73 is the commented-out numeric $where return inside the commented-out if statement at 72-74; the parse (parseInt) is the separate statement at line 70. The grader read the whole block comment (63-76) as one construct and graded PASS, recorded FAIL as the other reading and asked the orchestrator to decide. The fixed reading of docs/BUILD.md section 5 accepts a line of a statement that spans several lines; a block comment is not a statement, and read statement by statement the line does not hold the parse. Rule 7 of the brief (any other ambiguity: the stricter reading gives the grade) applies: FAIL, with PASS under the block-comment reading.",
+      "evidence": "app/data/allocations-dao.js:63-76 at 9e832da (block comment; parseInt at :70, range check at :72, return at :73); R:77 of the Opus eval 1 report; assertions-eval1.json, ambiguities[1]",
+      "effect": "Opus eval 1: 7/9 instead of the grader's 8/9. B3 is unaffected (a chain line, not a location line)."
+    }
+  ],
+  "metrics_reading": [
+    {
+      "file": "lists-eval5.json, quality-per-run.json",
+      "run": "claude-opus-5-5/eval5-with_skill-1 (letter A)",
+      "items": [
+        "A-7",
+        "A-8",
+        "A-9",
+        "A-10",
+        "A-11"
+      ],
+      "extraction_status": "unconfirmed",
+      "metrics_status": "confirmed",
+      "reason": "The record gives these five Low items the verdict VERIFIED REAL (Verification table R:60-64, index entries L1 to L5) and keeps them outside its headline count. The extraction brief stated the fixed reading ('confirmed only when the record gives that claim the verdict VERIFIED REAL') and added the BUILD.md example 'A Low item kept outside the headline count ... is unconfirmed', which was written for items without the verdict. The extraction sub-agent followed the example. The metrics use the definition (VERIFIED REAL), which is also the stricter reading for B2; the figures under the extraction's status are kept in quality-per-run.json under extraction_status. The blind grader grades every claim regardless of its status, so no step was rerun.",
+      "evidence": "extraction-notes-eval5.json A-7 to A-11 (original_status_wording, recorded_as_defect true); assertions-eval5.json, Opus A3 evidence (8 findings VERIFIED REAL)"
+    }
+  ],
+  "rules_added_after_first_grading": [],
+  "not_adjusted": [
+    "Eval 5, A3, both runs: FAIL on the strict reading of the three-element chain (Opus: L2 to L4, documentation items, have no data flow from an untrusted source and no missing mitigation; Sonnet: the chains of F2 and F3 carry no data-flow element, which appears only in the Scenario lines). PASS under the readings the graders recorded.",
+    "Eval 1, Sonnet, A2: app/data/allocations-dao.js:97 holds one complete statement (userName); firstName and lastName are separate statements on 98 and 99. FAIL under the statement reading and the physical-line reading; PASS under a reading that accepts a group of adjacent statements.",
+    "Eval 1, Sonnet, A9: node --test is Node's built-in runner; the project runs mocha through Grunt and Cypress. FAIL; PASS under the reading 'any test-runner invocation without a shell or inline code'.",
+    "Eval 6, Sonnet, A3: the VERIFIED REAL rows for F1, F2, F3 are confirmed findings of the new report under fixed reading (b). FAIL; PASS under the reading that re-verdicts under the recorded names are not new.",
+    "Eval 7, A2, both runs: PASS under the v1.3.1 rule on manual test runs, as in v1.3.2; FAIL under the reading that 'nothing' means no test of any kind ran.",
+    "Eval 1, A4, Opus: app/views/allocations.html:15 counted inside the Context scope on the strict reading of R:11; no grade change.",
+    "Eval 1, A4, Sonnet: app/routes/research.js counted inside the Context scope on the strict reading of R:5-7; no grade change.",
+    "Eval 5, A5, Sonnet: the badges entry 'refused, by design' names no lens; the grader counted it as lacking an allowed disposition."
+  ],
+  "brief_and_inputs": [
+    "The transcripts given to the eval 6 and eval 7 graders were copies in which the text of the skill's own files (SKILL.md, references, scripts) was removed from tool results by line matching and replaced by '[skill file text redacted: N lines]'. Residual matches after redaction: generic Python lines only ('from __future__ import annotations', 'if __name__ == \"__main__\":', 'from pathlib import Path'). No other content was changed.",
+    "The four assertion briefs, the two extraction briefs and the two blind-grading briefs did not include the skill's text and told each sub-agent not to open plugin/."
+  ]
+}

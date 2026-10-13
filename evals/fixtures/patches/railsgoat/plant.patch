@@ -1,0 +1,170 @@
+diff --git a/app/controllers/messages_controller.rb b/app/controllers/messages_controller.rb
+index db97e86..42330dc 100644
+--- a/app/controllers/messages_controller.rb
++++ b/app/controllers/messages_controller.rb
+@@ -8,11 +8,14 @@ class MessagesController < ApplicationController
+   end
+ 
+   def show
+-    @message = Message.where(id: params[:id]).first
++    # Scoped through the receiver association (docs/audits/2026-10-03-messages.md, MSG-1)
++    @message = current_user.messages.find_by(id: params[:id])
++    not_your_message unless @message
+   end
+ 
+   def destroy
+-    message = Message.where(id: params[:id]).first
++    message = current_user.messages.find_by(id: params[:id])
++    return not_your_message unless message
+ 
+     if message.destroy
+       flash[:success] = "Your message has been deleted."
+@@ -38,6 +41,11 @@ class MessagesController < ApplicationController
+ 
+   private
+ 
++  def not_your_message
++    flash[:error] = "Message not found."
++    redirect_to user_messages_path(user_id: current_user.id)
++  end
++
+   def message_params
+     params.require(:message).permit(:creator_id, :message, :read, :receiver_id)
+   end
+diff --git a/docs/audits/2026-10-03-messages.md b/docs/audits/2026-10-03-messages.md
+new file mode 100644
+index 0000000..f5913e0
+--- /dev/null
++++ b/docs/audits/2026-10-03-messages.md
+@@ -0,0 +1,43 @@
++# Defensive audit sweep: messages, 2026-10-03
++
++## Context
++Scope: the messages feature, `app/controllers/messages_controller.rb`, `app/models/message.rb`,
++`app/views/messages/`. Trigger: first sweep on this zone; the registry had no row for it. No
++changes in the zone since the pinned upstream commit.
++
++## Delegation
++One reviewer in a fresh session, with the brief from the skill. Pre-read: `README.md`,
++`docs/audits/categories.md`. No previous reports existed; the registry was bootstrapped in this
++run.
++
++## Verification
++| Finding | Zone | Verdict | Claimed | Verified | Reservations | Proof |
++|---|---|---|---|---|---|---|
++| MSG-1 `show` and `destroy` load `Message.where(id: params[:id])` with no receiver check | messages | VERIFIED REAL | High | High | none | `spec/guards/message_scoping_spec.rb` |
++| MSG-2 `index` calls `sleep(3)` on every request | messages | OVER-RATED | Medium | Low | a three second delay per request is a cost, not an exposure; one request at a time per session | not applicable |
++
++## Confirmed defects
++
++### MSG-1: messages readable and deletable across users (FIXED in this change)
++- Location: `app/controllers/messages_controller.rb:11` and
++  `app/controllers/messages_controller.rb:15`, before the fix.
++- Class: insecure direct object reference.
++- Evidence chain: (1) `params[:id]` was the only lookup key; (2) nothing compared the message's
++  `receiver_id` with `current_user.id`; (3) `User#messages` is already scoped by `receiver_id`
++  (`app/models/user.rb:20`) and was not used.
++- Scenario: a signed-in employee walks `/users/<own id>/messages/<n>` for increasing `n` and
++  reads, or deletes, every message in the system.
++- Fix: look the message up through `current_user.messages`, the association the model already
++  defines, and answer "not found" otherwise. Applied in this change.
++- Reproduction and guard: `spec/guards/message_scoping_spec.rb`, blocked path and legitimate
++  path.
++
++## Refused or unconfirmed candidates
++- MSG-2, OVER-RATED (lens: exploitability). Recorded as Low in the registry's refused list, not
++  in the headline count.
++
++## Coverage
++Read: `app/controllers/messages_controller.rb`, `app/models/message.rb`, `app/models/user.rb`,
++`app/views/messages/index.html.erb`, `app/views/messages/show.html.erb`, `config/routes.rb`.
++Skipped: everything outside the messages feature (other zones). Lenses applied: exploitability,
++claim correctness, existing mitigation.
+diff --git a/docs/audits/categories.md b/docs/audits/categories.md
+new file mode 100644
+index 0000000..bb1cc69
+--- /dev/null
++++ b/docs/audits/categories.md
+@@ -0,0 +1,12 @@
++# Audit categories
++
++Categories, not patterns. A new pattern lands under an existing category. "Covered by" names the
++control in this project; the last column says whether a test asserts it.
++
++| Category | Covered by | Enforced mechanically? |
++|---|---|---|
++| Authentication and sessions | `authenticated` before_action in `app/controllers/application_controller.rb`; `current_user` resolved from the `auth_token` cookie or the session | partly: the feature specs sign in |
++| Authorization per route | `administrative` filter in `app/controllers/application_controller.rb`, applied per controller | no |
++| Ownership of rows | `has_one` and `has_many` associations on `User` (`app/models/user.rb`), used through `current_user` | yes for messages (`spec/guards/message_scoping_spec.rb`); no for the rest |
++| Input validation | strong parameters declared per controller | no |
++| File handling | extension allow-list and size cap in `app/controllers/benefit_forms_controller.rb` | no |
+diff --git a/docs/audits/sweep-registry.md b/docs/audits/sweep-registry.md
+new file mode 100644
+index 0000000..66460f1
+--- /dev/null
++++ b/docs/audits/sweep-registry.md
+@@ -0,0 +1,23 @@
++# Sweep registry: what exists, what ran, what it is worth
++
++Proposals for sweeps are written here, not in conversation. The `Last run` column is derived
++from report filenames by `scripts/sweep_status.py`; the other columns are written by hand.
++
++## Candidates
++
++| Zone | Argument | Last run | Yield |
++|---|---|---|---|
++| `messages` | Internal messages between employees. Ownership is now enforced through the receiver association and guarded by a spec. | 2026-10-03 | 1/2 |
++
++## Proposed, not yet run
++
++| Zone | Argument | Premise to re-verify before starting |
++|---|---|---|
++| `account-settings` | Profile update and password change paths; strong parameters are declared per controller, with no shared policy. | that `app/controllers/users_controller.rb` was not rewritten since 2026-10-03 |
++
++## Candidates verified and refused
++
++Written here so they are not rediscovered. A refused candidate without a written reason comes back.
++
++- `sleep(3)` in `MessagesController#index`: Low, a cost rather than an exposure, see the
++  2026-10-03 messages report, MSG-2.
+diff --git a/spec/guards/message_scoping_spec.rb b/spec/guards/message_scoping_spec.rb
+new file mode 100644
+index 0000000..fd3d1a6
+--- /dev/null
++++ b/spec/guards/message_scoping_spec.rb
+@@ -0,0 +1,35 @@
++# frozen_string_literal: true
++require "spec_helper"
++
++# Guard for the invariant "a message is visible only to its receiver"
++# (docs/audits/2026-10-03-messages.md, finding MSG-1). Both halves matter: a guard that checks
++# only the blocked path lets an over-restrictive fix through unnoticed.
++feature "guard: messages are scoped to the signed-in receiver" do
++  let(:normal_user) { UserFixture.normal_user }
++  let(:another_user) { User.find_by(id: 2) }
++
++  before do
++    UserFixture.reset_all_users
++  end
++
++  scenario "blocks the attack path: a message addressed to someone else is not shown" do
++    login(normal_user)
++    foreign = Message.create!(creator_id: another_user.id, receiver_id: another_user.id,
++                              message: "quarterly numbers, do not forward")
++
++    visit "/users/#{normal_user.id}/messages/#{foreign.id}"
++
++    expect(page).not_to have_content("quarterly numbers")
++    expect(page).to have_content("Message not found")
++  end
++
++  scenario "lets the legitimate path through: the receiver still reads their own message" do
++    login(normal_user)
++    own = Message.create!(creator_id: another_user.id, receiver_id: normal_user.id,
++                          message: "welcome aboard")
++
++    visit "/users/#{normal_user.id}/messages/#{own.id}"
++
++    expect(page).to have_content("welcome aboard")
++  end
++end

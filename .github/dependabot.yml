@@ -1,0 +1,16 @@
+# Dependabot: keeps the SHA-pinned GitHub Actions current. The pip file (requirements-ci.txt) is
+# not managed here: it is a universal, hash-checked resolution regenerated with the command in
+# its header, and Dependabot's rewrite would not preserve that; security alerts still arrive.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "ci"
+    labels: []
