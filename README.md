@@ -15,9 +15,11 @@
 every confirmed finding located on its exact line and reproduced by a failing test, every run
 recorded so the next one re-checks the last instead of starting from zero.**
 
-It does not replace an audit, and it finds what Claude finds on its own. What it adds is that
-each finding can be checked, that the record is kept, and that the next review starts from it.
-The skill reports, reproduces and proposes; the fixes go through your normal change process.
+Claude finds the defects; the skill makes each finding checkable, keeps the record, and gives
+the next review a starting point. It complements an audit and the project's own tests. The
+skill reports, reproduces and proposes; the fixes go through your normal change process.
+
+Listed in the Claude directory: `claude plugin install verified-security-sweep@anthropic-plugin-directory`.
 
 ## What it adds to Claude, measured
 
@@ -58,7 +60,10 @@ Across the evaluation rounds ([`evals/results/`](evals/results/)):
   command to the user.
 - **Install:** installed through `--plugin-dir` on a clean copy, the skill loaded on the first
   tool call and the full run passed every check from the installed copy
-  (`evals/results/install-2026-10-13.md`).
+  (`evals/results/install-2026-10-13.md`). Installed from the Claude directory after the
+  listing, the copy matched the v1.4.0 release file for file and by archive digest, and a run on
+  it passed 9 of 9 checks with the three planted defects on their lines
+  (`evals/results/install-directory-2026-10-16.md`).
 
 What the current version still misses, so you know what to read with care:
 - **Leads the reviewer raises but the sweep does not verify.** Both models record them with
@@ -172,8 +177,17 @@ Then compare the report with the three planted defects listed in
 
 ## Install
 
-**From the Claude directory.** Once the plugin is listed, install it from the directory in
-Claude Code or the Claude apps; the listing tracks this repository's `main` branch.
+**From the Claude directory.** The plugin is listed for Claude Code, Cowork and the Claude apps.
+In Claude Code:
+
+```bash
+claude plugin install verified-security-sweep@anthropic-plugin-directory
+```
+
+or `/plugin`, Discover, "Verified Security Sweep". The directory installs the tagged commit of
+the listed version, not this repository's `main`; the installed copy of v1.4.0 was compared with
+the release file by file and by archive digest
+(`evals/results/install-directory-2026-10-16.md`).
 
 **From a release, for the Claude apps.** Download `verified-security-sweep.skill` from the
 [latest release](https://github.com/SecPlusDev/verified-security-sweep/releases/latest) and upload it as a
@@ -271,7 +285,8 @@ and `evals/trigger-eval-holdout-2.json`, the results in `evals/results/`. The pl
 installed and run the way a user gets it, through `--plugin-dir` on a clean copy of the
 planted-defects fixture (`evals/install-test.md`, result in `evals/results/install-2026-10-13.md`):
 the skill loaded on the first tool call, the three planted defects came back on their lines with
-failing tests, and every script passed from the installed copy.
+failing tests, and every script passed from the installed copy. After the listing, the same
+check ran on the copy the directory installs (`evals/results/install-directory-2026-10-16.md`).
 Run trigger evaluations only from an empty project directory, with a Claude config directory that
 denies `Bash`, `Write` and `Edit`, from an account where this skill is not installed or synced,
 with one worker at a time, and with nested sessions started without any MCP server of the

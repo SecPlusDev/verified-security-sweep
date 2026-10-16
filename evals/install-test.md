@@ -43,3 +43,39 @@ Same command, new session, the prompt of eval 5 in `evals/evals.json` with `<rep
 
 `--plugin-dir` loads the plugin for that session only; nothing stays installed. Record the result,
 the model, the date and the token use in `evals/results/`.
+
+## 3. From the directory: the installed copy is the release
+
+Once a version is listed, check what the directory delivers. Use a configuration directory
+created for the check, so the account's own configuration and plugins stay out of it:
+
+```bash
+mkdir -p <work>/cfg-directory-test
+export CLAUDE_CONFIG_DIR=<work>/cfg-directory-test
+claude plugin install verified-security-sweep@anthropic-plugin-directory
+claude plugin list        # verified-security-sweep@anthropic-plugin-directory, Version: <version>-<commit>
+```
+
+The installed copy is under `$CLAUDE_CONFIG_DIR/plugins/cache/anthropic-plugin-directory/verified-security-sweep/<version>-<commit>/`.
+Compare it with the tagged release, then rebuild the archive from it:
+
+```bash
+git -C <work>/repo archive v<version> plugin | tar -x -C <work>/install-test/tag
+git -C <work>/repo show v<version>:LICENSE > <work>/install-test/tag/LICENSE
+diff -r --brief <work>/install-test/tag/plugin <installed copy>
+python3 <work>/repo/.github/scripts/package_skill.py --root <installed copy>/skills/verified-security-sweep \
+  --license <work>/install-test/tag/LICENSE --out <work>/install-test/dist-directory
+```
+
+Pass: `claude plugin list` names the tagged commit; the diff reports no differing file (an
+`.in_use/` folder is Claude Code's marker for a running session, not plugin content); the digest
+equals the version's row in `docs/BUILD.md` section 6. Running the scripts with `python3 -I`
+during the check writes `__pycache__` into the installed copy, because `-I` ignores
+`PYTHONDONTWRITEBYTECODE`; use plain `python3`. Then step 2 can run on the installed copy, from a
+session started with the same `CLAUDE_CONFIG_DIR`. Afterwards:
+
+```bash
+claude plugin uninstall verified-security-sweep@anthropic-plugin-directory
+```
+
+Result: `evals/results/install-directory-2026-10-16.md`.

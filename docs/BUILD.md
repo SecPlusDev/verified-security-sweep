@@ -221,6 +221,19 @@ Behavior evals run through skill-creator with the fixtures from `evals/fixtures/
   `set`, a `#!/usr/bin/env` shebang). Scripts are invoked as
   `python3 ${CLAUDE_SKILL_DIR}/scripts/<name>.py`, with no shebang and no execute bit. An explicit
   `icon` field in `plugin.json` produces a warning; the implicit `.claude-plugin/icon.png` does not.
+  The v1.4.0 submission passed with warnings that did not block review: "Unrecognized field in
+  plugin.json" for the fields outside the manifest reference (the listing takes its texts from
+  the directory form, not from them), and an informational note that the icon passed without a
+  code check. The review itself took about a day.
+- **Install test.** Before a release, `evals/install-test.md` steps 1 and 2: the plugin loaded
+  through `--plugin-dir` from the clone, the five scripts answering `--help` from the installed
+  path, then a natural request on a clean copy of the planted-defects fixture with the run
+  graded as eval 5. After a version is listed, step 3: the plugin installed from the directory
+  into a configuration directory created for the check, the installed tree compared with the
+  tagged release file by file, the archive rebuilt from the installed copy and its digest
+  compared with section 6, then step 2 again on that copy. The directory installs the tagged
+  commit, and the install lands under that configuration directory only, so the check never
+  touches the account's own configuration. Results in `evals/results/install-*.md`.
 
 ## 6. Archive digest
 
@@ -252,6 +265,21 @@ Versions and digests remain verifiable; the cited development commits do not res
   `references/verify-fix.md` holds the base pattern.
 - `sweep_status.py` aggregating the calibration columns of the verification table.
 - Signed release tags; CodeQL on the Python in this repository.
+- Verdicts and dispositions, seen once (`evals/results/install-directory-2026-10-16.md`,
+  candidate R2). A rule for `check_report.py`: an `OVER-RATED` row must have its `Verified`
+  severity below its `Claimed` severity, by the verdict's definition ("real, lower severity").
+  And a gap in the skill text to close with it: `OVER-RATED` is not `VERIFIED REAL`, so the
+  candidate is not confirmed and belongs in the refused section, but none of that section's four
+  dispositions describes it, and `FALSE POSITIVE` is defined by the claim-correctness lens alone
+  while refusals cite any of the three lenses. The run wrote "refused ... (verdict OVER-RATED,
+  kept as Low)" to bridge the gap. Settle the vocabulary in the next skill text version; adopt the
+  rule when the pattern recurs in graded runs, not on one occurrence.
+- Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference (`displayName`,
+  `keywords`, `documentationUrl`, `supportUrl`, `privacyPolicyUrl`): the directory warns on
+  them and ignores them. To be removed or kept deliberately in the next tagged version, since any
+  change under `plugin/` is a new tag and a new submission.
+- `plugin/README.md`: the install section still describes the pre-listing paths; aligned with
+  the root README in the next tagged version, for the same reason.
 
 ## 8. Changes rejected on evidence
 
