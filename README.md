@@ -64,6 +64,12 @@ Across the evaluation rounds ([`evals/results/`](evals/results/)):
   listing, the copy matched the v1.4.0 release file for file and by archive digest, and a run on
   it passed 9 of 9 checks with the three planted defects on their lines
   (`evals/results/install-directory-2026-10-16.md`).
+- **Real code, once:** one run on a parked personal project that is not a fixture, reviewed
+  with `evals/real-code-rubric.md` by its author, who is also this skill's author: 2 confirmed
+  findings, both judged real, 9 dismissed candidates all with sound reasons, report accepted
+  as is, 13 minutes against an estimate of days by hand
+  (`evals/results/real-code-2026-10-16.md`). One data point from a non-independent reviewer;
+  read it as such.
 
 What the current version still misses, so you know what to read with care:
 - **Leads the reviewer raises but the sweep does not verify.** Both models record them with

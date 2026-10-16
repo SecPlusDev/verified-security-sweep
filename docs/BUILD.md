@@ -222,9 +222,11 @@ Behavior evals run through skill-creator with the fixtures from `evals/fixtures/
   `python3 ${CLAUDE_SKILL_DIR}/scripts/<name>.py`, with no shebang and no execute bit. An explicit
   `icon` field in `plugin.json` produces a warning; the implicit `.claude-plugin/icon.png` does not.
   The v1.4.0 submission passed with warnings that did not block review: "Unrecognized field in
-  plugin.json" for the fields outside the manifest reference (the listing takes its texts from
-  the directory form, not from them), and an informational note that the icon passed without a
-  code check. The review itself took about a day.
+  plugin.json" for three fields outside the manifest reference (the three URL fields; the
+  listing does read `displayName` and `keywords`), and an informational note that the icon
+  passed without a code check. The review itself took about a day. The icon is reviewed
+  separately and expired before its review was done, which deleted it from the listing; it was
+  uploaded again from the portal, no new version needed.
 - **Install test.** Before a release, `evals/install-test.md` steps 1 and 2: the plugin loaded
   through `--plugin-dir` from the clone, the five scripts answering `--help` from the installed
   path, then a natural request on a clean copy of the planted-defects fixture with the run
@@ -274,9 +276,15 @@ Versions and digests remain verifiable; the cited development commits do not res
   while refusals cite any of the three lenses. The run wrote "refused ... (verdict OVER-RATED,
   kept as Low)" to bridge the gap. Settle the vocabulary in the next skill text version; adopt the
   rule when the pattern recurs in graded runs, not on one occurrence.
-- Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference (`displayName`,
-  `keywords`, `documentationUrl`, `supportUrl`, `privacyPolicyUrl`): the directory warns on
-  them and ignores them. To be removed or kept deliberately in the next tagged version, since any
+- Checking the test runner before writing reproductions, seen once
+  (`evals/results/real-code-2026-10-16.md`): the run executed an existing test of the project
+  that contacts real hosts, although the prompt said reproductions must stay local. A rule for
+  the skill text: check the runner with collection only (`pytest --co`, or the stack's
+  equivalent), or run only the tests the sweep wrote; never an existing test without reading it
+  for network use. Adopted when it recurs.
+- Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference: the directory
+  warns on three of them (`documentationUrl`, `supportUrl`, `privacyPolicyUrl`) and ignores
+  them; `displayName` and `keywords` are read, the listing shows them. To be removed or kept deliberately in the next tagged version, since any
   change under `plugin/` is a new tag and a new submission.
 - `plugin/README.md`: the install section still describes the pre-listing paths; aligned with
   the root README in the next tagged version, for the same reason.
