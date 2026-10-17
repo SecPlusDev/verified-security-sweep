@@ -71,7 +71,8 @@ Across the evaluation rounds ([`evals/results/`](evals/results/)):
   (`evals/results/real-code-2026-10-16.md`). A private multi-organization web application
   under development, two zones: 15 confirmed findings (2 High), every one with a failing
   reproduction and a passing guard, 20 dismissed candidates with their lens, three product
-  questions asked in writing and re-verified under the owner's answers
+  questions asked in writing and re-verified under the owner's answers; the fixes went in as
+  pull requests the same day and the first `recheck` on real code read all 15 as fixed
   (`evals/results/real-code-2026-10-17.md`). Both from a non-independent reviewer; read them
   as such.
 
