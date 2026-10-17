@@ -289,6 +289,12 @@ Versions and digests remain verifiable; the cited development commits do not res
   of the code's history and a later run re-verifies under it. To add to
   `references/report-and-registry.md` in the next skill text version, with the rule that a
   resolved decision re-verifies the candidate and moves it to confirmed or refused.
+- Where `recheck` runs, seen once (`evals/results/real-code-2026-10-17.md`): on a machine
+  whose Python was not the project's environment, every recorded command would have come back
+  `inconclusive` through the guard, and the recheck had to run inside the project's own
+  container image. One sentence for `references/report-and-registry.md`, section 5, in the
+  next skill text version: run `recheck` where the project's tests run (its container, its CI
+  image, its virtual environment), and read `inconclusive` first as an environment problem.
 - Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference: the directory
   warns on three of them (`documentationUrl`, `supportUrl`, `privacyPolicyUrl`) and ignores
   them; `displayName` and `keywords` are read, the listing shows them. To be removed or kept deliberately in the next tagged version, since any
