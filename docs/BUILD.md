@@ -282,6 +282,13 @@ Versions and digests remain verifiable; the cited development commits do not res
   the skill text: check the runner with collection only (`pytest --co`, or the stack's
   equivalent), or run only the tests the sweep wrote; never an existing test without reading it
   for network use. Adopted when it recurs.
+- An "Owner decisions" section in the registry, seen once
+  (`evals/results/real-code-2026-10-17.md`): the template has the "decision pending"
+  disposition but no place to record the owner's answer, the date, and the finding it produced
+  or closed. A run invented the section, and it is the right record: the answer becomes part
+  of the code's history and a later run re-verifies under it. To add to
+  `references/report-and-registry.md` in the next skill text version, with the rule that a
+  resolved decision re-verifies the candidate and moves it to confirmed or refused.
 - Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference: the directory
   warns on three of them (`documentationUrl`, `supportUrl`, `privacyPolicyUrl`) and ignores
   them; `displayName` and `keywords` are read, the listing shows them. To be removed or kept deliberately in the next tagged version, since any
