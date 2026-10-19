@@ -20,7 +20,10 @@ other's: `money` matches `2026-01-15-money.md` and `2026-01-15-money-crons.md`, 
 not match `2026-01-15-oauth-callbacks.md`.
 
 Exit codes: 0 no divergence (or --check not given), 1 divergence with --check, 2 setup error
-(missing folder or registry, no dated reports, no candidate rows).
+(missing folder or registry, no candidate rows, fewer dated reports than --min-reports while a
+registry row declares a run). A first run, with no dated report and no declared run in any
+registry row, prints "no reports yet (first run)" and exits 0: the registry is set up and the
+report is still being written.
 """
 
 from __future__ import annotations
@@ -120,12 +123,15 @@ def main() -> int:
         return 2
 
     reps = reports(audits)
-    if len(reps) < a.min_reports:
-        print(f"only {len(reps)} dated reports found in {audits}; extraction looks broken", file=sys.stderr)
-        return 2
     rows = registry_rows(registry)
     if not rows:
         print(f"no candidate rows with a backticked zone slug found in {registry}", file=sys.stderr)
+        return 2
+    if not reps and not any(r["declared"] for r in rows):
+        print(f"no reports yet (first run): {len(rows)} zone(s) in the registry, 0 dated reports in {audits}")
+        return 0
+    if len(reps) < a.min_reports:
+        print(f"only {len(reps)} dated reports found in {audits}; extraction looks broken", file=sys.stderr)
         return 2
 
     today = date.today()

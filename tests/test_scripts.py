@@ -267,6 +267,28 @@ def test_exit_2_when_fewer_reports_than_min(audits: Path, registry_aligned: Path
     assert "extraction looks broken" in r.stderr
 
 
+def test_first_run_with_no_report_and_no_declared_run_is_not_an_error(tmp_path: Path):
+    # Seen on every bootstrap: the registry is written before the first report exists
+    audits = tmp_path / "audits"
+    audits.mkdir()
+    (audits / "sweep-registry.md").write_text(
+        "## Candidates\n\n| Zone | Argument | Last run | Yield |\n|---|---|---|---|\n| `money` | billing | | |\n",
+        encoding="utf-8",
+    )
+    r = run_script(SWEEP_STATUS, "--check", "--audits", str(audits))
+    assert r.returncode == 0, r.stderr
+    assert "no reports yet (first run): 1 zone(s)" in r.stdout
+    assert "extraction looks broken" not in r.stderr
+    # A declared run with no report is still a problem, not a first run
+    (audits / "sweep-registry.md").write_text(
+        "## Candidates\n\n| Zone | Argument | Last run | Yield |\n|---|---|---|---|\n| `money` | billing | 2026-01-15 | 1/1 |\n",
+        encoding="utf-8",
+    )
+    r = run_script(SWEEP_STATUS, "--check", "--audits", str(audits))
+    assert r.returncode == 2
+    assert "extraction looks broken" in r.stderr
+
+
 # --------------------------------------------------------------------------------------
 # fresh_code.py
 # --------------------------------------------------------------------------------------
