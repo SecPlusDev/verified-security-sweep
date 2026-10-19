@@ -1248,3 +1248,44 @@ def test_leak_check_setup_errors(tmp_path: Path, leak_repo: Path):
     assert r.returncode == 2
     r = run_leak(leak_repo, "--from-cited", str(tmp_path / "missing.md"))
     assert r.returncode == 2
+
+
+def test_keylike_is_a_key_shape_not_an_identifier():
+    # Measured on a real record of 13 reports: identifiers with digits, dated file names and API
+    # paths made 696 false values and 1850 false FAILs before these rules
+    cc = _load(CHECK_CITATIONS)
+    assert cc.keylike("Zz9yY8xX" * 4)                              # both cases
+    assert cc.keylike(bytes(range(16)).hex())                       # hex, 32
+    assert cc.keylike("dGhpcyBpcyBhIHNlY3JldCBrZXk9")               # base64 padding
+    assert not cc.keylike("test_sweep_case_access_20261017")        # one case, digits
+    assert not cc.keylike("docs/audits/2026-10-17-reports.md")      # a dated path
+    assert not cc.keylike("/api/v1/cases/9/members/active")         # an API path
+    assert not cc.keylike("2026-10-19-authentication")
+
+
+def test_name_like_covers_words_that_stand_next_to_secret_names():
+    cc = _load(CHECK_CITATIONS)
+    for word in ("bearer", "Shodan", "VirusTotal", "clearance_level", "SECRET_KEY", "password", "changeme"):
+        assert cc.name_like(word), word
+    for value in ("apple", "hunter2pw", "abcd efgh", "dev-secret-12", "Tr0ub4dor&3"):
+        assert not cc.name_like(value), value
+    # A dict key after a secret-name literal is not a value; a type annotation is not a value
+    assert cc.secret_literals('"api_key": "x9y8z7w6v5", "shodan": {') == ["x9y8z7w6v5"]
+    assert cc.secret_literals('KeyedConnector("SHODAN_API_KEY", "Shodan", ("domain", "ip"))') == []
+    assert not cc.sensitive("config.py", "postgres_password_file: str | None = None")
+    assert cc.sensitive("config.py", "postgres_password: str = 'hunter2pw'")
+
+
+def test_leak_check_never_collects_from_the_deliverables_or_test_fixtures(leak_repo: Path):
+    # A report quoting a test name, and a test fixture holding an invented password, are not leaks
+    (leak_repo / "tests" / "test_sweep_auth.py").write_text(
+        'def test_f1():\n    client.login(password="invented-fixture-pw-2026")\n', encoding="utf-8"
+    )
+    subprocess.run(["git", "-C", str(leak_repo), "add", "-A"], check=True)
+    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
+        "Reproduction: `tests/test_sweep_auth.py::test_f1` uses the fixture password invented-fixture-pw-2026.\n",
+        encoding="utf-8",
+    )
+    r = run_leak(leak_repo)
+    assert r.returncode == 0, r.stdout
+    assert "0 FAIL, 0 WARN" in r.stdout

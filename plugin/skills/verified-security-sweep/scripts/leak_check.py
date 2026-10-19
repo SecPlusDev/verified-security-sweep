@@ -10,9 +10,11 @@ sources, lengths and masked context, never a value.
     python3 leak_check.py --extra out/report.xlsx --extra out/handoff/
     python3 leak_check.py --strict                     # a WARN is a failure too
 
-Values collected from the repository (read, never printed, never written anywhere):
+Values collected from the repository (read, never printed, never written anywhere; the
+deliverables themselves are never a source):
     every value in a dotenv-style file (`.env`, `.env.*`, `*.env`) whose key names a secret;
-    every string literal that is a value on a line naming a secret, in tracked text files;
+    every string literal that is a value on a line naming a secret, in tracked text files
+    outside the test folders (test fixtures hold invented credentials);
     every password inside a DSN (`scheme://user:password@host`);
     every key-like token (24 or more key-alphabet characters mixing letters and digits).
 --from-cited REPORT limits the tracked files to the ones the report cites (dotenv files are
@@ -106,6 +108,7 @@ def collect(root: Path, files: list[str]) -> dict[str, str]:
         if text is None:
             continue
         dotenv = cc.is_dotenv(rel)
+        in_tests = any(part in TEST_DIR_NAMES for part in Path(rel).parts[:-1])
         for n, line in enumerate(text.splitlines(), 1):
             if dotenv:
                 m = re.match(r"^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*)$", line)
@@ -117,6 +120,8 @@ def collect(root: Path, files: list[str]) -> dict[str, str]:
             for m in cc.KEYLIKE_RE.finditer(line):
                 if cc.keylike(m.group(0)):
                     add(m.group(0), f"{rel}:{n}")
+            if in_tests:
+                continue  # test fixtures hold invented credentials; real ones are key-shaped or in dotenv
             if cc.SECRET_NAME_RE.search(line):
                 for value in cc.secret_literals(line):
                     add(value, f"{rel}:{n}")
@@ -271,9 +276,16 @@ def main() -> int:
         files = cited_files(report, root)
     else:
         files = tracked_files(root)
-    files = sorted(set(files) | set(dotenv_files(root)))
-    values = collect(root, files)
     targets = deliverables(root, root / args.audits, args.extra)
+    # The deliverables are what is searched, never a source: a report quoting a test name or
+    # its own index would otherwise match itself.
+    delivered = {p.resolve() for p in targets}
+    audits_dir = (root / args.audits).resolve()
+    files = sorted(
+        f for f in set(files) | set(dotenv_files(root))
+        if (root / f).resolve() not in delivered and audits_dir not in (root / f).resolve().parents
+    )
+    values = collect(root, files)
     hits = scan(targets, values, root)
 
     for h in hits:
