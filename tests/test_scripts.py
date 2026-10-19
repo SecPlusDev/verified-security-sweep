@@ -582,6 +582,90 @@ def test_missing_report_is_a_setup_error(tmp_path: Path):
     assert "report not found" in r.stderr
 
 
+# Credential-like lines: the five shapes seen in an external review run, none of which the
+# key-like rule alone catches, plus one key-like token. The values below are invented.
+SECRET_VALUES = {
+    "dsn_default": "postgresql://app:hunter2pw@db/app",
+    "app_password": "abcd efgh ijkl mnop",
+    "dotenv_key": "dev-secret-12",
+    "dotenv_admin": "apple",
+    "keylike": "sk_live_" + "A1b2C3d4" * 4,
+}
+
+
+@pytest.fixture()
+def secret_repo(tmp_path: Path) -> Path:
+    root = tmp_path / "svc"
+    (root / "app" / "seeds").mkdir(parents=True)
+    (root / "docs").mkdir()
+    (root / "app" / "config.py").write_text(
+        "import os\n"
+        f'DATABASE_URL = os.getenv("DATABASE_URL", "{SECRET_VALUES["dsn_default"]}")\n'
+        f'API_KEY = "{SECRET_VALUES["keylike"]}"\n'
+        "SECRET_KEY = settings.SECRET_KEY\n",
+        encoding="utf-8",
+    )
+    (root / "app" / "seeds" / "smtp_seed.py").write_text(
+        "config = SMTPConfiguration(\n"
+        '    username="mailer@example.invalid",\n'
+        f'    password="{SECRET_VALUES["app_password"]}",\n'
+        ")\n",
+        encoding="utf-8",
+    )
+    (root / "app" / ".env").write_text(
+        f"SECRET_KEY={SECRET_VALUES['dotenv_key']}\nADMIN_PASSWORD={SECRET_VALUES['dotenv_admin']}\n",
+        encoding="utf-8",
+    )
+    return root
+
+
+def test_credential_like_lines_are_printed_masked(secret_repo: Path):
+    report = write_report(
+        secret_repo,
+        "F1 `app/config.py:2`, F2 `app/seeds/smtp_seed.py:3`, F3 `app/.env:1`, F4 `app/.env:2`, "
+        "F5 `app/config.py:3`; plain `app/config.py:4` and `app/seeds/smtp_seed.py:2`.\n",
+    )
+    r = run_script(CHECK_CITATIONS, str(report), "--root", str(secret_repo))
+    assert r.returncode == 0, r.stdout
+    for value in SECRET_VALUES.values():
+        assert value not in r.stdout
+    assert r.stdout.count("OK (masked)") == 5
+    assert 'DATABASE_URL = os.getenv("DATABASE_URL", "<masked, 33 chars>")' in r.stdout
+    assert 'password="<masked, 19 chars>"' in r.stdout
+    assert "SECRET_KEY=<masked, 13 chars>" in r.stdout
+    assert "ADMIN_PASSWORD=<masked, 5 chars>" in r.stdout
+    assert 'API_KEY = "<masked, 40 chars>"' in r.stdout
+    # A reference to configuration and a username are printed as they are
+    assert "OK            R:1    app/config.py:4  | SECRET_KEY = settings.SECRET_KEY" in r.stdout
+    assert 'username="mailer@example.invalid"' in r.stdout
+    assert "7 citation(s), 0 not OK" in r.stdout
+
+
+def test_quiet_hides_masked_rows_too(secret_repo: Path):
+    report = write_report(secret_repo, "`app/.env:1` and `app/config.py:99`.\n")
+    r = run_script(CHECK_CITATIONS, str(report), "--root", str(secret_repo), "--quiet")
+    assert r.returncode == 1
+    assert "app/.env:1" not in r.stdout
+    assert "OUT OF RANGE" in r.stdout
+    for value in SECRET_VALUES.values():
+        assert value not in r.stdout
+
+
+def test_sensitive_predicate_shapes():
+    cc = _load(CHECK_CITATIONS)
+    assert cc.sensitive("app/.env", "ADMIN_PASSWORD=apple")
+    assert not cc.sensitive("app/.env", "# ADMIN_PASSWORD is set at deploy time")
+    assert cc.sensitive("settings.yaml", "smtp_password: abcd efgh")
+    assert not cc.sensitive("settings.yaml", "smtp_host: smtp.example.invalid")
+    assert cc.sensitive("app.py", '"password": "abc def"')
+    assert not cc.sensitive("app.py", '"password":')
+    assert not cc.sensitive("app.py", 'password = request.form["password"]')
+    assert not cc.sensitive("app.py", "token = secrets.token_urlsafe(32)")
+    assert cc.sensitive("app.py", "conn = connect('postgresql://user:hunter2@db/app')")
+    assert cc.mask("conn = connect('postgresql://user:hunter2@db/app')") == "conn = connect('<masked, 32 chars>')"
+    assert cc.mask("DATABASE_URL=postgres://app:pw@db/app", "app/.env") == "DATABASE_URL=<masked, 24 chars>"
+
+
 # --------------------------------------------------------------------------------------
 # findings.py
 # --------------------------------------------------------------------------------------
@@ -654,6 +738,48 @@ def test_findings_check_fails_when_the_cited_line_does_not_hold_the_snippet(find
     r = run_findings(findings_repo, "check")
     assert r.returncode == 1
     assert "does not hold the snippet; the line reads: def get_invoice(user, invoice_id):" in r.stdout
+
+
+def test_findings_check_refuses_a_literal_next_to_a_secret_name(findings_repo: Path):
+    (findings_repo / "app.py").write_text(
+        'import db\n\n\ndef get_invoice(user, invoice_id):\n    return connect("postgresql://app:hunter2pw@db/app")\n',
+        encoding="utf-8",
+    )
+    write_index(findings_repo, [finding_entry(snippet='connect("postgresql://app:hunter2pw@db/app")')])
+    r = run_findings(findings_repo, "check")
+    assert r.returncode == 1
+    assert "hunter2pw" not in r.stdout
+    assert "quote the non-secret part of the line" in r.stdout
+    write_index(findings_repo, [finding_entry(snippet='"password": "abc def"', location="app.py:5")])
+    r = run_findings(findings_repo, "check")
+    assert r.returncode == 1
+    assert "literal value next to a secret name" in r.stdout
+    assert "abc def" not in r.stdout.split("literal value")[0]
+
+
+def test_findings_check_accepts_a_secret_name_without_its_value(findings_repo: Path):
+    (findings_repo / "app.py").write_text(
+        'import db\n\n\ndef get_invoice(user, invoice_id):\n    return {"password": "abc def"}\n', encoding="utf-8"
+    )
+    write_index(findings_repo, [finding_entry(snippet='"password":')])
+    r = run_findings(findings_repo, "check")
+    assert r.returncode == 0, r.stdout
+    assert "abc def" not in r.stdout
+
+
+def test_findings_check_masks_the_line_it_reads_when_it_looks_like_a_credential(findings_repo: Path):
+    (findings_repo / "app.py").write_text(
+        'import db\nPASSWORD = "hunter2pw"\n\ndef get_invoice(user, invoice_id):\n    return db.find(id=invoice_id)\n',
+        encoding="utf-8",
+    )
+    write_index(findings_repo, [finding_entry(location="app.py:2")])
+    (findings_repo / "docs" / "audits" / "2026-01-15-money.md").write_text(
+        "| F1 | money | VERIFIED REAL |\nF1 at `app.py:2`.\n", encoding="utf-8"
+    )
+    r = run_findings(findings_repo, "check")
+    assert r.returncode == 1
+    assert "hunter2pw" not in r.stdout
+    assert 'the line reads: PASSWORD = "<masked, 9 chars>"' in r.stdout
 
 
 def test_findings_check_reports_bad_fields_duplicates_and_count_mismatch(findings_repo: Path):

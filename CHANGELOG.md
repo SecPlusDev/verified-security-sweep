@@ -3,6 +3,22 @@
 All notable changes to this skill. Versions follow semver; each release attaches the `.skill`
 archive built by CI from the tagged commit.
 
+## Unreleased
+
+Candidates for v1.4.1, from an external review run on 2026-10-19 (a first sweep of a third-party
+repository that holds committed credentials) and from the real-code runs of 2026-10-16 and
+2026-10-17. Each lands as its own pull request; the version is tagged once the round is measured.
+
+- `check_citations.py` prints credential-like lines masked, as `OK (masked)`: dotenv files, a
+  secret name with a literal value, a DSN with `user:password@`, a key-like token. Every string
+  literal that is a value, every value after `=` or `:`, every DSN password and every key-like
+  token becomes `<masked, N chars>`; names and structure stay. No option to unmask. The same
+  predicate and mask are used by `findings.py`: `check` refuses a snippet that holds a literal
+  next to a secret name or a DSN (`"password":` alone stays allowed), and the lines it prints go
+  through the mask. A dotenv path (`app/.env:3`) is now a citation. SKILL.md step 5 says never to
+  print such a line by other means. Found by an external run where the mandatory citation check
+  printed an app password and a key default into the session transcript.
+
 ## v1.4.0 (2026-10-13)
 
 The release of the v1.3 line. Versions 1.2.x and 1.3.x below were built and measured but never

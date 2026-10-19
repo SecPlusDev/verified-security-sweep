@@ -26,6 +26,14 @@ Each OK line shows the text of the first cited line. A comment, a blank line or 
 at the location of a finding is a citation to correct even though it exists: the script prints
 the text so that a reader catches it, it does not judge it.
 
+A cited line that looks like it holds a credential is printed masked, as `OK (masked)`: every
+string literal and every value after `=` or `:` is replaced by `<masked, N chars>`. A line is
+treated that way when it is in a dotenv-style file (`.env`, `.env.*`, `*.env`), when it names a
+secret (password, secret, token, api key, private key, credential, a DSN with `user:password@`)
+and carries a literal value, or when it holds a key-like token. There is no option to print the
+value: a hard-coded credential finding cites the line that holds the credential, and the script's
+output goes into the session transcript. The author who needs the value opens the file.
+
 Exit codes: 0 every citation resolves to existing lines (also when the report cites none),
 1 at least one citation is not OK, 2 setup error (report missing, root not a directory).
 """
@@ -40,17 +48,126 @@ import sys
 from pathlib import Path
 
 # A path segment, then a dot and an extension that starts with a letter (so a dotted address
-# with a port, or a time such as `10:30`, is not a citation), then the line part. The lookbehind
-# keeps URLs out: a citation never starts right after a slash, a dot or a word character.
+# with a port, or a time such as `10:30`, is not a citation), then the line part. The stem may
+# be empty, so that a dotenv file (`app/.env:3`) is a citation too. The lookbehind keeps URLs
+# out: a citation never starts right after a slash, a dot or a word character.
 CITATION_RE = re.compile(
     r"(?<![\w/.~-])"
-    r"((?:[\w.-]+/)*[\w-][\w.-]*\.[A-Za-z][A-Za-z0-9]*)"
+    r"((?:[\w.-]+/)*(?:[\w-][\w.-]*)?\.[A-Za-z][A-Za-z0-9]*)"
     r":(~?)(\d+(?:-\d+)?(?:,\s?\d+(?:-\d+)?)*)"
 )
 
 # Folders that hold dependencies or build output, not the code under audit. Searching them for
 # a shortened path would turn `session.js` into an ambiguity with a library's own file.
 SKIPPED_DIRS = (".git", "node_modules", ".venv", "venv", "__pycache__", ".tox", "dist", "build")
+
+# Credential handling, shared with findings.py and leak_check.py. The shapes below decide when a
+# line is printed masked; they err on the side of masking, because an over-masked line costs the
+# reader one file open and an under-masked one puts a credential in the transcript.
+#
+# A key-like token: 24 or more characters of the alphabets keys are written in, mixing letters
+# and digits (the letter/digit test is in keylike()). 24 is below the shortest common API key.
+KEYLIKE_RE = re.compile(r"[A-Za-z0-9+/_=-]{24,}")
+# Words that name a secret when they appear in a key, a variable or a field name.
+SECRET_WORDS = (
+    r"(?:passw(?:or)?d|pwd|secret|token|api[_-]?key|apikey|private[_-]?key|credential|"
+    r"client[_-]?secret|auth[_-]?key|access[_-]?key|dsn|connection[_-]?string)"
+)
+SECRET_NAME_RE = re.compile("(?i)" + SECRET_WORDS)
+# A DSN or URL that carries user:password@ before the host.
+DSN_RE = re.compile(r"://([^/\s:@]+):([^/\s@]+)@")
+# Quoted string literals; the content is what gets masked.
+LITERAL_RE = re.compile(r"\"((?:[^\"\\]|\\.)*)\"|'((?:[^'\\]|\\.)*)'")
+# `name = value` or `name: value` where the name holds a secret word; the value runs to the end.
+ASSIGN_RE = re.compile(r"(?i)^(\s*[\w.\[\]\"'-]*" + SECRET_WORDS + r"[\w.\[\]\"'-]*\s*[=:]\s*)(.*)$")
+# Values that reference configuration rather than hold it, left unmasked.
+REFERENCE_RE = re.compile(
+    r"^(?:None|null|nil|true|false|\"\"|'')?$|^\$|^\$?\{|^os\.|^env\b|^process\.env|^settings\."
+    r"|^config\b|^get[A-Za-z_]*\(|^secrets\.|^request\.|^req\.|^self\.|^this\."
+)
+MASK = "<masked, {n} chars>"
+
+
+def is_dotenv(path: str) -> bool:
+    name = Path(path).name
+    return name == ".env" or name.startswith(".env.") or name.endswith(".env")
+
+
+def keylike(text: str) -> bool:
+    """A token of key alphabet, 24 characters or more, that mixes letters and digits."""
+    return any(re.search(r"[A-Za-z]", m) and re.search(r"\d", m) for m in KEYLIKE_RE.findall(text))
+
+
+def name_like(value: str) -> bool:
+    """A literal that is a name, not a value: a secret word used as a field or variable name
+    (`"password"`), or an environment-variable name (`"SECRET_KEY"`, `"DATABASE_URL"`)."""
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
+        return False
+    return bool(SECRET_NAME_RE.search(value)) or value == value.upper()
+
+
+def literal_values(text: str) -> list[str]:
+    """Quoted literals on the line that are values, not names: a literal that is only a secret
+    word (`"password"`, `'SECRET_KEY'`) is a field or variable name and does not count."""
+    out = []
+    for m in LITERAL_RE.finditer(text):
+        value = m.group(1) if m.group(1) is not None else m.group(2)
+        if not value:
+            continue
+        if name_like(value):
+            continue
+        out.append(value)
+    return out
+
+
+def sensitive(path: str, text: str) -> bool:
+    """True when the line may hold a credential: a dotenv file, a secret name with a literal
+    value, a DSN with user:password@, or a key-like token."""
+    if is_dotenv(path) and "=" in text and not text.lstrip().startswith("#"):
+        return True
+    if DSN_RE.search(text) or keylike(text):
+        return True
+    if not SECRET_NAME_RE.search(text):
+        return False
+    if literal_values(text):
+        return True
+    m = ASSIGN_RE.match(text)
+    if m:
+        value = m.group(2).strip().rstrip(",;")
+        return bool(value) and not REFERENCE_RE.match(value)
+    return False
+
+
+def mask(text: str, path: str = "") -> str:
+    """The line with every string literal that is a value, every value after `name =` or
+    `name:` (any name in a dotenv file, a secret name elsewhere), every DSN password and every
+    key-like token replaced by `<masked, N chars>`; names and structure stay."""
+    def lit(m: re.Match) -> str:
+        value = m.group(1) if m.group(1) is not None else m.group(2)
+        quote = m.group(0)[0]
+        if not value or name_like(value):
+            return m.group(0)
+        return f"{quote}{MASK.format(n=len(value))}{quote}"
+
+    out = LITERAL_RE.sub(lit, text)
+    m = ASSIGN_RE.match(out)
+    if not m and is_dotenv(path):
+        m = re.match(r"^(\s*[\w.-]+\s*=\s*)(.*)$", out)
+    if m:
+        value = m.group(2)
+        core = value.strip().rstrip(",;")
+        if core and "<masked" not in core and not REFERENCE_RE.match(core):
+            out = m.group(1) + value.replace(core, MASK.format(n=len(core)), 1)
+    out = DSN_RE.sub(lambda m: f"://{m.group(1)}:{MASK.format(n=len(m.group(2)))}@", out)
+    out = KEYLIKE_RE.sub(lambda m: MASK.format(n=len(m.group(0))) if keylike(m.group(0)) else m.group(0), out)
+    return out
+
+
+def shown_text(path: str, text: str) -> tuple[str, bool]:
+    """(text to print, masked?) for a line read from the repository."""
+    if sensitive(path, text):
+        return mask(text, path), True
+    return text, False
 
 
 def repo_root(given: str | None) -> Path:
@@ -131,7 +248,10 @@ def check(report: Path, root: Path) -> list[dict]:
                 item["status"] = "OUT OF RANGE"
                 item["text"] = f"file has {len(content)} lines"
                 continue
-            item["text"] = content[spans[0][0] - 1].strip()
+            text, masked = shown_text(target, content[spans[0][0] - 1].strip())
+            item["text"] = text
+            if masked:
+                item["status"] = "OK (masked)"
     return results
 
 
@@ -159,9 +279,9 @@ def main() -> int:
     if not results:
         print(f"{report}: no file:line citations found")
         return 0
-    problems = [r for r in results if r["status"] != "OK"]
+    problems = [r for r in results if not r["status"].startswith("OK")]
     for r in results:
-        if args.quiet and r["status"] == "OK":
+        if args.quiet and r["status"].startswith("OK"):
             continue
         shown = r["citation"] + (f" -> {r['resolved']}" if r["resolved"] else "")
         print(f"{r['status']:<12}  R:{r['report_line']:<4} {shown}  | {r['text']}")
