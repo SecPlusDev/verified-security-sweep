@@ -27,8 +27,11 @@ rows must equal its number of entries. The location and snippet describe the cod
 `commit` and are checked there (git show), so an entry stays valid after the code moves on; an
 entry without a commit is checked against the working tree. A commit missing from this clone
 (squashed or rebased away, or a shallow clone) makes the entry unverifiable here, reported as
-SKIP; --strict makes that a failure. A snippet that looks like a key or token fails: the index
-must not copy a credential.
+SKIP; --strict makes that a failure. A snippet that looks like a key or token, or that carries a
+literal value on a line naming a secret (`"password": "abc def"`, a DSN with `user:password@`),
+fails: the index must not copy a credential. `"password":` alone, the name without the value, is
+fine. Lines the script prints (OK rows, "the line reads:") go through the same mask as
+check_citations.py when they look like a credential.
 
 recheck: for every entry whose status is "open", `reproduce` is a command that fails while the
 defect is present. A failure means still open, a pass means fixed. `guard` runs first and must
@@ -72,9 +75,9 @@ STATUSES = ("open", "accepted")
 # SARIF levels for the verified severity; Low findings are notes, never failures of a CI gate.
 LEVELS = {"Critical": "error", "High": "error", "Medium": "warning", "Low": "note"}
 LOCATION_RE = re.compile(r"^(.+):(\d+)$")
-# A run of 24 or more key-alphabet characters that mixes letters and digits reads as a key or
-# token; an index line quoting it would copy the credential into another file and into SARIF.
-KEYLIKE_RE = re.compile(r"[A-Za-z0-9+/_=-]{24,}")
+# Key-like tokens, secret names with literal values and the mask are shared with
+# check_citations.py (cc.keylike, cc.sensitive, cc.mask); an index line quoting a credential
+# would copy it into another file and into SARIF.
 # Interpreters that run code given on the command line, and the flags that do it. A reproduction
 # is a test file run by the project's runner; inline code in the index is refused.
 INLINE_CODE = {"python": ("-c",), "node": ("-e", "--eval", "-p", "--print"), "ruby": ("-e",),
@@ -191,8 +194,20 @@ def refused(command: str) -> str:
     return ""
 
 
-def keylike(snippet: str) -> bool:
-    return any(re.search(r"[A-Za-z]", m) and re.search(r"\d", m) for m in KEYLIKE_RE.findall(snippet))
+def credential_in(snippet: str) -> str:
+    """Why a snippet may copy a credential into the index, or '' when it does not."""
+    if cc.keylike(snippet):
+        return "snippet looks like a key or token; quote the non-secret part of the line"
+    if cc.DSN_RE.search(snippet):
+        return "snippet holds a DSN with user:password@; quote the non-secret part of the line"
+    if cc.SECRET_NAME_RE.search(snippet) and cc.sensitive("", snippet):
+        return "snippet holds a literal value next to a secret name; quote the name, never the value"
+    return ""
+
+
+def shown(path: str, text: str) -> str:
+    """A line of repository text, masked when it looks like a credential."""
+    return cc.shown_text(path, text)[0]
 
 
 def check_entry(entry: dict, audits: Path, snap: Snapshot, strict: bool = False) -> tuple[list[str], str]:
@@ -204,8 +219,9 @@ def check_entry(entry: dict, audits: Path, snap: Snapshot, strict: bool = False)
         why = refused(str(entry[field]))
         if why:
             problems.append(f"{field} {why}; write the reproduction as a test the project's runner executes")
-    if keylike(str(entry["snippet"])):
-        problems.append("snippet looks like a key or token; quote the non-secret part of the line")
+    why = credential_in(str(entry["snippet"]))
+    if why:
+        problems.append(why)
     if entry["severity"] not in SEVERITIES:
         problems.append(f"severity '{entry['severity']}' is not one of {', '.join(SEVERITIES)}")
     if entry["status"] not in STATUSES:
@@ -241,7 +257,8 @@ def check_entry(entry: dict, audits: Path, snap: Snapshot, strict: bool = False)
         problems.append(f"{entry['location']}: line out of range, file has {len(content)} lines")
         return problems, ""
     if squash(entry["snippet"]) not in squash(content[line - 1]):
-        problems.append(f"{entry['location']} does not hold the snippet; the line reads: {content[line - 1].strip()}")
+        problems.append(f"{entry['location']} does not hold the snippet; the line reads: "
+                        f"{shown(matches[0], content[line - 1].strip())}")
     return problems, ""
 
 
@@ -271,7 +288,7 @@ def cmd_check(entries, audits: Path, root: Path, strict: bool = False) -> int:
             print(f"SKIP  {ident}: {skip}")
         else:
             at = f"@{str(entry['commit'])[:12]}" if str(entry.get("commit", "")).strip() else "(working tree)"
-            print(f"OK    {ident}  {entry['location']} {at}  | {squash(entry['snippet'])}")
+            print(f"OK    {ident}  {entry['location']} {at}  | {shown(entry['location'], squash(entry['snippet']))}")
     for name, count in sorted(per_report.items()):
         report = audits / name
         if report.is_file():

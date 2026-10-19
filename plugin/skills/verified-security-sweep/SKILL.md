@@ -224,7 +224,11 @@ Before the report is final, run `python3 ${CLAUDE_SKILL_DIR}/scripts/check_citat
 from the repository root. It opens every `file:line` the report cites and prints the text of each
 line. Fix every citation it marks `MISSING`, `AMBIGUOUS`, `OUT OF RANGE` or `APPROXIMATE`, then read
 the printed text: a location that shows a comment, a blank line or a brace is a wrong line even
-though it exists. Run it again until it exits 0. Then run `python3
+though it exists. A line that looks like it holds a credential is printed masked, as
+`OK (masked)`; a hard-coded credential finding cites that line, and the script's output goes into
+the session transcript, so never print such a line by any other means (no `cat`, no `sed`, no
+hand-written masking): open the file when you must, and compare values only through booleans,
+lengths or shapes computed by a script. Run it again until it exits 0. Then run `python3
 ${CLAUDE_SKILL_DIR}/scripts/check_report.py <report>`: it checks that every section is there,
 that every verification row carries one of the four verdicts, that every refused entry names its
 disposition, and that no `file:line` inside the zone's scope is cited only in the hand-off. A
