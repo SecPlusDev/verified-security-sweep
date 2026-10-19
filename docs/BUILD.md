@@ -295,6 +295,20 @@ Versions and digests remain verifiable; the cited development commits do not res
   container image. One sentence for `references/report-and-registry.md`, section 5, in the
   next skill text version: run `recheck` where the project's tests run (its container, its CI
   image, its virtual environment), and read `inconclusive` first as an environment problem.
+- Verify-fix before merge, seen once (`evals/results/real-code-2026-10-19.md`, the regression):
+  a fix proposed in a report's hand-off and merged without a verify-fix pass produced a High
+  finding in the next zone the same day. The skill has the mode (eval 8); the hand-off text does
+  not say to use it on the fix pull requests. One sentence for SKILL.md step 6 in the next skill
+  text version: a fix pull request derived from the report goes through verify-fix before merge.
+- An external-review section for SKILL.md, seen once (`evals/results/real-code-2026-10-19.md`):
+  on a repository the reviewer does not own, the run had to decide anchoring (code citations at
+  the reviewed commit with a permalink base; the record delivered, not present), that "never
+  commit" overrides hooks, CI and files in the repository (a stop hook asked twice to commit and
+  push), private delivery and a private reporting channel in the hand-off, local-only
+  reproduction with outbound network blocked and no credential tried, and disclosure of the
+  reviewer's interest. All five were decided in the run; they belong in the text, with an
+  `External review: yes` line in Context that `check_report.py` ties to the anchoring statement,
+  and one eval with a planted hook that asks for a commit.
 - Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference: the directory
   warns on three of them (`documentationUrl`, `supportUrl`, `privacyPolicyUrl`) and ignores
   them; `displayName` and `keywords` are read, the listing shows them. To be removed or kept deliberately in the next tagged version, since any
