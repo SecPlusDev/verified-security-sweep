@@ -3,11 +3,14 @@
 All notable changes to this skill. Versions follow semver; each release attaches the `.skill`
 archive built by CI from the tagged commit.
 
-## Unreleased
+## v1.4.1 (2026-10-19)
 
-Candidates for v1.4.1, from an external review run on 2026-10-19 (a first sweep of a third-party
-repository that holds committed credentials) and from the real-code runs of 2026-10-16 and
-2026-10-17. Each lands as its own pull request; the version is tagged once the round is measured.
+Privacy of the record. From an external review run on 2026-10-19 (a first sweep of a third-party
+repository that holds committed credentials) and from the real-code runs of 2026-10-16 to
+2026-10-19. Confirmed on the planted-defects fixture with Opus, the plugin loaded from the
+clone (`evals/results/confirm-v1.4.1-2026-10-19.md`): 8 of 9 assertions, the miss a throwaway
+copy of the project left inside the working tree, which the last two items below answer in the
+text after that run. Archive digest in `docs/BUILD.md` section 6.
 
 - `check_citations.py` prints credential-like lines masked, as `OK (masked)`: dotenv files, a
   secret name with a literal value, a DSN with `user:password@`, a key-like token. Every string
@@ -44,6 +47,14 @@ repository that holds committed credentials) and from the real-code runs of 2026
 - `sweep_status.py` no longer reports "extraction looks broken" on a first run: with no dated
   report and no registry row declaring a run it prints "no reports yet (first run)" and exits 0.
   The broken-extraction error stays for a registry that declares a run no report matches.
+- SKILL.md step 6, two sentences added after the confirmation run: a fix is tried on a throwaway
+  copy outside the repository, never inside the working tree (the run left a 144 MB copy of the
+  project in the tree; the text said nothing about where the copy goes); and a fix pull request
+  derived from the hand-off goes through verify-fix before merge (a fix merged unverified
+  produced a High finding in the next zone, `evals/results/real-code-2026-10-19.md`).
+- The five `plugin.json` fields outside the manifest reference stay: the directory's listing
+  reads them (display name, keywords, documentation, support and privacy links); the validator's
+  warning is informational.
 
 ## v1.4.0 (2026-10-13)
 

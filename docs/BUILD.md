@@ -260,6 +260,7 @@ Versions and digests remain verifiable; the cited development commits do not res
 | v1.3.4 | `49d773311190372163f8acb91121054bf4cf009b022fd0a170a126ba873c7b61` |
 | v1.3.5 | `8aad72a29ec7de3556134e8f995ecdaa3738529c6347889dea0785715c3780dc` |
 | v1.4.0 | `43b85f314afcd6efe26ac35d100762a28ca1aaa5f2ac9a2937a01a706558e77f` |
+| v1.4.1 | `f2699bd15effed0a8c30ea988386b62a854503ded1a23d7031b1c73e7528eb83` |
 
 ## 7. Deferred
 
@@ -295,11 +296,10 @@ Versions and digests remain verifiable; the cited development commits do not res
   container image. One sentence for `references/report-and-registry.md`, section 5, in the
   next skill text version: run `recheck` where the project's tests run (its container, its CI
   image, its virtual environment), and read `inconclusive` first as an environment problem.
-- Verify-fix before merge, seen once (`evals/results/real-code-2026-10-19.md`, the regression):
-  a fix proposed in a report's hand-off and merged without a verify-fix pass produced a High
-  finding in the next zone the same day. The skill has the mode (eval 8); the hand-off text does
-  not say to use it on the fix pull requests. One sentence for SKILL.md step 6 in the next skill
-  text version: a fix pull request derived from the report goes through verify-fix before merge.
+- Verify-fix before merge: adopted in v1.4.1 (SKILL.md step 6), on one occurrence
+  (`evals/results/real-code-2026-10-19.md`), because the cost of the sentence is nil and the
+  cost of the miss was a High finding. Whether runs follow it is measured from the next fix
+  round on real code.
 - An external-review section for SKILL.md, seen once (`evals/results/real-code-2026-10-19.md`):
   on a repository the reviewer does not own, the run had to decide anchoring (code citations at
   the reviewed commit with a permalink base; the record delivered, not present), that "never
@@ -309,12 +309,11 @@ Versions and digests remain verifiable; the cited development commits do not res
   reviewer's interest. All five were decided in the run; they belong in the text, with an
   `External review: yes` line in Context that `check_report.py` ties to the anchoring statement,
   and one eval with a planted hook that asks for a commit.
-- Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference: the directory
-  warns on three of them (`documentationUrl`, `supportUrl`, `privacyPolicyUrl`) and ignores
-  them; `displayName` and `keywords` are read, the listing shows them. To be removed or kept deliberately in the next tagged version, since any
+- Fields of `plugin/.claude-plugin/plugin.json` outside the manifest reference: kept in
+  v1.4.1. The listing reads all five (display name, keywords, and the documentation, support and
+  privacy links appear on the Listing tab); the "unrecognized field" warning comes from the
+  manifest validator and blocks nothing. To be removed or kept deliberately in the next tagged version, since any
   change under `plugin/` is a new tag and a new submission.
-- `plugin/README.md`: the install section still describes the pre-listing paths; aligned with
-  the root README in the next tagged version, for the same reason.
 
 ## 8. Changes rejected on evidence
 

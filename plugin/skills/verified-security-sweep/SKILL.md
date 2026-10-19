@@ -266,7 +266,12 @@ confirmed: say so, record the zone as clean with the date, and say which lenses 
 the "clean" is auditable. Open items the owner must decide (a product rule, an accepted risk) go
 in a section of their own, not mixed with defects. Everything the sweep wants changed outside
 `docs/audits/` and the test folders (a fix, a pointer in the rules file, a CI step) is written in
-the report's hand-off section as a proposal, never applied by the sweep.
+the report's hand-off section as a proposal, never applied by the sweep. Trying a fix to confirm
+that the reproduction turns green is done on a throwaway copy outside the repository (a
+temporary directory), never inside the working tree, and the copy is removed afterwards. A fix
+pull request derived from the hand-off goes through verify-fix (`references/verify-fix.md`)
+before merge: the report proposes the fix from the handler and its route, not from the whole
+system, and a fix merged unverified has produced a new High finding in the next zone.
 
 ## Bootstrap: first run in a repo without `docs/audits/`
 
