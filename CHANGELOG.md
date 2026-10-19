@@ -28,6 +28,10 @@ repository that holds committed credentials) and from the real-code runs of 2026
   it to exit 0; `references/finding-verification.md` says how a credential is verified: by shape
   and boolean, never by printing it, never by trying it. Six tests.
 
+- `sweep_status.py` no longer reports "extraction looks broken" on a first run: with no dated
+  report and no registry row declaring a run it prints "no reports yet (first run)" and exits 0.
+  The broken-extraction error stays for a registry that declares a run no report matches.
+
 ## v1.4.0 (2026-10-13)
 
 The release of the v1.3 line. Versions 1.2.x and 1.3.x below were built and measured but never
