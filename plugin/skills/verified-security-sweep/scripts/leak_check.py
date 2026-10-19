@@ -12,7 +12,8 @@ sources, lengths and masked context, never a value.
 
 Values collected from the repository (read, never printed, never written anywhere; the
 deliverables themselves are never a source):
-    every value in a dotenv-style file (`.env`, `.env.*`, `*.env`) whose key names a secret;
+    every value in a dotenv-style file (`.env`, `.env.*`, `*.env`) whose key names a secret
+    (`.env.example` and other sample files hold placeholders and are left out);
     every string literal that is a value on a line naming a secret, in tracked text files
     outside the test folders (test fixtures hold invented credentials);
     every password inside a DSN (`scheme://user:password@host`);
@@ -52,8 +53,11 @@ import check_citations as cc  # noqa: E402  (sibling script: credential shapes a
 
 # Values shorter than this are compared as whole words and reported as WARN, not FAIL.
 MIN_FAIL_LENGTH = 8
-# Values shorter than this are not worth collecting: too many coincidences, no secret.
-MIN_VALUE_LENGTH = 3
+# Values shorter than this, or without any letter or digit, are not collected: a 4-letter word
+# or a placeholder such as `---` matches ordinary prose and table rules everywhere.
+MIN_VALUE_LENGTH = 5
+# Dotenv files that document the variables rather than hold them.
+EXAMPLE_DOTENV_RE = re.compile(r"(?i)\.(example|sample|template|dist|defaults?)$|\.env\.example")
 # Files larger than this are not read (generated data, minified bundles).
 MAX_FILE_BYTES = 1_000_000
 TEST_DIR_NAMES = ("test", "tests", "spec", "__tests__")
@@ -97,13 +101,17 @@ def collect(root: Path, files: list[str]) -> dict[str, str]:
 
     def add(value: str, source: str) -> None:
         value = value.strip()
-        if len(value) < MIN_VALUE_LENGTH or cc.name_like(value) or cc.REFERENCE_RE.match(value):
+        if len(value) < MIN_VALUE_LENGTH or not re.search(r"[A-Za-z0-9]", value):
+            return
+        if cc.name_like(value) or cc.REFERENCE_RE.match(value):
             return
         found.setdefault(value, source)
 
     for rel in files:
         if SKIP_NAME_RE.search(rel) or any(part in cc.SKIPPED_DIRS for part in Path(rel).parts):
             continue
+        if cc.is_dotenv(rel) and EXAMPLE_DOTENV_RE.search(rel):
+            continue  # .env.example and the like hold placeholders
         text = read_text(root / rel)
         if text is None:
             continue
