@@ -37,7 +37,7 @@ team's normal change process (branch, PR, review); never fix-and-commit from ins
 | Setting up `docs/audits/` for the first time | the bootstrap section below |
 | Quick probes for a specific stack | `references/stack-probes.md` |
 
-Requirements: `git` on the path and Python 3.9 or newer for the five scripts in `scripts/`
+Requirements: `git` on the path and Python 3.9 or newer for the six scripts in `scripts/`
 (standard library only); a reviewer agent or the ability to open a fresh session for delegated
 reading; permission to start the application under review locally for reproduction.
 
@@ -80,8 +80,8 @@ Checklist, one line per step; the sections below say how each is done.
 [ ] 3. One read-only reviewer per zone, strict brief, previous reports cited
 [ ] 4. Every cited line opened in its own file; every candidate through the three lenses
 [ ] 5. Every confirmed finding reproduced by a failing test
-[ ] 6. Report and findings.jsonl written; check_citations.py, check_report.py and findings.py
-       check exit 0; registry updated; sweep_status.py --check exits 0
+[ ] 6. Report and findings.jsonl written; check_citations.py, check_report.py, findings.py
+       check and leak_check.py exit 0; registry updated; sweep_status.py --check exits 0
 [ ] 7. Hand-off written as proposals; nothing outside docs/audits/ and the test folders changed
 ```
 
@@ -242,6 +242,15 @@ quote the non-secret part of the line), the command that runs the reproduction a
 and the legitimate-path test as `guard`, both as test-runner invocations, never inline code. Then run `python3 ${CLAUDE_SKILL_DIR}/scripts/findings.py check` until it exits
 0: it confirms that each cited line holds its snippet and that the report and the index agree.
 The index is what lets the next sweep re-verify this one instead of re-reading it.
+
+Last, run `python3 ${CLAUDE_SKILL_DIR}/scripts/leak_check.py` from the repository root (add
+`--extra <path>` for anything else delivered, such as a workbook): it collects credential-like
+values from the repository (dotenv values, literals next to secret names, DSN passwords,
+key-like tokens) and searches the report, the index and the new test files for them, printing
+sources, lengths and masked context, never a value. A `FAIL` is a value copied into a
+deliverable: replace it with the variable's name or its shape. A `WARN` is a short value that
+may be an ordinary word; read the context. Run it again until it exits 0. The run that read
+the secrets is the run that writes the record, and nothing else checks that the two stay apart.
 
 Then update the registry row for the zone (yield = confirmed / verified) and, if the team keeps
 one, the coverage matrix rows (last run, report reference, findings, status). The registry's

@@ -18,6 +18,15 @@ repository that holds committed credentials) and from the real-code runs of 2026
   through the mask. A dotenv path (`app/.env:3`) is now a citation. SKILL.md step 5 says never to
   print such a line by other means. Found by an external run where the mandatory citation check
   printed an app password and a key default into the session transcript.
+- `leak_check.py`, the sixth script: collects credential-like values from the repository (dotenv
+  values whose key names a secret, literals next to secret names, DSN passwords, key-like
+  tokens; `--from-cited <report>` limits the files to the ones the report cites) and searches
+  `docs/audits/`, the test files git reports as changed, and any `--extra` path (zip containers
+  such as a workbook member by member) for them. `FAIL` for a value of 8 characters or more,
+  `WARN` for a shorter one that may be a coincidence (`--strict` makes it a failure); sources,
+  lengths and masked context printed, never a value, nothing written. Checklist step 6 requires
+  it to exit 0; `references/finding-verification.md` says how a credential is verified: by shape
+  and boolean, never by printing it, never by trying it. Six tests.
 
 ## v1.4.0 (2026-10-13)
 
