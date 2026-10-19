@@ -37,7 +37,10 @@ repository that holds committed credentials) and from the real-code runs of 2026
   scans nor from secret-name literals in test folders (fixtures hold invented credentials). On
   that record: 1850 FAIL and 766 WARN before, 0 and 0 after, with 36 values collected from 355
   tracked files in about a second; one comment line printed masked by `check_citations.py`
-  across 326 citations.
+  across 326 citations. A confirmation run on the planted-defects fixture then showed 13 WARN
+  from a 3-character placeholder in `docker/.env.example` and a 4-letter password in a test URL
+  matching table rules and prose: sample dotenv files are not sources, and a value needs at
+  least 5 characters with a letter or digit to be collected.
 - `sweep_status.py` no longer reports "extraction looks broken" on a first run: with no dated
   report and no registry row declaring a run it prints "no reports yet (first run)" and exits 0.
   The broken-extraction error stays for a registry that declares a run no report matches.

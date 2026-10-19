@@ -1289,3 +1289,18 @@ def test_leak_check_never_collects_from_the_deliverables_or_test_fixtures(leak_r
     r = run_leak(leak_repo)
     assert r.returncode == 0, r.stdout
     assert "0 FAIL, 0 WARN" in r.stdout
+
+
+def test_leak_check_skips_sample_dotenv_files_and_tiny_values(leak_repo: Path):
+    # From a confirmation run: `---` in docker/.env.example and `pass` from a test URL matched
+    # table rules and prose everywhere, 13 WARN on a clean record
+    (leak_repo / "docker").mkdir()
+    (leak_repo / "docker" / ".env.example").write_text("SECRET_KEY=---\nADMIN_PASSWORD=change-me-now\n", encoding="utf-8")
+    (leak_repo / "app" / "hooks.py").write_text('URL = "http://user:pass@example.invalid/hook"\n', encoding="utf-8")
+    subprocess.run(["git", "-C", str(leak_repo), "add", "-A"], check=True)
+    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
+        "| a | b |\n|---|---|\nread handlers are expected to pass readonly; change-me-now is the sample.\n", encoding="utf-8"
+    )
+    r = run_leak(leak_repo)
+    assert r.returncode == 0, r.stdout
+    assert "0 FAIL, 0 WARN" in r.stdout
