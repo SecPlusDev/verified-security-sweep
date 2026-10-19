@@ -1100,3 +1100,129 @@ def test_check_report_scope_is_context_and_cited_files_not_coverage(tmp_path: Pa
 def test_check_report_exit_2_when_missing():
     r = run_script(CHECK_REPORT, "/nonexistent/report.md")
     assert r.returncode == 2
+
+
+# --------------------------------------------------------------------------------------
+# leak_check.py
+# --------------------------------------------------------------------------------------
+
+LEAK_CHECK = SCRIPTS / "leak_check.py"
+LEAK_VALUES = {
+    "admin_password": "apple",                      # an ordinary word, 5 characters: WARN territory
+    "app_password": "abcd efgh ijkl mnop",           # an app password: four lowercase groups
+    "jwt_default": "postgresql://app:hunter2pw@db/app",
+    "api_key": "sk_live_" + "Zz9yY8xX" * 4,
+}
+
+
+@pytest.fixture()
+def leak_repo(tmp_path: Path) -> Path:
+    root = tmp_path / "svc"
+    (root / "app" / "seeds").mkdir(parents=True)
+    (root / "docs" / "audits").mkdir(parents=True)
+    (root / "tests").mkdir()
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    (root / "app" / ".env").write_text(
+        f"ADMIN_EMAIL=admin@example.invalid\nADMIN_PASSWORD={LEAK_VALUES['admin_password']}\n", encoding="utf-8"
+    )
+    (root / "app" / "config.py").write_text(
+        f'SECRET_KEY = os.getenv("SECRET_KEY", "{LEAK_VALUES["jwt_default"]}")\n'
+        f'API_KEY = "{LEAK_VALUES["api_key"]}"\n',
+        encoding="utf-8",
+    )
+    (root / "app" / "seeds" / "smtp_seed.py").write_text(
+        f'config = SMTP(username="mailer@example.invalid", password="{LEAK_VALUES["app_password"]}")\n',
+        encoding="utf-8",
+    )
+    (root / "tests" / "test_existing.py").write_text("def test_ok():\n    assert True\n", encoding="utf-8")
+    subprocess.run(["git", "-C", str(root), "add", "-A"], check=True)
+    subprocess.run(
+        ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "import"],
+        check=True,
+    )
+    return root
+
+
+def run_leak(root: Path, *args: str) -> subprocess.CompletedProcess:
+    return run_script(LEAK_CHECK, "--root", str(root), *args)
+
+
+def assert_no_value(stdout: str) -> None:
+    for value in LEAK_VALUES.values():
+        assert value not in stdout
+
+
+def test_leak_check_passes_a_report_that_names_variables_only(leak_repo: Path):
+    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
+        "F1 `ADMIN_PASSWORD` in `app/.env:2` is a literal; F2 `SECRET_KEY` default at `app/config.py:1`;\n"
+        "F3 the SMTP seed at `app/seeds/smtp_seed.py:1` holds an app password (format checked as a boolean).\n",
+        encoding="utf-8",
+    )
+    r = run_leak(leak_repo)
+    assert r.returncode == 0, r.stdout
+    assert_no_value(r.stdout)
+    assert "0 FAIL, 0 WARN" in r.stdout
+    assert "5 value(s) collected" in r.stdout   # the username on the seed line is not one of them
+
+
+def test_leak_check_fails_a_report_that_quotes_a_value(leak_repo: Path):
+    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
+        f"F3 the seed sets password=\"{LEAK_VALUES['app_password']}\" at `app/seeds/smtp_seed.py:1`.\n",
+        encoding="utf-8",
+    )
+    r = run_leak(leak_repo)
+    assert r.returncode == 1
+    assert_no_value(r.stdout)
+    assert "FAIL" in r.stdout
+    assert "value from app/seeds/smtp_seed.py:1 (len 19)" in r.stdout
+    assert "<masked, 19 chars>" in r.stdout
+    assert "1 FAIL, 0 WARN" in r.stdout
+
+
+def test_leak_check_warns_on_a_short_value_that_may_be_a_coincidence(leak_repo: Path):
+    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
+        "The seeded admin password is an ordinary word (an apple a day); pineapple is not it.\n", encoding="utf-8"
+    )
+    r = run_leak(leak_repo)
+    assert r.returncode == 0, r.stdout
+    assert "WARN" in r.stdout
+    assert "value from app/.env:ADMIN_PASSWORD (len 5)" in r.stdout
+    assert "0 FAIL, 1 WARN" in r.stdout
+    r = run_leak(leak_repo, "--strict")
+    assert r.returncode == 1
+
+
+def test_leak_check_scans_changed_test_files_and_zip_containers(leak_repo: Path, tmp_path: Path):
+    (leak_repo / "tests" / "test_sweep_auth.py").write_text(
+        f'KEY = "{LEAK_VALUES["api_key"]}"\n', encoding="utf-8"
+    )
+    book = tmp_path / "report.xlsx"
+    with __import__("zipfile").ZipFile(book, "w") as zf:
+        zf.writestr("xl/sharedStrings.xml", f"<t>{LEAK_VALUES['jwt_default']}</t>")
+    r = run_leak(leak_repo, "--extra", str(book))
+    assert r.returncode == 1
+    assert_no_value(r.stdout)
+    assert "tests/test_sweep_auth.py:1" in r.stdout.replace("\\", "/")
+    assert "report.xlsx!xl/sharedStrings.xml:1" in r.stdout
+    assert "value from app/config.py:1 (len 33)" in r.stdout
+    assert "2 FAIL, 0 WARN" in r.stdout
+
+
+def test_leak_check_from_cited_limits_the_collection(leak_repo: Path):
+    report = leak_repo / "docs" / "audits" / "2026-01-15-auth.md"
+    report.write_text(f"Only `app/config.py:1` is cited; the seed password is {LEAK_VALUES['app_password']}.\n",
+                      encoding="utf-8")
+    r = run_leak(leak_repo, "--from-cited", str(report))
+    # The seed is not cited, so its value is not collected; the dotenv file always is
+    assert "0 FAIL, 0 WARN" in r.stdout
+    assert "4 value(s) collected" in r.stdout
+    r = run_leak(leak_repo)
+    assert r.returncode == 1
+    assert "1 FAIL, 0 WARN" in r.stdout
+
+
+def test_leak_check_setup_errors(tmp_path: Path, leak_repo: Path):
+    r = run_leak(leak_repo, "--extra", str(tmp_path / "missing.xlsx"))
+    assert r.returncode == 2
+    r = run_leak(leak_repo, "--from-cited", str(tmp_path / "missing.md"))
+    assert r.returncode == 2

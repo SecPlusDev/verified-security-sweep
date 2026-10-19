@@ -102,6 +102,7 @@ jobs:
           python plugin/skills/verified-security-sweep/scripts/check_citations.py --help
           python plugin/skills/verified-security-sweep/scripts/findings.py --help
           python plugin/skills/verified-security-sweep/scripts/check_report.py --help
+          python plugin/skills/verified-security-sweep/scripts/leak_check.py --help
 
       - name: pytest
         run: python -m pytest tests/ -q -p no:cacheprovider
@@ -127,12 +128,13 @@ jobs:
         run: |
           set -euo pipefail
           s=plugin/skills/verified-security-sweep/scripts
-          python -W error -m py_compile "$s/sweep_status.py" "$s/fresh_code.py" "$s/check_citations.py" "$s/findings.py" "$s/check_report.py"
+          python -W error -m py_compile "$s/sweep_status.py" "$s/fresh_code.py" "$s/check_citations.py" "$s/findings.py" "$s/check_report.py" "$s/leak_check.py"
           python "$s/sweep_status.py" --help > /dev/null
           python "$s/fresh_code.py" --help > /dev/null
           python "$s/check_citations.py" --help > /dev/null
           python "$s/findings.py" --help > /dev/null
           python "$s/check_report.py" --help > /dev/null
+          python "$s/leak_check.py" --help > /dev/null
           d="$RUNNER_TEMP/audits"; mkdir -p "$d"
           : > "$d/2026-01-15-money.md"
           printf '## Candidates\n\n| Zone | Argument | Last run | Yield |\n|---|---|---|---|\n| `money` | billing | 2026-01-15 | 1/1 |\n' > "$d/sweep-registry.md"
@@ -148,6 +150,10 @@ jobs:
           r="$RUNNER_TEMP/repo"; git init -q "$r"; cd "$r"
           git -c user.name=ci -c user.email=ci@example.invalid commit -q --allow-empty -m init
           mkdir src && echo 'x = 1' > src/a.py && git add -A && git -c user.name=ci -c user.email=ci@example.invalid commit -q -m a
+          mkdir -p docs/audits && printf 'SECRET_KEY=abcdefgh12345678\n' > .env && printf 'report names SECRET_KEY only\n' > docs/audits/2026-01-15-money.md
+          python "$GITHUB_WORKSPACE/$s/leak_check.py" --root "$r"
+          printf 'leaked abcdefgh12345678\n' > docs/audits/2026-01-15-money.md
+          if python "$GITHUB_WORKSPACE/$s/leak_check.py" --root "$r"; then echo "leak_check did not fail on a copied value" >&2; exit 1; fi
           python "$GITHUB_WORKSPACE/$s/fresh_code.py" --json | python -c 'import json,sys; d=json.load(sys.stdin); assert d["files"][0]["file"]=="src/a.py"'
 
   package:
@@ -177,6 +183,7 @@ jobs:
           python3 "$root/scripts/check_citations.py" --help > /dev/null
           python3 "$root/scripts/findings.py" --help > /dev/null
           python3 "$root/scripts/check_report.py" --help > /dev/null
+          python3 "$root/scripts/leak_check.py" --help > /dev/null
           python3 .github/scripts/check_skill.py "$root" --max-lines 500
 
       - name: Upload archive

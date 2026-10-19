@@ -25,11 +25,11 @@ claude --model claude-opus-5-5 --plugin-dir <work>/repo/plugin \
 Prompt:
 
 ```
-Use the verified-security-sweep skill. Do not review anything yet: run each of its five scripts
+Use the verified-security-sweep skill. Do not review anything yet: run each of its six scripts
 with --help, from the skill's own scripts folder, and tell me the full path you ran them from.
 ```
 
-Pass: the session loads the skill, the five scripts answer `--help`, and the path is under
+Pass: the session loads the skill, the six scripts answer `--help`, and the path is under
 `.../repo/plugin/skills/verified-security-sweep/scripts/`.
 
 ## 2. Full run: a natural request triggers it and every step works from the installed copy

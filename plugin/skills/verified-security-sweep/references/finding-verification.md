@@ -56,6 +56,16 @@ result of each case (the attack path fails on the current code, the legitimate p
 proof of the finding is then what was observed instead, for example a live request and its
 response; if nothing was observed, the finding is `NEEDS DEEPER REVIEW`, not `VERIFIED REAL`.
 
+A hard-coded credential is verified by its shape, never by its value. Decide whether a value is
+real or a placeholder through booleans, lengths or shapes computed by a script (length, character
+classes, the format of a known key type, equality with the value in another file), and put the
+boolean in the report. Never print the value, in the session or in a test's output, and never
+write a masking expression by hand for the purpose: in the run that produced this rule, the
+hand-written expression was wrong and the value was printed. Never try the credential against the
+service it belongs to; its validity is a reservation in the verification table, not a test. The
+reproduction test reads the value at run time and compares, so the test file holds the variable
+name and the shape, not the value, and `leak_check.py` confirms that nothing delivered holds it.
+
 - Concurrency: an interleaving test (two requests racing on one token, two uploads racing on one
   quota, a cancel racing a payment). A fix for a race verified only by reading has been found
   incomplete when the interleaving test was finally written.

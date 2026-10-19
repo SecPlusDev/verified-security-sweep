@@ -120,6 +120,19 @@ def literal_values(text: str) -> list[str]:
     return out
 
 
+# A literal assigned to, or passed right after, a secret name: `password="x"`, `"secret": 'x'`,
+# `os.getenv("API_KEY", "x")`. Group 2 is the value.
+SECRET_LITERAL_RE = re.compile(
+    r"(?i)" + SECRET_WORDS + r"[\w-]*[\"']?\s*[=:,]\s*(\"|')((?:[^\"'\\]|\\.)+)\1"
+)
+
+
+def secret_literals(text: str) -> list[str]:
+    """Literal values assigned to or passed next to a secret name on the line; a username on
+    the same line as a password is not among them."""
+    return [m.group(2) for m in SECRET_LITERAL_RE.finditer(text) if not name_like(m.group(2))]
+
+
 def sensitive(path: str, text: str) -> bool:
     """True when the line may hold a credential: a dotenv file, a secret name with a literal
     value, a DSN with user:password@, or a key-like token."""

@@ -234,7 +234,7 @@ Requests like these do not, by design:
 - "review this PR, it's the new dark mode toggle and some tailwind cleanup in the settings page"
   (no security-relevant surface)
 
-Five helper scripts ship with the skill and run on their own:
+Six helper scripts ship with the skill and run on their own:
 
 ```bash
 S=plugin/skills/verified-security-sweep/scripts
@@ -245,6 +245,7 @@ python3 $S/check_report.py docs/audits/2026-01-15-money.md      # sections, verd
 python3 $S/findings.py check                # findings index: each cited line holds the quoted code
 python3 $S/findings.py recheck --run --write   # re-run each open finding's reproduction: open, fixed or inconclusive
 python3 $S/findings.py sarif > findings.sarif  # open findings as SARIF 2.1.0
+python3 $S/leak_check.py                    # no credential of the repository in the report, the index or the new tests
 ```
 
 ## Cost and limits

@@ -43,7 +43,7 @@ Rules for every file in this repository:
 | `docs/audits/` convention with bootstrap | the skill needs a place to read history from; bootstrap makes it work on any repository |
 | Low findings in their own section | excluding them loses signal; a separate section keeps the report readable |
 | Stack probes for several frameworks | probes for one stack leave users of the others with nothing |
-| Five standard-library scripts | `sweep_status.py` and `fresh_code.py` are generic and tested; `check_citations.py` reads only `path:line` citations, because a model asked to verify every line still cited lines that do not exist (round v1.2.2); `findings.py` reads a JSON index, not the report's prose, because a check on a quoted snippet and a re-run of each reproduction need data, and because written rules held on Opus but not on Sonnet while mechanical checks held on both (round v1.2.3); `check_report.py` reads the report's structure, because two rounds of text (v1.3.1, v1.3.2) did not stop a model from labelling leads of the zone as another zone's and handing them off without a verdict, while the same lead is mechanically inside the zone's own scope |
+| Six standard-library scripts | `sweep_status.py` and `fresh_code.py` are generic and tested; `check_citations.py` reads only `path:line` citations, because a model asked to verify every line still cited lines that do not exist (round v1.2.2); `findings.py` reads a JSON index, not the report's prose, because a check on a quoted snippet and a re-run of each reproduction need data, and because written rules held on Opus but not on Sonnet while mechanical checks held on both (round v1.2.3); `check_report.py` reads the report's structure, because two rounds of text (v1.3.1, v1.3.2) did not stop a model from labelling leads of the zone as another zone's and handing them off without a verdict, while the same lead is mechanically inside the zone's own scope; `leak_check.py` searches the deliverables for the repository's own credential values, because the run that reads the secrets is the run that writes the record, and an external review run (2026-10-19) showed that a hand-written check is one wrong expression away from printing the value |
 | Reviewer count follows zone count | one reviewer per zone, never more than four; several reviewers on a single-zone repository is waste |
 | Calibration from the report, not a script | the `Claimed`, `Verified`, `Reservations` columns make it measurable without tooling |
 | Free, MIT, with attribution | the README says the skill is not an audit and does not replace one |
@@ -228,7 +228,7 @@ Behavior evals run through skill-creator with the fixtures from `evals/fixtures/
   separately and expired before its review was done, which deleted it from the listing; it was
   uploaded again from the portal, no new version needed.
 - **Install test.** Before a release, `evals/install-test.md` steps 1 and 2: the plugin loaded
-  through `--plugin-dir` from the clone, the five scripts answering `--help` from the installed
+  through `--plugin-dir` from the clone, the six scripts answering `--help` from the installed
   path, then a natural request on a clean copy of the planted-defects fixture with the run
   graded as eval 5. After a version is listed, step 3: the plugin installed from the directory
   into a configuration directory created for the check, the installed tree compared with the
@@ -342,7 +342,7 @@ Core quality
 - [x] Workflows have clear steps (the seven-step checklist in `SKILL.md`).
 
 Code and scripts
-- [x] Scripts solve problems rather than defer to Claude (five scripts; each fix shipped with its test).
+- [x] Scripts solve problems rather than defer to Claude (six scripts; each fix shipped with its test).
 - [x] Error handling explicit (exit codes 0, 1, 2 documented in every `--help`).
 - [x] No unexplained constants (every constant carries a comment; `check_skill.py` does not check
       this, the review of each pull request does).
