@@ -2,7 +2,7 @@
   "name": "verified-security-sweep",
   "displayName": "Verified Security Sweep",
   "description": "Repeatable security and correctness reviews of a codebase, with a record: pick a zone, delegate the reading, verify every finding on the cited lines, reproduce it with a failing test, keep a registry of what was reviewed and found. Finds and verifies; does not ship fixes.",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": {
     "name": "SecPlusDev",
     "url": "https://github.com/SecPlusDev"
