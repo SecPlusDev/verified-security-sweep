@@ -73,8 +73,12 @@ Across the evaluation rounds ([`evals/results/`](evals/results/)):
   reproduction and a passing guard, 20 dismissed candidates with their lens, three product
   questions asked in writing and re-verified under the owner's answers; the fixes went in as
   pull requests the same day and the first `recheck` on real code read all 15 as fixed
-  (`evals/results/real-code-2026-10-17.md`). Both from a non-independent reviewer; read them
-  as such.
+  (`evals/results/real-code-2026-10-17.md`); the same codebase then went through nine zones in
+  three days, 87 confirmed findings, each re-verified before the next zone, with one regression
+  caused by a proposed fix and caught by the next zone, written up as a limit
+  (`evals/results/real-code-2026-10-19.md`). Both from a non-independent reviewer; read them
+  as such. One external run on a third-party repository (15 confirmed, 3 committed credentials)
+  exposed the privacy gaps that v1.4.1 closes, same file.
 
 What the current version still misses, so you know what to read with care:
 - **Leads the reviewer raises but the sweep does not verify.** Both models record them with
