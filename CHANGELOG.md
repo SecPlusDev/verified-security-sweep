@@ -28,6 +28,16 @@ repository that holds committed credentials) and from the real-code runs of 2026
   it to exit 0; `references/finding-verification.md` says how a credential is verified: by shape
   and boolean, never by printing it, never by trying it. Six tests.
 
+- Credential shapes calibrated on a real record (13 reports, 87 findings, 241 recheck lines of
+  one private codebase): the key-like rule requires the shape of a key (both cases of letters,
+  or a hexadecimal run of 32+, or base64 padding) so that test names with dates, dated file
+  names and API paths no longer count; capitalised display names, snake_case field names, dict
+  keys after a secret-name literal, type annotations and scheme or placeholder words (`bearer`,
+  `changeme`) are names, not values; `leak_check.py` never collects from the deliverables it
+  scans nor from secret-name literals in test folders (fixtures hold invented credentials). On
+  that record: 1850 FAIL and 766 WARN before, 0 and 0 after, with 36 values collected from 355
+  tracked files in about a second; one comment line printed masked by `check_citations.py`
+  across 326 citations.
 - `sweep_status.py` no longer reports "extraction looks broken" on a first run: with no dated
   report and no registry row declaring a run it prints "no reports yet (first run)" and exits 0.
   The broken-extraction error stays for a registry that declares a run no report matches.

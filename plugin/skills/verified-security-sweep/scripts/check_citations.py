@@ -65,9 +65,16 @@ SKIPPED_DIRS = (".git", "node_modules", ".venv", "venv", "__pycache__", ".tox", 
 # line is printed masked; they err on the side of masking, because an over-masked line costs the
 # reader one file open and an under-masked one puts a credential in the transcript.
 #
-# A key-like token: 24 or more characters of the alphabets keys are written in, mixing letters
-# and digits (the letter/digit test is in keylike()). 24 is below the shortest common API key.
+# A key-like token: 24 or more characters of the alphabets keys are written in; keylike() then
+# requires the shape of a key and not of an identifier (see there). 24 is below the shortest
+# common API key.
 KEYLIKE_RE = re.compile(r"[A-Za-z0-9+/_=-]{24,}")
+# Words that stand next to secret names without being secrets: schemes, formats, placeholders.
+NOT_SECRET_WORDS = frozenset(
+    "bearer basic digest oauth oauth2 jwt hmac oidc sha1 sha256 sha512 md5 utf-8 utf8 none null nil "
+    "true false yes no on off example placeholder changeme change-me redacted masked dummy sample "
+    "test testing default development production required optional string integer boolean".split()
+)
 # Words that name a secret when they appear in a key, a variable or a field name.
 SECRET_WORDS = (
     r"(?:passw(?:or)?d|pwd|secret|token|api[_-]?key|apikey|private[_-]?key|credential|"
@@ -84,6 +91,7 @@ ASSIGN_RE = re.compile(r"(?i)^(\s*[\w.\[\]\"'-]*" + SECRET_WORDS + r"[\w.\[\]\"'
 REFERENCE_RE = re.compile(
     r"^(?:None|null|nil|true|false|\"\"|'')?$|^\$|^\$?\{|^os\.|^env\b|^process\.env|^settings\."
     r"|^config\b|^get[A-Za-z_]*\(|^secrets\.|^request\.|^req\.|^self\.|^this\."
+    r"|^(?:str|int|bool|float|bytes|list|dict|Optional|Any|Mapped|Field)\b|\|\s*None\b|=\s*None$"
 )
 MASK = "<masked, {n} chars>"
 
@@ -94,16 +102,37 @@ def is_dotenv(path: str) -> bool:
 
 
 def keylike(text: str) -> bool:
-    """A token of key alphabet, 24 characters or more, that mixes letters and digits."""
-    return any(re.search(r"[A-Za-z]", m) and re.search(r"\d", m) for m in KEYLIKE_RE.findall(text))
+    """A token of key alphabet, 24 characters or more, shaped like a key and not like an
+    identifier: letters and digits mixed, and either both cases of letters, or a hexadecimal
+    run of 32 or more, or base64 padding (`=`) or `+`. A test name with a date in it
+    (`test_sweep_access_20260119`), a dated file name or an API path has digits but one case
+    only."""
+    for m in KEYLIKE_RE.findall(text):
+        if not (re.search(r"[A-Za-z]", m) and re.search(r"\d", m)):
+            continue
+        if re.search(r"[A-Z]", m) and re.search(r"[a-z]", m):
+            return True
+        # One case only: a hexadecimal run, or base64 padding or `+`. A slash alone is a path
+        # (`/api/v1/items/9`), not base64: base64 output of 24+ characters has both cases.
+        if re.fullmatch(r"[0-9a-fA-F]{32,}", m) or re.search(r"[+=]", m):
+            return True
+    return False
 
 
 def name_like(value: str) -> bool:
-    """A literal that is a name, not a value: a secret word used as a field or variable name
-    (`"password"`), or an environment-variable name (`"SECRET_KEY"`, `"DATABASE_URL"`)."""
+    """A literal that is a name or a word, not a value: a secret word used as a field or
+    variable name (`"password"`), an environment-variable name (`"SECRET_KEY"`,
+    `"DATABASE_URL"`), or a scheme, format or placeholder word (`"bearer"`, `"changeme"`)."""
+    if value.lower() in NOT_SECRET_WORDS:
+        return True
+    if re.fullmatch(r"[A-Z][A-Za-z]+", value):
+        return True  # a capitalised word of letters (`Shodan`, `VirusTotal`): a display name
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
         return False
-    return bool(SECRET_NAME_RE.search(value)) or value == value.upper()
+    if SECRET_NAME_RE.search(value) or value == value.upper():
+        return True
+    # snake_case or dotted-off identifiers (`clearance_level`, `display_name`) are field names
+    return "_" in value and value == value.lower()
 
 
 def literal_values(text: str) -> list[str]:
@@ -123,7 +152,7 @@ def literal_values(text: str) -> list[str]:
 # A literal assigned to, or passed right after, a secret name: `password="x"`, `"secret": 'x'`,
 # `os.getenv("API_KEY", "x")`. Group 2 is the value.
 SECRET_LITERAL_RE = re.compile(
-    r"(?i)" + SECRET_WORDS + r"[\w-]*[\"']?\s*[=:,]\s*(\"|')((?:[^\"'\\]|\\.)+)\1"
+    r"(?i)" + SECRET_WORDS + r"[\w-]*[\"']?\s*[=:,]\s*(\"|')((?:[^\"'\\]|\\.)+)\1(?!\s*:)"
 )
 
 
