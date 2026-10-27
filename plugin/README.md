@@ -63,10 +63,10 @@ it reliably when it did; per-model figures are in the repository's `evals/result
   an interpreter, and the skill lists the commands and runs them only when they invoke the
   project's test runner. `sarif` prints the open findings as SARIF. Without `--run` nothing is
   executed.
-- **Runs** `python3 scripts/leak_check.py`, which collects credential-like values from the target
-  repository (dotenv values, literals next to secret names, DSN passwords, key-like tokens) and
-  searches the report, the index and the new test files for them. It prints sources, lengths and
-  masked context, never a value, and writes nothing.
+- **Runs** `python3 scripts/leak_check.py`, which scans the report, the index and the new test
+  files for credential shapes (a literal or a value next to a secret name, a DSN password, a
+  key-like token). It reads the deliverables only, never the repository's dotenv files or
+  sources; it prints shapes, lengths and masked context, never a value, and writes nothing.
 - No script opens a network connection, and all use only the Python standard library. Apart
   from the recheck log, they write no files.
 - **Runs** read-only `grep` searches from `references/stack-probes.md` to find places to read.

@@ -244,13 +244,15 @@ and the legitimate-path test as `guard`, both as test-runner invocations, never 
 The index is what lets the next sweep re-verify this one instead of re-reading it.
 
 Last, run `python3 ${CLAUDE_SKILL_DIR}/scripts/leak_check.py` from the repository root (add
-`--extra <path>` for anything else delivered, such as a workbook): it collects credential-like
-values from the repository (dotenv values, literals next to secret names, DSN passwords,
-key-like tokens) and searches the report, the index and the new test files for them, printing
-sources, lengths and masked context, never a value. A `FAIL` is a value copied into a
-deliverable: replace it with the variable's name or its shape. A `WARN` is a short value that
-may be an ordinary word; read the context. Run it again until it exits 0. The run that read
-the secrets is the run that writes the record, and nothing else checks that the two stay apart.
+`--extra <path>` for anything else delivered, such as a workbook): it scans the report, the
+index and the new test files for credential shapes (a literal or a value next to a secret name,
+a DSN password, a key-like token) and prints each hit with its shape, its length and the line
+masked, never a value; it opens no file of the repository itself. A `FAIL` is a value copied
+into a deliverable: replace it with the variable's name or its shape. A `WARN` is a short value
+that may be an ordinary word; read the context. Run it again until it exits 0. It does not see a
+password written in prose without its name, so a credential is written as its name and its
+shape, never as "it is <value>". The run that read the secrets is the run that writes the
+record, and nothing else checks that the two stay apart.
 
 Then update the registry row for the zone (yield = confirmed / verified) and, if the team keeps
 one, the coverage matrix rows (last run, report reference, findings, status). The registry's

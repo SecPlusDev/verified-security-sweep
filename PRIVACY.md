@@ -1,6 +1,6 @@
 # Privacy policy
 
-Last updated: 2026-10-05
+Last updated: 2026-10-27
 
 This policy covers the `verified-security-sweep` plugin and skill. The maintainer runs no service for
 it: there is no server, no account and no telemetry.
@@ -12,6 +12,11 @@ it: there is no server, no account and no telemetry.
 - The repository's git history, through `scripts/fresh_code.py`. That includes commit authors'
   names: the script counts the distinct authors per changed file and prints only the count. It
   does not display, write or keep the names, and they are gone when the script exits.
+- Credential-like lines, when a report cites one: `scripts/check_citations.py` and
+  `scripts/findings.py` print such a line with every value replaced by `<masked, N chars>`, and
+  offer no option to print it unmasked. `scripts/leak_check.py` reads only what the sweep itself
+  wrote (the report, the index, the tests it added) and looks for credential shapes there; it
+  opens no dotenv file and no source file of the repository, and nothing it prints is a value.
 
 ## What the plugin writes
 

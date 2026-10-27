@@ -249,7 +249,7 @@ python3 $S/check_report.py docs/audits/2026-01-15-money.md      # sections, verd
 python3 $S/findings.py check                # findings index: each cited line holds the quoted code
 python3 $S/findings.py recheck --run --write   # re-run each open finding's reproduction: open, fixed or inconclusive
 python3 $S/findings.py sarif > findings.sarif  # open findings as SARIF 2.1.0
-python3 $S/leak_check.py                    # no credential of the repository in the report, the index or the new tests
+python3 $S/leak_check.py                    # no credential shape in the report, the index or the new tests
 ```
 
 ## Cost and limits
