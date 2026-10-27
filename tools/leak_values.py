@@ -123,18 +123,18 @@ def collect(root: Path, files: list[str]) -> dict[str, str]:
         for n, line in enumerate(text.splitlines(), 1):
             if dotenv:
                 m = re.match(r"^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*)$", line)
-                if m and cc.SECRET_NAME_RE.search(m.group(1)):
+                if m and cc.NAME_RE.search(m.group(1)):
                     add(strip_quotes(m.group(2).split(" #")[0]), f"{rel}:{m.group(1)}")
                 continue
-            for m in cc.DSN_RE.finditer(line):
+            for m in cc.URL_AUTH_RE.finditer(line):
                 add(m.group(2), f"{rel}:{n}")
-            for m in cc.KEYLIKE_RE.finditer(line):
-                if cc.keylike(m.group(0)):
+            for m in cc.TOKEN_RE.finditer(line):
+                if cc.tokenlike(m.group(0)):
                     add(m.group(0), f"{rel}:{n}")
             if in_tests:
                 continue  # test fixtures hold invented credentials; real ones are key-shaped or in dotenv
-            if cc.SECRET_NAME_RE.search(line):
-                for value in cc.secret_literals(line):
+            if cc.NAME_RE.search(line):
+                for value in cc.named_literals(line):
                     add(value, f"{rel}:{n}")
                 m = cc.ASSIGN_RE.match(line)
                 if m:

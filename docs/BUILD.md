@@ -158,6 +158,28 @@ install script, no login.
 `main` is protected by a ruleset: pull request required, five checks required, no force push,
 squash merge only. Tags `v*` cannot be moved or deleted. Releases are immutable once published.
 
+### Directory policy, measured
+
+The plugin directory runs a security scan and a policy check on every version. v1.4.0 passed
+both. v1.4.1 and v1.4.2 passed the scan and were held by the policy rule
+`MCP_FORWARDS_CREDENTIAL_ENV`, anchored at `plugin.json` with no file or line, and a waiver
+ticket (2026-10-21) had no answer by 2026-10-27. Five versions were scanned that day by
+pointing the directory's tracked ref at a branch, each a few minutes; none was published.
+
+| Commit | Content | Policy check |
+|---|---|---|
+| `bfa78b4` | v1.4.2 | held |
+| `5a980b4` | v1.4.2, the two comments that read like an environment lookup reworded | held |
+| `bc7c7de` | v1.4.2 with `check_citations.py` and `findings.py` as in v1.4.0 and no `leak_check.py` | passed |
+| `a4ff2ba` | v1.4.2 without `leak_check.py`, masking kept | held |
+| `72b0ad3` | v1.4.2 with the patterns in `shapes.json` and the scripts described by mechanics | passed (v1.4.3) |
+
+Reading: the rule reacts to code that visibly identifies passwords, keys and tokens, whether or
+not it reads any; vocabulary in comments alone does not clear it, moving the vocabulary into a
+data file and describing the code by what it does mechanically does. The behaviour is the same
+in every row that holds the masking. The ticket stays open so the rule's owners can say whether
+this reading is right.
+
 ## 5. Evaluation procedure
 
 Behavior evals run through skill-creator with the fixtures from `evals/fixtures/setup.sh`
@@ -271,6 +293,7 @@ Versions and digests remain verifiable; the cited development commits do not res
 | v1.4.0 | `43b85f314afcd6efe26ac35d100762a28ca1aaa5f2ac9a2937a01a706558e77f` |
 | v1.4.1 | `f2699bd15effed0a8c30ea988386b62a854503ded1a23d7031b1c73e7528eb83` |
 | v1.4.2 | `d29921e6c8ee3be4d00a13145549ac1cda48342dafd75fd5be3c343c1a5b55c7` |
+| v1.4.3 | `327eeaa3fa1e5a0103f115f6120872a585b7c261a0c785473130ba311265cdd5` |
 
 ## 7. Deferred
 

@@ -179,3 +179,6 @@ identifier:permitAll
 identifier:selectRaw
 identifier:toDateString
 identifier:whereRaw
+
+# docs/BUILD.md, "Directory policy, measured", cites the commits the directory scanned; the file is reviewed by hand in every pull request
+hex-file:docs/BUILD.md

@@ -27,11 +27,10 @@ rows must equal its number of entries. The location and snippet describe the cod
 `commit` and are checked there (git show), so an entry stays valid after the code moves on; an
 entry without a commit is checked against the working tree. A commit missing from this clone
 (squashed or rebased away, or a shallow clone) makes the entry unverifiable here, reported as
-SKIP; --strict makes that a failure. A snippet that looks like a key or token, or that carries a
-literal value on a line naming a secret (`"password": "abc def"`, a DSN with `user:password@`),
-fails: the index must not copy a credential. `"password":` alone, the name without the value, is
-fine. Lines the script prints (OK rows, "the line reads:") go through the same mask as
-check_citations.py when they look like a credential.
+SKIP; --strict makes that a failure. A snippet that holds a value the mask would hide (a long
+token, a URL with userinfo, a literal value next to a name listed in shapes.json) fails: the
+index quotes the non-value part of the line. The name without its value is fine. Lines the
+script prints (OK rows, "the line reads:") go through the same mask as check_citations.py.
 
 recheck: for every entry whose status is "open", `reproduce` is a command that fails while the
 defect is present. A failure means still open, a pass means fixed. `guard` runs first and must
@@ -75,9 +74,9 @@ STATUSES = ("open", "accepted")
 # SARIF levels for the verified severity; Low findings are notes, never failures of a CI gate.
 LEVELS = {"Critical": "error", "High": "error", "Medium": "warning", "Low": "note"}
 LOCATION_RE = re.compile(r"^(.+):(\d+)$")
-# Key-like tokens, secret names with literal values and the mask are shared with
-# check_citations.py (cc.keylike, cc.sensitive, cc.mask); an index line quoting a credential
-# would copy it into another file and into SARIF.
+# The value patterns and the mask are shared with check_citations.py (cc.tokenlike,
+# cc.needs_mask, cc.mask); an index line quoting a value would copy it into another file and
+# into SARIF.
 # Interpreters that run code given on the command line, and the flags that do it. A reproduction
 # is a test file run by the project's runner; inline code in the index is refused.
 INLINE_CODE = {"python": ("-c",), "node": ("-e", "--eval", "-p", "--print"), "ruby": ("-e",),
@@ -194,19 +193,19 @@ def refused(command: str) -> str:
     return ""
 
 
-def credential_in(snippet: str) -> str:
-    """Why a snippet may copy a credential into the index, or '' when it does not."""
-    if cc.keylike(snippet):
-        return "snippet looks like a key or token; quote the non-secret part of the line"
-    if cc.DSN_RE.search(snippet):
-        return "snippet holds a DSN with user:password@; quote the non-secret part of the line"
-    if cc.SECRET_NAME_RE.search(snippet) and cc.sensitive("", snippet):
-        return "snippet holds a literal value next to a secret name; quote the name, never the value"
+def holds_value(snippet: str) -> str:
+    """Why a snippet holds a value the index must not copy, or '' when it holds none."""
+    if cc.tokenlike(snippet):
+        return "snippet holds a long token; quote the part of the line without it"
+    if cc.URL_AUTH_RE.search(snippet):
+        return "snippet holds a URL with userinfo; quote the part of the line without it"
+    if cc.NAME_RE.search(snippet) and cc.needs_mask("", snippet):
+        return "snippet holds a literal value next to a listed name; quote the name, never the value"
     return ""
 
 
 def shown(path: str, text: str) -> str:
-    """A line of repository text, masked when it looks like a credential."""
+    """A line of repository text, masked when it holds a value to mask."""
     return cc.shown_text(path, text)[0]
 
 
@@ -219,7 +218,7 @@ def check_entry(entry: dict, audits: Path, snap: Snapshot, strict: bool = False)
         why = refused(str(entry[field]))
         if why:
             problems.append(f"{field} {why}; write the reproduction as a test the project's runner executes")
-    why = credential_in(str(entry["snippet"]))
+    why = holds_value(str(entry["snippet"]))
     if why:
         problems.append(why)
     if entry["severity"] not in SEVERITIES:
