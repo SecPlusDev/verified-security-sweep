@@ -64,7 +64,8 @@ write a masking expression by hand for the purpose: in the run that produced thi
 hand-written expression was wrong and the value was printed. Never try the credential against the
 service it belongs to; its validity is a reservation in the verification table, not a test. The
 reproduction test reads the value at run time and compares, so the test file holds the variable
-name and the shape, not the value, and `leak_check.py` confirms that nothing delivered holds it.
+name and the shape, not the value, and `leak_check.py` confirms that nothing delivered holds a
+value of that shape.
 
 - Concurrency: an interleaving test (two requests racing on one token, two uploads racing on one
   quota, a cancel racing a payment). A fix for a race verified only by reading has been found

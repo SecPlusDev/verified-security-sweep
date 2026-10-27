@@ -1,47 +1,60 @@
-"""No credential of the repository in what the sweep delivers.
+"""No credential in what the sweep delivers.
 
 The report, the tests and the findings index are written by the same session that read the
-repository's secrets. This script collects credential-like values from the repository and
-searches the deliverables for them, so that a value never leaves with the record. It prints
-sources, lengths and masked context, never a value.
+repository's secrets. This script scans the deliverables for credential shapes and reports each
+hit masked. It opens no credential file: it reads the deliverables only, never the repository's
+dotenv files or sources, so nothing it does depends on a value, and no value is read to be
+compared with.
 
     python3 leak_check.py                              # docs/audits/ and the changed test files
-    python3 leak_check.py --from-cited docs/audits/2026-01-15-money.md
     python3 leak_check.py --extra out/report.xlsx --extra out/handoff/
     python3 leak_check.py --strict                     # a WARN is a failure too
 
-Values collected from the repository (read, never printed, never written anywhere; the
-deliverables themselves are never a source):
-    every value in a dotenv-style file (`.env`, `.env.*`, `*.env`) whose key names a secret
-    (`.env.example` and other sample files hold placeholders and are left out);
-    every string literal that is a value on a line naming a secret, in tracked text files
-    outside the test folders (test fixtures hold invented credentials);
-    every password inside a DSN (`scheme://user:password@host`);
-    every key-like token (24 or more key-alphabet characters mixing letters and digits).
---from-cited REPORT limits the tracked files to the ones the report cites (dotenv files are
-always collected); it is faster and gives fewer coincidences.
+Shapes found (the same ones check_citations.py masks when it prints a cited line):
+    a key-like token: 24 or more key-alphabet characters, letters and digits mixed, with both
+        cases, base64 padding or `+`, and not an identifier of word-like segments (a dated id,
+        a path, a test name); a 40-character lowercase hexadecimal run is a commit id and is
+        skipped; a 64-character one that git does not know as an object of the repository is
+        reported as a WARN (a digest or a hexadecimal key: read the context);
+    a DSN password: `scheme://user:password@host`;
+    a quoted literal assigned to or passed next to a secret name: `password="..."`,
+        `"api_key": '...'`, `ADMIN_PASSWORD = "..."`;
+    an unquoted value after a secret name and `=` anywhere (`ADMIN_PASSWORD=...` in inline
+        code), or after a secret name and `:` at the start of the line, when it is one token;
+        prose after a colon has spaces and is not one.
+    Placeholders and names are not values: `changeme`, `<your-key>`, `${SECRET}`, `********`,
+    `SECRET_KEY`, a word in the stoplist of check_citations.py.
 
 Files scanned: everything under docs/audits/; the test files git reports as added, modified or
 untracked under a folder named test, tests, spec or __tests__; and every --extra path (a file,
 or a folder walked). A zip container (an .xlsx, .docx or .zip) is scanned member by member.
+In a test file only the key-like and DSN shapes count: the tests the sweep adds log in with
+invented passwords next to their names, by the skill's own rule, and a real credential copied
+into a test is key-shaped or a DSN far more often than a word.
 
-Result per hit, one line: the output file and line, the source of the value (file and line, or
-the dotenv key), its length, and the output line with the value replaced by `<masked, N chars>`.
-    FAIL   a value of 8 characters or more appears in a deliverable
-    WARN   a shorter value appears as a whole word: possibly a coincidence (a password that is an
-           ordinary word), possibly a leak; read the context and decide
+Result per hit, one line: the output file and line, the shape, the length, and the output line
+with the value replaced by `<masked, N chars>`.
+    FAIL   a value of 8 characters or more
+    WARN   a shorter value, or a lone hexadecimal run: possibly a coincidence (a password that
+           is an ordinary word next to its name, a digest), possibly a leak; read the context
 Exit codes: 0 no FAIL (and no WARN with --strict); 1 at least one FAIL, or a WARN with --strict;
-2 setup error (root not a repository, report or --extra path missing).
+2 setup error (root not a directory, --extra path missing).
+
+What this does not see: a weak password written in prose without its name ("the admin
+password is apple" is caught, "it is apple" is not), and a weak password copied into a test
+next to its name. The value-side check that catches both,
+by reading the repository's values, is kept outside the plugin (tools/leak_values.py in the
+repository) because it reads credentials; the evaluation runs recorded with the skill compare
+the two on the same records.
 
 Why a script: a value inspected by hand goes through a hand-written masking expression, and in
 the run that prompted this script that expression was wrong and the value was printed. The
-script answers with booleans, lengths and shapes; nothing else is needed to decide.
+script answers with shapes and lengths; nothing else is needed to decide.
 """
 
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import subprocess
 import sys
@@ -51,28 +64,24 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_citations as cc  # noqa: E402  (sibling script: credential shapes and the mask)
 
-# Values shorter than this are compared as whole words and reported as WARN, not FAIL.
+# Values shorter than this are reported as WARN, not FAIL.
 MIN_FAIL_LENGTH = 8
-# Values shorter than this, or without any letter or digit, are not collected: a 4-letter word
-# or a placeholder such as `---` matches ordinary prose and table rules everywhere.
+# Values shorter than this, or without any letter or digit, are not values: `---`, `***`.
 MIN_VALUE_LENGTH = 5
-# Dotenv files that document the variables rather than hold them.
-EXAMPLE_DOTENV_RE = re.compile(r"(?i)\.(example|sample|template|dist|defaults?)$|\.env\.example")
-# Files larger than this are not read (generated data, minified bundles).
+# Files larger than this are not read.
 MAX_FILE_BYTES = 1_000_000
 TEST_DIR_NAMES = ("test", "tests", "spec", "__tests__")
-# Lock files and minified bundles hold thousands of key-like hashes that are not credentials.
-SKIP_NAME_RE = re.compile(r"(?i)(^|/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|poetry\.lock|Pipfile\.lock|"
-                          r"composer\.lock|Cargo\.lock|go\.sum|.*\.min\.(js|css)|.*\.map)$")
 ZIP_SUFFIXES = (".xlsx", ".docx", ".pptx", ".zip", ".odt", ".ods")
-
-
-def git_lines(root: Path, *args: str) -> list[str] | None:
-    try:
-        out = subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True, text=True)
-    except (OSError, subprocess.CalledProcessError):
-        return None
-    return out.stdout.splitlines()
+# A placeholder, not a value: one character repeated, an angle-bracket slot, an ellipsis, a
+# masked span this script or check_citations.py already printed.
+PLACEHOLDER_RE = re.compile(r"^(.)\1*$|^<[^<>]*>$|^\.{3,}$|^x{4,}$|^X{4,}$|<masked, \d+ chars>")
+# A 40-character lowercase hexadecimal run is a commit id: the record cites commits everywhere
+# (`"commit": "..."` in the logs). A 64-character one is a digest or a hexadecimal key.
+# `NAME=value` anywhere on the line (inline code in a report: `ADMIN_PASSWORD=...`), the name
+# holding a secret word, the value one token. Only `=`: `token: rotated` in prose is a sentence.
+INLINE_ASSIGN_RE = re.compile(r"(?i)(?<![\w.-])([\w.-]*" + cc.SECRET_WORDS + r"[\w.-]*)=([^\s\"'`,;)]+)")
+COMMIT_ID_RE = re.compile(r"^[0-9a-f]{40}$")
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 def read_text(path: Path) -> str | None:
@@ -88,86 +97,12 @@ def read_text(path: Path) -> str | None:
     return data.decode("utf-8", errors="replace")
 
 
-def strip_quotes(value: str) -> str:
-    value = value.strip()
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-        return value[1:-1]
-    return value
-
-
-def collect(root: Path, files: list[str]) -> dict[str, str]:
-    """value -> source ('path:line' or 'path:KEY'). Values are kept in memory only."""
-    found: dict[str, str] = {}
-
-    def add(value: str, source: str) -> None:
-        value = value.strip()
-        if len(value) < MIN_VALUE_LENGTH or not re.search(r"[A-Za-z0-9]", value):
-            return
-        if cc.name_like(value) or cc.REFERENCE_RE.match(value):
-            return
-        found.setdefault(value, source)
-
-    for rel in files:
-        if SKIP_NAME_RE.search(rel) or any(part in cc.SKIPPED_DIRS for part in Path(rel).parts):
-            continue
-        if cc.is_dotenv(rel) and EXAMPLE_DOTENV_RE.search(rel):
-            continue  # .env.example and the like hold placeholders
-        text = read_text(root / rel)
-        if text is None:
-            continue
-        dotenv = cc.is_dotenv(rel)
-        in_tests = any(part in TEST_DIR_NAMES for part in Path(rel).parts[:-1])
-        for n, line in enumerate(text.splitlines(), 1):
-            if dotenv:
-                m = re.match(r"^\s*(?:export\s+)?([\w.-]+)\s*=\s*(.*)$", line)
-                if m and cc.SECRET_NAME_RE.search(m.group(1)):
-                    add(strip_quotes(m.group(2).split(" #")[0]), f"{rel}:{m.group(1)}")
-                continue
-            for m in cc.DSN_RE.finditer(line):
-                add(m.group(2), f"{rel}:{n}")
-            for m in cc.KEYLIKE_RE.finditer(line):
-                if cc.keylike(m.group(0)):
-                    add(m.group(0), f"{rel}:{n}")
-            if in_tests:
-                continue  # test fixtures hold invented credentials; real ones are key-shaped or in dotenv
-            if cc.SECRET_NAME_RE.search(line):
-                for value in cc.secret_literals(line):
-                    add(value, f"{rel}:{n}")
-                m = cc.ASSIGN_RE.match(line)
-                if m:
-                    core = m.group(2).strip().rstrip(",;")
-                    if core and not cc.LITERAL_RE.search(core):
-                        add(core, f"{rel}:{n}")
-    return found
-
-
-def tracked_files(root: Path) -> list[str]:
-    lines = git_lines(root, "ls-files", "-z")
-    if lines is None:
-        return []
-    return [p for p in "\n".join(lines).split("\0") if p]
-
-
-def dotenv_files(root: Path) -> list[str]:
-    out = []
-    for current, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in cc.SKIPPED_DIRS]
-        for name in files:
-            rel = (Path(current).relative_to(root) / name).as_posix()
-            if cc.is_dotenv(rel):
-                out.append(rel)
-    return out
-
-
-def cited_files(report: Path, root: Path) -> list[str]:
-    files = cc.index_files(root)
-    out: set[str] = set()
-    for line in cc.read_lines(report):
-        for m in cc.CITATION_RE.finditer(line):
-            _, matches = cc.resolve(m.group(1), root, files)
-            if len(matches) == 1:
-                out.add(matches[0])
-    return sorted(out)
+def git_lines(root: Path, *args: str) -> list[str] | None:
+    try:
+        out = subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True, text=True)
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return out.stdout.splitlines()
 
 
 def changed_test_files(root: Path) -> list[str]:
@@ -221,12 +156,6 @@ def texts_of(path: Path) -> list[tuple[str, str]]:
     return [(str(path), text)] if text is not None else []
 
 
-def present(value: str, line: str) -> bool:
-    if len(value) >= MIN_FAIL_LENGTH:
-        return value in line
-    return re.search(r"(?<![A-Za-z0-9])" + re.escape(value) + r"(?![A-Za-z0-9])", line) is not None
-
-
 def shown_path(path: Path, root: Path) -> str:
     try:
         return path.resolve().relative_to(root.resolve()).as_posix()
@@ -234,24 +163,96 @@ def shown_path(path: Path, root: Path) -> str:
         return str(path)
 
 
-def scan(targets: list[Path], values: dict[str, str], root: Path) -> list[dict]:
+def is_value(text: str) -> bool:
+    """A string that could be a credential: long enough, with a letter or digit, not a name, a
+    reference or a placeholder."""
+    text = text.strip()
+    if len(text) < MIN_VALUE_LENGTH or not re.search(r"[A-Za-z0-9]", text):
+        return False
+    if cc.name_like(text) or cc.REFERENCE_RE.match(text) or PLACEHOLDER_RE.search(text):
+        return False
+    return True
+
+
+class GitObjects:
+    """Whether a 40- or 64-character hexadecimal token names an object of the repository."""
+
+    def __init__(self, root: Path) -> None:
+        self.root = root
+        self.cache: dict[str, bool] = {}
+
+    def knows(self, token: str) -> bool:
+        if token not in self.cache:
+            try:
+                subprocess.run(["git", "-C", str(self.root), "cat-file", "-e", token],
+                               check=True, capture_output=True)
+                self.cache[token] = True
+            except (OSError, subprocess.CalledProcessError):
+                self.cache[token] = False
+        return self.cache[token]
+
+
+def shapes_in(line: str, objects: GitObjects, in_tests: bool = False) -> list[tuple[str, str, str]]:
+    """(shape, value, level) for every credential-shaped value on the line. In a test file only
+    the key-like and DSN shapes count: a test the sweep adds logs in with an invented password
+    next to its name (`client.login(password="wrong-pw")`), by the skill's own rule."""
+    out: list[tuple[str, str, str]] = []
+    seen: set[str] = set()
+
+    def add(shape: str, value: str, level: str | None = None) -> None:
+        value = value.strip()
+        if value in seen or not is_value(value):
+            return
+        seen.add(value)
+        out.append((shape, value, level or ("FAIL" if len(value) >= MIN_FAIL_LENGTH else "WARN")))
+
+    for m in cc.DSN_RE.finditer(line):
+        add("DSN password", m.group(2))
+    for m in cc.SECRET_LITERAL_RE.finditer(line) if not in_tests else ():
+        name = re.match(r"[\w-]+", m.group(0))
+        add(f"literal next to `{name.group(0) if name else 'secret'}`", m.group(2))
+    m = cc.ASSIGN_RE.match(line) if not in_tests else None
+    if m:
+        value = m.group(2).strip().rstrip(",;").strip()
+        if value and not cc.LITERAL_RE.search(value) and not re.search(r"\s", value):
+            name = cc.SECRET_NAME_RE.search(m.group(1))
+            add(f"value after `{name.group(0) if name else 'secret'}`", value.rstrip("`)"))
+    for m in INLINE_ASSIGN_RE.finditer(line) if not in_tests else ():
+        add(f"value after `{m.group(1)}=`", m.group(2))
+    for m in cc.KEYLIKE_RE.finditer(line):
+        token = m.group(0)
+        if not cc.keylike(token):
+            continue
+        if COMMIT_ID_RE.match(token):
+            continue  # a commit id, by the record's convention
+        if SHA256_RE.match(token):
+            if objects.knows(token):
+                continue
+            add("hexadecimal run of 64, not a git object", token, "WARN")
+        else:
+            add("key-like token", token)
+    # A DSN password inside a key-like token, a literal inside a DSN: report the longer one only
+    values = [v for _, v, _ in out]
+    return [(s, v, lv) for s, v, lv in out if not any(v != w and v in w for w in values)]
+
+
+def scan(targets: list[Path], root: Path) -> list[dict]:
+    objects = GitObjects(root)
     hits = []
     for target in targets:
+        in_tests = any(p in TEST_DIR_NAMES for p in Path(shown_path(target, root)).parts[:-1])
         for label, text in texts_of(target):
             label = label.replace(str(target), shown_path(target, root), 1)
             for n, line in enumerate(text.splitlines(), 1):
-                matched = [v for v in values if present(v, line)]
-                if not matched:
+                found = shapes_in(line, objects, in_tests)
+                if not found:
                     continue
-                # A DSN and the password inside it both match: report the longer one only
-                matched = [v for v in matched if not any(v != w and v in w for w in matched)]
                 context = line
-                for v in sorted(matched, key=len, reverse=True):
+                for _, v, _ in sorted(found, key=lambda t: len(t[1]), reverse=True):
                     context = context.replace(v, cc.MASK.format(n=len(v)))
-                for v in matched:
-                    hits.append({"level": "FAIL" if len(v) >= MIN_FAIL_LENGTH else "WARN",
-                                 "where": f"{label}:{n}", "source": values[v], "length": len(v),
-                                 "context": context.strip()})
+                for shape, v, level in found:
+                    hits.append({"level": level, "where": f"{label}:{n}", "shape": shape,
+                                 "length": len(v), "context": context.strip()})
     return hits
 
 
@@ -263,7 +264,6 @@ def main() -> int:
     )
     ap.add_argument("--root", help="repository root (default: git top level of the current directory)")
     ap.add_argument("--audits", default="docs/audits", help="audits folder, relative to the root (default: docs/audits)")
-    ap.add_argument("--from-cited", metavar="REPORT", help="collect values only from the files this report cites")
     ap.add_argument("--extra", action="append", default=[], metavar="PATH", help="another file or folder to scan; repeatable")
     ap.add_argument("--strict", action="store_true", help="a WARN is a failure too")
     args = ap.parse_args()
@@ -276,32 +276,14 @@ def main() -> int:
         if not Path(item).exists():
             print(f"--extra path not found: {item}", file=sys.stderr)
             return 2
-    if args.from_cited:
-        report = Path(args.from_cited)
-        if not report.is_file():
-            print(f"report not found: {report}", file=sys.stderr)
-            return 2
-        files = cited_files(report, root)
-    else:
-        files = tracked_files(root)
     targets = deliverables(root, root / args.audits, args.extra)
-    # The deliverables are what is searched, never a source: a report quoting a test name or
-    # its own index would otherwise match itself.
-    delivered = {p.resolve() for p in targets}
-    audits_dir = (root / args.audits).resolve()
-    files = sorted(
-        f for f in set(files) | set(dotenv_files(root))
-        if (root / f).resolve() not in delivered and audits_dir not in (root / f).resolve().parents
-    )
-    values = collect(root, files)
-    hits = scan(targets, values, root)
+    hits = scan(targets, root)
 
     for h in hits:
-        print(f"{h['level']:<5}  {h['where']}  value from {h['source']} (len {h['length']})  | {h['context']}")
+        print(f"{h['level']:<5}  {h['where']}  {h['shape']} (len {h['length']})  | {h['context']}")
     fails = sum(1 for h in hits if h["level"] == "FAIL")
     warns = len(hits) - fails
-    print(f"{len(targets)} file(s) scanned, {len(values)} value(s) collected from {len(files)} file(s), "
-          f"{fails} FAIL, {warns} WARN")
+    print(f"{len(targets)} file(s) scanned, {fails} FAIL, {warns} WARN")
     if fails or (args.strict and warns):
         return 1
     return 0

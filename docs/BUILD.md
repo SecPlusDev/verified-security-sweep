@@ -43,7 +43,7 @@ Rules for every file in this repository:
 | `docs/audits/` convention with bootstrap | the skill needs a place to read history from; bootstrap makes it work on any repository |
 | Low findings in their own section | excluding them loses signal; a separate section keeps the report readable |
 | Stack probes for several frameworks | probes for one stack leave users of the others with nothing |
-| Six standard-library scripts | `sweep_status.py` and `fresh_code.py` are generic and tested; `check_citations.py` reads only `path:line` citations, because a model asked to verify every line still cited lines that do not exist (round v1.2.2); `findings.py` reads a JSON index, not the report's prose, because a check on a quoted snippet and a re-run of each reproduction need data, and because written rules held on Opus but not on Sonnet while mechanical checks held on both (round v1.2.3); `check_report.py` reads the report's structure, because two rounds of text (v1.3.1, v1.3.2) did not stop a model from labelling leads of the zone as another zone's and handing them off without a verdict, while the same lead is mechanically inside the zone's own scope; `leak_check.py` searches the deliverables for the repository's own credential values, because the run that reads the secrets is the run that writes the record, and an external review run (2026-10-19) showed that a hand-written check is one wrong expression away from printing the value |
+| Six standard-library scripts | `sweep_status.py` and `fresh_code.py` are generic and tested; `check_citations.py` reads only `path:line` citations, because a model asked to verify every line still cited lines that do not exist (round v1.2.2); `findings.py` reads a JSON index, not the report's prose, because a check on a quoted snippet and a re-run of each reproduction need data, and because written rules held on Opus but not on Sonnet while mechanical checks held on both (round v1.2.3); `check_report.py` reads the report's structure, because two rounds of text (v1.3.1, v1.3.2) did not stop a model from labelling leads of the zone as another zone's and handing them off without a verdict, while the same lead is mechanically inside the zone's own scope; `leak_check.py` scans the deliverables for credential shapes, because the run that reads the secrets is the run that writes the record, and an external review run (2026-10-19) showed that a hand-written check is one wrong expression away from printing the value; it scans for shapes and reads no file of the repository (v1.4.2) because the directory's policy check holds a plugin that reads a credential, and the measured cost of shapes over values is two of eight planted leaks, both a weak password in prose without its name (`evals/results/leak-check-shapes-2026-10-27.md`); the value-side check stays in the repository as `tools/leak_values.py` for the evaluation runs |
 | Reviewer count follows zone count | one reviewer per zone, never more than four; several reviewers on a single-zone repository is waste |
 | Calibration from the report, not a script | the `Claimed`, `Verified`, `Reservations` columns make it measurable without tooling |
 | Free, MIT, with attribution | the README says the skill is not an audit and does not replace one |
@@ -127,6 +127,7 @@ smoke-runs them (pytest 9 needs 3.10).
 
 `plugin/` is the plugin path at submission and the only thing users install. The rest is build
 material: `evals/` (prompts, assertions, trigger set, fixture setup), `tests/`, `docs/`,
+`tools/` (maintainer scripts that are not shipped: `leak_values.py`, the value-side leak check),
 `.github/` (CI, lint, leakage check, packaging).
 
 Local gates before a pull request, identical to CI:
@@ -264,6 +265,14 @@ Versions and digests remain verifiable; the cited development commits do not res
 
 ## 7. Deferred
 
+- `leak_check.py` by values again, in the plugin, if the directory waives the credential-reading
+  hold (ticket of 2026-10-21): `tools/leak_values.py` is the script, and the gap it closes is
+  measured in `evals/results/leak-check-shapes-2026-10-27.md`.
+- Directory figures, dated, as a reference point rather than a claim: 25 October 2026, ten days
+  after listing, 305 installs, 45 accounts active in 28 days (36 in 7), 58 uses, 50 invocations
+  of the skill, 0 uninstalls, 0 errors in 25,268 loads across 13 Claude Code versions,
+  directory rank 1,005. The largest install path is the directory's own suggestion in chat
+  (110), then the plugin page (102) and the desktop app's plugin browser (52).
 - A separate skill for mechanical guards, for people who build rather than verify. Until then
   `references/verify-fix.md` holds the base pattern.
 - `sweep_status.py` aggregating the calibration columns of the verification table.
