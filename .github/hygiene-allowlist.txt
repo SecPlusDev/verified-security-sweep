@@ -179,3 +179,10 @@ identifier:permitAll
 identifier:selectRaw
 identifier:toDateString
 identifier:whereRaw
+
+# docs/BUILD.md, "Directory policy, measured": the five probe commits scanned by the directory on 2026-10-27
+hex:bfa78b4
+hex:5a980b4
+hex:bc7c7de
+hex:a4ff2ba
+hex:72b0ad3
