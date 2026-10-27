@@ -1049,6 +1049,28 @@ def test_check_report_accepts_the_template_shape(tmp_path: Path):
     assert "3 verification rows (1 VERIFIED REAL), 3 refused entries" in r.stdout
 
 
+def test_check_report_requires_anchors_on_an_external_review(tmp_path: Path):
+    # From the first external run (a third party's repository): the citations of a delivered
+    # record resolve only against the commit reviewed and a permalink base, and the run had to
+    # decide both on the spot. "External review: yes" now needs them in Context.
+    ctx = "## Context\n"
+    declared = GOOD_REPORT.replace(ctx, ctx + "External review: yes. Asked by the maintainer; the reviewer is a user of the project.\n")
+    r = run_script(CHECK_REPORT, str(write_report(tmp_path, declared)))
+    assert r.returncode == 1
+    assert "EXTERNAL REVIEW WITHOUT ANCHOR" in r.stdout
+    assert "the commit reviewed and the permalink base URL" in r.stdout
+    anchored = GOOD_REPORT.replace(
+        ctx, ctx + f"- **External review**: yes, at {bytes(range(6)).hex()}, permalinks https://github.com/healthchecks/healthchecks/blob/{bytes(range(6)).hex()}/.\n"
+    )
+    r = run_script(CHECK_REPORT, str(write_report(tmp_path, anchored)))
+    assert r.returncode == 0, r.stdout
+    assert "external review, 0 problem(s)" in r.stdout
+    # The owner's own repository declares nothing and is not asked for anchors
+    r = run_script(CHECK_REPORT, str(write_report(tmp_path, GOOD_REPORT.replace(ctx, ctx + "External review: no.\n"))))
+    assert r.returncode == 0, r.stdout
+    assert "external review" not in r.stdout
+
+
 def test_check_report_flags_a_zone_lead_hidden_in_the_handoff(tmp_path: Path):
     text = GOOD_REPORT.replace(
         "2. Proposed sweep of `jobs`",

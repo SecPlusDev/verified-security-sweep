@@ -275,7 +275,7 @@ python3 $S/leak_check.py                    # no credential shape in the report,
 
 ## Evaluation
 
-The behavior figures come from seven prompts on three public repositories pinned to a commit
+The behavior figures come from eight prompts on three public repositories pinned to a commit
 (an Express app, a Rails app and a Django service): planted review history, a planted
 over-restrictive fix for the verify-fix prompt, a fixture with three planted defects whose list
 was committed before any run, and two later states of it (an earlier review followed by a fix,

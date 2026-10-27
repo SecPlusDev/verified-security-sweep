@@ -17,7 +17,9 @@ recheck of earlier findings is a run of the zone, named the same way; "recheck" 
 
 ## Context
 Scope (zone, files or modules). Trigger (owner request, fresh code, registry age, pre-launch).
-What changed in the zone since the last run.
+What changed in the zone since the last run. On a repository the reviewer does not own, one
+line: `External review: yes, at <commit>, permalinks <repository URL>/blob/<commit>/`, then who
+asked and the reviewer's relationship to the project.
 
 ## Delegation
 Reviewers (how many, which agent or "fresh session"), the brief used, the pre-read each one did,
@@ -47,7 +49,12 @@ rediscovers it:
 "By design" or "intended" is a refusal under claim correctness: write it as one, with the code
 or document that shows the intent. A file or behavior that was checked and holds no candidate is
 not a refused candidate; it goes in Coverage ("checked, no defect"). Decisions that belong to the
-owner (a product rule, an accepted risk) are listed here with "decision pending".
+owner (a product rule, an accepted risk) are listed here with "decision pending", and the
+owner's answer is recorded in the registry's "Owner decisions" table when it comes. An
+`OVER-RATED` candidate is real: it is confirmed at its verified severity, with a row in
+Confirmed defects, a reproduction and an index entry at that severity, and the verification
+row keeps the verdict `OVER-RATED` with `Claimed` above `Verified`; it is never written as
+refused.
 
 - P2, no rate limit on the login endpoint: refused, lens existing mitigation. The gateway applies
   10 requests per minute per IP (`infra/gateway.yaml:42`) and `tests/guards/login-rate-limit.test.ts`
@@ -113,7 +120,19 @@ from report filenames by `scripts/sweep_status.py`; the other columns are writte
 ## Candidates verified and refused
 
 Written here so they are not rediscovered. A refused candidate without a written reason comes back.
+
+## Owner decisions
+
+| Date | Candidate | Question put to the owner | Decision | Result |
+|---|---|---|---|---|
+| 2026-01-15 | 2026-01-08-money/P6, refunds above the plan limit | is the limit a product rule or an omission? | omission; enforce it | re-verified, confirmed as F4 in `2026-01-15-money.md` |
 ```
+
+Owner decisions: a candidate listed as "decision pending" in a report gets a row here when the
+owner answers, with the date and the finding it produced or closed. A resolved decision
+re-verifies the candidate under the answer and moves it to confirmed (a new report row, a
+reproduction, an index entry) or to refused (the lens, citing the decision); the answer is part
+of the code's history, and a later run re-verifies under it.
 
 Zone cell: the slug in backticks first, then free text. The status script matches the slug
 against report filenames.
@@ -163,8 +182,8 @@ the "inventories that contradict" class, found in `docs/audits/` itself.
 
 ## 5. Findings index: `docs/audits/findings.jsonl`, and the recheck log
 
-One JSON object per line, one line per `VERIFIED REAL` finding, appended by the run that confirmed
-it and never rewritten by a later run (a later run changes `status` only, and only by the
+One JSON object per line, one line per confirmed finding (`VERIFIED REAL`, or `OVER-RATED` at
+its verified severity), appended by the run that confirmed it and never rewritten by a later run (a later run changes `status` only, and only by the
 owner's decision). `scripts/findings.py check` validates it.
 
 | Field | Content |
@@ -206,7 +225,10 @@ rebase, a shallow clone) is reported as not verifiable here, not as wrong.
 `scripts/findings.py recheck --run --write` runs `guard` and then `reproduce` for every open
 finding and appends one line per finding to `docs/audits/recheck-log.jsonl`: date, commit,
 whether the working tree had uncommitted changes, id, result (`open`, `fixed`, `inconclusive`),
-exit codes, and where the snippet is now. A failing guard makes the result `inconclusive`, never
+exit codes, and where the snippet is now. Run it where the project's tests run (its container,
+its CI image, its virtual environment): on any other machine every guard fails and every result
+is `inconclusive`, so read `inconclusive` first as an environment problem, then as a deleted
+test. A failing guard makes the result `inconclusive`, never
 `open`: a deleted test or a broken setup must not read as a defect that is still there. The
 result never depends on line numbers. The log is the history; nothing in it is edited.
 
