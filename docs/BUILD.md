@@ -270,6 +270,7 @@ Versions and digests remain verifiable; the cited development commits do not res
 | v1.3.5 | `8aad72a29ec7de3556134e8f995ecdaa3738529c6347889dea0785715c3780dc` |
 | v1.4.0 | `43b85f314afcd6efe26ac35d100762a28ca1aaa5f2ac9a2937a01a706558e77f` |
 | v1.4.1 | `f2699bd15effed0a8c30ea988386b62a854503ded1a23d7031b1c73e7528eb83` |
+| v1.4.2 | `d29921e6c8ee3be4d00a13145549ac1cda48342dafd75fd5be3c343c1a5b55c7` |
 
 ## 7. Deferred
 

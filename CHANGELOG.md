@@ -3,7 +3,13 @@
 All notable changes to this skill. Versions follow semver; each release attaches the `.skill`
 archive built by CI from the tagged commit.
 
-## Unreleased
+## v1.4.2 (2026-10-27)
+
+Answer to the plugin directory's policy hold on v1.4.1 ("Uses a credential from the user's
+machine", `leak_check.py`), and the external-review text deferred from the v1.4.1 candidates.
+The skill text changes are measured by eval 8 and the next real-code round; the confirmation run
+before tagging is `evals/results/confirm-v1.4.2-2026-10-27.md`. Archive digest in
+`docs/BUILD.md` section 6.
 
 - `leak_check.py` scans the deliverables for credential shapes and reads no file of the
   repository: a literal or a value next to a secret name (`password="..."`, `ADMIN_PASSWORD=...`
