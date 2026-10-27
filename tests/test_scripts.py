@@ -675,15 +675,15 @@ def test_quiet_hides_masked_rows_too(secret_repo: Path):
 
 def test_sensitive_predicate_shapes():
     cc = _load(CHECK_CITATIONS)
-    assert cc.sensitive("app/.env", "ADMIN_PASSWORD=apple")
-    assert not cc.sensitive("app/.env", "# ADMIN_PASSWORD is set at deploy time")
-    assert cc.sensitive("settings.yaml", "smtp_password: abcd efgh")
-    assert not cc.sensitive("settings.yaml", "smtp_host: smtp.example.invalid")
-    assert cc.sensitive("app.py", '"password": "abc def"')
-    assert not cc.sensitive("app.py", '"password":')
-    assert not cc.sensitive("app.py", 'password = request.form["password"]')
-    assert not cc.sensitive("app.py", "token = secrets.token_urlsafe(32)")
-    assert cc.sensitive("app.py", "conn = connect('postgresql://user:hunter2@db/app')")
+    assert cc.needs_mask("app/.env", "ADMIN_PASSWORD=apple")
+    assert not cc.needs_mask("app/.env", "# ADMIN_PASSWORD is set at deploy time")
+    assert cc.needs_mask("settings.yaml", "smtp_password: abcd efgh")
+    assert not cc.needs_mask("settings.yaml", "smtp_host: smtp.example.invalid")
+    assert cc.needs_mask("app.py", '"password": "abc def"')
+    assert not cc.needs_mask("app.py", '"password":')
+    assert not cc.needs_mask("app.py", 'password = request.form["password"]')
+    assert not cc.needs_mask("app.py", "token = secrets.token_urlsafe(32)")
+    assert cc.needs_mask("app.py", "conn = connect('postgresql://user:hunter2@db/app')")
     assert cc.mask("conn = connect('postgresql://user:hunter2@db/app')") == "conn = connect('<masked, 32 chars>')"
     assert cc.mask("DATABASE_URL=postgres://app:pw@db/app", "app/.env") == "DATABASE_URL=<masked, 24 chars>"
 
@@ -771,11 +771,11 @@ def test_findings_check_refuses_a_literal_next_to_a_secret_name(findings_repo: P
     r = run_findings(findings_repo, "check")
     assert r.returncode == 1
     assert "hunter2pw" not in r.stdout
-    assert "quote the non-secret part of the line" in r.stdout
+    assert "quote the part of the line without it" in r.stdout
     write_index(findings_repo, [finding_entry(snippet='"password": "abc def"', location="app.py:5")])
     r = run_findings(findings_repo, "check")
     assert r.returncode == 1
-    assert "literal value next to a secret name" in r.stdout
+    assert "literal value next to a listed name" in r.stdout
     assert "abc def" not in r.stdout.split("literal value")[0]
 
 
@@ -965,7 +965,7 @@ def test_keylike_snippet_is_refused(findings_repo: Path):
     (findings_repo / "app.py").write_text(f"import db\n\n\n\nKEY = '{key}'\n", encoding="utf-8")
     write_index(findings_repo, [finding_entry(snippet=key)])
     r = run_findings(findings_repo, "check")
-    assert r.returncode == 1 and "looks like a key or token" in r.stdout
+    assert r.returncode == 1 and "holds a long token" in r.stdout
 
 
 def test_recheck_log_records_uncommitted_changes(pinned_repo):
@@ -1252,8 +1252,8 @@ def test_leak_check_finds_every_labeled_value_and_the_shaped_unlabeled_ones(leak
     assert any("auth.md:2 " in ln and "literal next to `password` (len 19)" in ln for ln in lines)
     assert any("auth.md:3 " in ln and "literal next to `SECRET_KEY` (len 33)" in ln for ln in lines)
     assert any("auth.md:4 " in ln and "literal next to `API_KEY` (len 40)" in ln for ln in lines)
-    assert any("auth.md:7 " in ln and "DSN password (len 9)" in ln for ln in lines)
-    assert any("auth.md:8 " in ln and "key-like token (len 40)" in ln for ln in lines)
+    assert any("auth.md:7 " in ln and "URL userinfo value (len 9)" in ln for ln in lines)
+    assert any("auth.md:8 " in ln and "long token (len 40)" in ln for ln in lines)
     assert "<masked, 40 chars>" in r.stdout and "<masked, 19 chars>" in r.stdout
     # The two it does not see: a weak password and an app password in prose, without a name
     assert not any("auth.md:5 " in ln or "auth.md:6 " in ln for ln in lines)
@@ -1287,7 +1287,7 @@ def test_leak_check_scans_changed_test_files_and_zip_containers(leak_repo: Path,
     assert_no_value(r.stdout)
     assert "tests/test_sweep_auth.py:1" in r.stdout.replace("\\", "/")
     assert "report.xlsx!xl/sharedStrings.xml:1" in r.stdout
-    assert "key-like token (len 40)" in r.stdout and "DSN password (len 9)" in r.stdout
+    assert "long token (len 40)" in r.stdout and "URL userinfo value (len 9)" in r.stdout
     assert "2 FAIL, 0 WARN" in r.stdout
 
 
@@ -1330,17 +1330,17 @@ def test_keylike_is_a_key_shape_not_an_identifier():
     # Measured on a real record of 13 reports: identifiers with digits, dated file names and API
     # paths made 696 false values and 1850 false FAILs before these rules
     cc = _load(CHECK_CITATIONS)
-    assert cc.keylike("Zz9yY8xX" * 4)                              # both cases
-    assert cc.keylike(bytes(range(16)).hex())                       # hex, 32
-    assert cc.keylike("dGhpcyBpcyBhIHNlY3JldCBrZXk9")               # base64 padding
-    assert not cc.keylike("test_sweep_case_access_20261017")        # one case, digits
-    assert not cc.keylike("docs/audits/2026-10-17-reports.md")      # a dated path
-    assert not cc.keylike("/api/v1/cases/9/members/active")         # an API path
-    assert not cc.keylike("2026-10-19-authentication")
+    assert cc.tokenlike("Zz9yY8xX" * 4)                              # both cases
+    assert cc.tokenlike(bytes(range(16)).hex())                       # hex, 32
+    assert cc.tokenlike("dGhpcyBpcyBhIHNlY3JldCBrZXk9")               # base64 padding
+    assert not cc.tokenlike("test_sweep_case_access_20261017")        # one case, digits
+    assert not cc.tokenlike("docs/audits/2026-10-17-reports.md")      # a dated path
+    assert not cc.tokenlike("/api/v1/cases/9/members/active")         # an API path
+    assert not cc.tokenlike("2026-10-19-authentication")
     # From the shape-side scan of a real record: a finding id with both cases, an assignment
     # with `=` inside; base64 padding is `=` at the end only
-    assert not cc.keylike("2026-01-15-audit-chain/AC6")
-    assert not cc.keylike("sensor_case_max_armed=50")
+    assert not cc.tokenlike("2026-01-15-audit-chain/AC6")
+    assert not cc.tokenlike("sensor_case_max_armed=50")
     assert cc.identifier_like("tests/test_sweep_auth.py::test_f1")
     assert not cc.identifier_like("sk_live_" + "Zz9yY8xX" * 4)
 
@@ -1352,10 +1352,10 @@ def test_name_like_covers_words_that_stand_next_to_secret_names():
     for value in ("apple", "hunter2pw", "abcd efgh", "dev-secret-12", "Tr0ub4dor&3"):
         assert not cc.name_like(value), value
     # A dict key after a secret-name literal is not a value; a type annotation is not a value
-    assert cc.secret_literals('"api_key": "x9y8z7w6v5", "shodan": {') == ["x9y8z7w6v5"]
-    assert cc.secret_literals('KeyedConnector("SHODAN_API_KEY", "Shodan", ("domain", "ip"))') == []
-    assert not cc.sensitive("config.py", "postgres_password_file: str | None = None")
-    assert cc.sensitive("config.py", "postgres_password: str = 'hunter2pw'")
+    assert cc.named_literals('"api_key": "x9y8z7w6v5", "shodan": {') == ["x9y8z7w6v5"]
+    assert cc.named_literals('KeyedConnector("SHODAN_API_KEY", "Shodan", ("domain", "ip"))') == []
+    assert not cc.needs_mask("config.py", "postgres_password_file: str | None = None")
+    assert cc.needs_mask("config.py", "postgres_password: str = 'hunter2pw'")
 
 
 def test_leak_values_never_collects_from_the_deliverables_or_test_fixtures(leak_repo: Path):

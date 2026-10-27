@@ -26,13 +26,13 @@ Each OK line shows the text of the first cited line. A comment, a blank line or 
 at the location of a finding is a citation to correct even though it exists: the script prints
 the text so that a reader catches it, it does not judge it.
 
-A cited line that looks like it holds a credential is printed masked, as `OK (masked)`: every
-string literal and every value after `=` or `:` is replaced by `<masked, N chars>`. A line is
-treated that way when it is in a dotenv-style file (`.env`, `.env.*`, `*.env`), when it names a
-secret (password, secret, token, api key, private key, credential, a DSN with `user:password@`)
-and carries a literal value, or when it holds a key-like token. There is no option to print the
-value: a hard-coded credential finding cites the line that holds the credential, and the script's
-output goes into the session transcript. The author who needs the value opens the file.
+A cited line whose values should not go into the session transcript is printed masked, as
+`OK (masked)`: every string literal and every value after `=` or `:` is replaced by
+`<masked, N chars>`. The patterns that decide it are in `shapes.json` next to this script: a
+line in a dotenv-style file (`.env`, `.env.*`, `*.env`), a line whose name holds one of the
+listed words and carries a literal value, a URL with userinfo, a long token. There is no option
+to print the value: the script's output goes into the transcript, and the author who needs the
+value opens the file.
 
 Exit codes: 0 every citation resolves to existing lines (also when the report cites none),
 1 at least one citation is not OK, 2 setup error (report missing, root not a directory).
@@ -41,6 +41,7 @@ Exit codes: 0 every citation resolves to existing lines (also when the report ci
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -61,40 +62,32 @@ CITATION_RE = re.compile(
 # a shortened path would turn `session.js` into an ambiguity with a library's own file.
 SKIPPED_DIRS = (".git", "node_modules", ".venv", "venv", "__pycache__", ".tox", "dist", "build")
 
-# Credential handling, shared with findings.py and leak_check.py. The shapes below decide when a
-# line is printed masked; they err on the side of masking, because an over-masked line costs the
-# reader one file open and an under-masked one puts a credential in the transcript.
-#
-# A key-like token: 24 or more characters of the alphabets keys are written in; keylike() then
-# requires the shape of a key and not of an identifier (see there). 24 is below the shortest
-# common API key.
-# `=` only as trailing padding: an `=` inside is an assignment (`SECRET_KEY=abc...`), two tokens.
-KEYLIKE_RE = re.compile(r"[A-Za-z0-9+/_-]{22,}={0,2}")
-# Words that stand next to secret names without being secrets: schemes, formats, placeholders.
-NOT_SECRET_WORDS = frozenset(
-    "bearer basic digest oauth oauth2 jwt hmac oidc sha1 sha256 sha512 md5 utf-8 utf8 none null nil "
-    "true false yes no on off example placeholder changeme change-me redacted masked dummy sample "
-    "test testing default development production required optional string integer boolean".split()
-)
-# Words that name a secret when they appear in a key, a variable or a field name.
-SECRET_WORDS = (
-    r"(?:passw(?:or)?d|pwd|secret|token|api[_-]?key|apikey|private[_-]?key|credential|"
-    r"client[_-]?secret|auth[_-]?key|access[_-]?key|dsn|connection[_-]?string)"
-)
-SECRET_NAME_RE = re.compile("(?i)" + SECRET_WORDS)
-# A DSN or URL that carries user:password@ before the host.
-DSN_RE = re.compile(r"://([^/\s:@]+):([^/\s@]+)@")
+# The value patterns, shared with findings.py and leak_check.py, live in shapes.json next to
+# this script: which words make a name whose value is masked, which words next to such a name
+# are not values, the shape of a long token, of a URL with userinfo, of a quoted literal, and
+# of a value that only references configuration. The patterns err on the side of masking: an
+# over-masked line costs the reader one file open, an under-masked one prints a value into the
+# session transcript.
+SHAPES = json.loads((Path(__file__).resolve().parent / "shapes.json").read_text(encoding="utf-8"))
+# A long token: 22 or more characters of the token alphabet with up to two `=` of padding at the
+# end (an `=` inside is an assignment, two tokens); tokenlike() then requires the shape of a token
+# and not of an identifier, and TOKEN_MIN_LENGTH characters.
+TOKEN_RE = re.compile(SHAPES["token"])
+TOKEN_MIN_LENGTH = int(SHAPES["token_min_length"])
+# Words that stand next to a masked name without being values: schemes, formats, placeholders.
+STOPLIST = frozenset(SHAPES["stoplist"])
+# Words that make a name whose value is masked, in a key, a variable or a field name.
+NAME_WORDS = SHAPES["name_words"]
+NAME_RE = re.compile("(?i)" + NAME_WORDS)
+# A URL that carries userinfo (`user:value@`) before the host.
+URL_AUTH_RE = re.compile(SHAPES["url_auth"])
 # Quoted string literals; the content is what gets masked.
-LITERAL_RE = re.compile(r"\"((?:[^\"\\]|\\.)*)\"|'((?:[^'\\]|\\.)*)'")
-# `name = value` or `name: value` where the name holds a secret word; the value runs to the end.
-ASSIGN_RE = re.compile(r"(?i)^(\s*[\w.\[\]\"'-]*" + SECRET_WORDS + r"[\w.\[\]\"'-]*\s*[=:]\s*)(.*)$")
+LITERAL_RE = re.compile(SHAPES["literal"])
+# `name = value` or `name: value` where the name holds one of the words; the value runs to the end.
+ASSIGN_RE = re.compile(r"(?i)^(\s*[\w.\[\]\"'-]*" + NAME_WORDS + r"[\w.\[\]\"'-]*\s*[=:]\s*)(.*)$")
 # Values that reference configuration rather than hold it, left unmasked.
-REFERENCE_RE = re.compile(
-    r"^(?:None|null|nil|true|false|\"\"|'')?$|^\$|^\$?\{|^os\.|^env\b|^process\.env|^settings\."
-    r"|^config\b|^get[A-Za-z_]*\(|^secrets\.|^request\.|^req\.|^self\.|^this\."
-    r"|^(?:str|int|bool|float|bytes|list|dict|Optional|Any|Mapped|Field)\b|\|\s*None\b|=\s*None$"
-)
-MASK = "<masked, {n} chars>"
+REFERENCE_RE = re.compile(SHAPES["reference"])
+MASK = SHAPES["mask"]
 
 
 def is_dotenv(path: str) -> bool:
@@ -102,14 +95,14 @@ def is_dotenv(path: str) -> bool:
     return name == ".env" or name.startswith(".env.") or name.endswith(".env")
 
 
-def keylike(text: str) -> bool:
-    """A token of key alphabet, 24 characters or more, shaped like a key and not like an
-    identifier: letters and digits mixed, and either both cases of letters, or a hexadecimal
-    run of 32 or more, or base64 padding (`=`) or `+`. A test name with a date in it
-    (`test_sweep_access_20260119`), a dated file name or an API path has digits but one case
-    only."""
-    for m in KEYLIKE_RE.findall(text):
-        if len(m) < 24 or not (re.search(r"[A-Za-z]", m) and re.search(r"\d", m)):
+def tokenlike(text: str) -> bool:
+    """A token of the token alphabet, TOKEN_MIN_LENGTH characters or more, shaped like a
+    generated token and not like an identifier: letters and digits mixed, and either both cases
+    of letters, or a hexadecimal run of 32 or more, or base64 padding (`=`) or `+`. A test name
+    with a date in it (`test_sweep_access_20260119`), a dated file name or an API path has
+    digits but one case only."""
+    for m in TOKEN_RE.findall(text):
+        if len(m) < TOKEN_MIN_LENGTH or not (re.search(r"[A-Za-z]", m) and re.search(r"\d", m)):
             continue
         if identifier_like(m):
             continue
@@ -136,24 +129,24 @@ def identifier_like(token: str) -> bool:
 
 
 def name_like(value: str) -> bool:
-    """A literal that is a name or a word, not a value: a secret word used as a field or
-    variable name (`"password"`), an environment-variable name (`"SECRET_KEY"`,
-    `"DATABASE_URL"`), or a scheme, format or placeholder word (`"bearer"`, `"changeme"`)."""
-    if value.lower() in NOT_SECRET_WORDS:
+    """A literal that is a name or a word, not a value: one of the listed words used as a field
+    or variable name, an ALL_CAPS configuration name (`"DATABASE_URL"`), or a scheme, format or
+    placeholder word from the stoplist (`"bearer"`, `"changeme"`)."""
+    if value.lower() in STOPLIST:
         return True
     if re.fullmatch(r"[A-Z][A-Za-z]+", value):
         return True  # a capitalised word of letters (`Shodan`, `VirusTotal`): a display name
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
         return False
-    if SECRET_NAME_RE.search(value) or value == value.upper():
+    if NAME_RE.search(value) or value == value.upper():
         return True
     # snake_case or dotted-off identifiers (`clearance_level`, `display_name`) are field names
     return "_" in value and value == value.lower()
 
 
 def literal_values(text: str) -> list[str]:
-    """Quoted literals on the line that are values, not names: a literal that is only a secret
-    word (`"password"`, `'SECRET_KEY'`) is a field or variable name and does not count."""
+    """Quoted literals on the line that are values, not names: a literal that is only a listed
+    word or an ALL_CAPS name is a field or variable name and does not count."""
     out = []
     for m in LITERAL_RE.finditer(text):
         value = m.group(1) if m.group(1) is not None else m.group(2)
@@ -165,27 +158,28 @@ def literal_values(text: str) -> list[str]:
     return out
 
 
-# A literal assigned to, or passed right after, a secret name: `password="x"`, `"secret": 'x'`,
-# `os.getenv("API_KEY", "x")`. Group 2 is the value.
-SECRET_LITERAL_RE = re.compile(
-    r"(?i)" + SECRET_WORDS + r"[\w-]*[\"']?\s*[=:,]\s*(\"|')((?:[^\"'\\]|\\.)+)\1(?!\s*:)"
+# A literal assigned to, or passed right after, a name that holds one of the words (`name="x"`,
+# `"name": 'x'`, or the default argument of a lookup whose first argument is such a name).
+# Group 2 is the value.
+NAMED_LITERAL_RE = re.compile(
+    r"(?i)" + NAME_WORDS + r"[\w-]*[\"']?\s*[=:,]\s*(\"|')((?:[^\"'\\]|\\.)+)\1(?!\s*:)"
 )
 
 
-def secret_literals(text: str) -> list[str]:
-    """Literal values assigned to or passed next to a secret name on the line; a username on
-    the same line as a password is not among them."""
-    return [m.group(2) for m in SECRET_LITERAL_RE.finditer(text) if not name_like(m.group(2))]
+def named_literals(text: str) -> list[str]:
+    """Literal values assigned to or passed next to a listed name on the line; a literal next to
+    an unlisted name on the same line is not among them."""
+    return [m.group(2) for m in NAMED_LITERAL_RE.finditer(text) if not name_like(m.group(2))]
 
 
-def sensitive(path: str, text: str) -> bool:
-    """True when the line may hold a credential: a dotenv file, a secret name with a literal
-    value, a DSN with user:password@, or a key-like token."""
+def needs_mask(path: str, text: str) -> bool:
+    """True when the line holds a value to mask: a dotenv file, a listed name with a literal
+    value, a URL with userinfo, or a long token."""
     if is_dotenv(path) and "=" in text and not text.lstrip().startswith("#"):
         return True
-    if DSN_RE.search(text) or keylike(text):
+    if URL_AUTH_RE.search(text) or tokenlike(text):
         return True
-    if not SECRET_NAME_RE.search(text):
+    if not NAME_RE.search(text):
         return False
     if literal_values(text):
         return True
@@ -198,8 +192,8 @@ def sensitive(path: str, text: str) -> bool:
 
 def mask(text: str, path: str = "") -> str:
     """The line with every string literal that is a value, every value after `name =` or
-    `name:` (any name in a dotenv file, a secret name elsewhere), every DSN password and every
-    key-like token replaced by `<masked, N chars>`; names and structure stay."""
+    `name:` (any name in a dotenv file, a listed name elsewhere), every URL userinfo value and
+    every long token replaced by `<masked, N chars>`; names and structure stay."""
     def lit(m: re.Match) -> str:
         value = m.group(1) if m.group(1) is not None else m.group(2)
         quote = m.group(0)[0]
@@ -216,14 +210,14 @@ def mask(text: str, path: str = "") -> str:
         core = value.strip().rstrip(",;")
         if core and "<masked" not in core and not REFERENCE_RE.match(core):
             out = m.group(1) + value.replace(core, MASK.format(n=len(core)), 1)
-    out = DSN_RE.sub(lambda m: f"://{m.group(1)}:{MASK.format(n=len(m.group(2)))}@", out)
-    out = KEYLIKE_RE.sub(lambda m: MASK.format(n=len(m.group(0))) if keylike(m.group(0)) else m.group(0), out)
+    out = URL_AUTH_RE.sub(lambda m: f"://{m.group(1)}:{MASK.format(n=len(m.group(2)))}@", out)
+    out = TOKEN_RE.sub(lambda m: MASK.format(n=len(m.group(0))) if tokenlike(m.group(0)) else m.group(0), out)
     return out
 
 
 def shown_text(path: str, text: str) -> tuple[str, bool]:
     """(text to print, masked?) for a line read from the repository."""
-    if sensitive(path, text):
+    if needs_mask(path, text):
         return mask(text, path), True
     return text, False
 

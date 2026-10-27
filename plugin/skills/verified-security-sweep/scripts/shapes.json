@@ -1,0 +1,11 @@
+{
+  "_about": "Patterns used by check_citations.py, findings.py and leak_check.py to decide which values of a printed line are replaced by the mask. Regular expressions in Python syntax. A line is shown with a value masked when the value is a quoted literal, a value after a name that matches `name_words`, the userinfo of a URL, or a long token; names and structure stay.",
+  "mask": "<masked, {n} chars>",
+  "name_words": "(?:passw(?:or)?d|pwd|secret|token|api[_-]?key|apikey|private[_-]?key|credential|client[_-]?secret|auth[_-]?key|access[_-]?key|dsn|connection[_-]?string)",
+  "stoplist": ["bearer", "basic", "digest", "oauth", "oauth2", "jwt", "hmac", "oidc", "sha1", "sha256", "sha512", "md5", "utf-8", "utf8", "none", "null", "nil", "true", "false", "yes", "no", "on", "off", "example", "placeholder", "changeme", "change-me", "redacted", "masked", "dummy", "sample", "test", "testing", "default", "development", "production", "required", "optional", "string", "integer", "boolean"],
+  "token": "[A-Za-z0-9+/_-]{22,}={0,2}",
+  "token_min_length": 24,
+  "url_auth": "://([^/\\s:@]+):([^/\\s@]+)@",
+  "literal": "\"((?:[^\"\\\\]|\\\\.)*)\"|'((?:[^'\\\\]|\\\\.)*)'",
+  "reference": "^(?:None|null|nil|true|false|\"\"|'')?$|^\\$|^\\$?\\{|^os\\.|^env\\b|^process\\.env|^settings\\.|^config\\b|^get[A-Za-z_]*\\(|^secrets\\.|^request\\.|^req\\.|^self\\.|^this\\.|^(?:str|int|bool|float|bytes|list|dict|Optional|Any|Mapped|Field)\\b|\\|\\s*None\\b|=\\s*None$"
+}

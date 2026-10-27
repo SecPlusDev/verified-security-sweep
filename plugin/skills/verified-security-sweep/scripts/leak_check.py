@@ -1,51 +1,49 @@
-"""No credential in what the sweep delivers.
+"""No value of the repository in what the sweep delivers.
 
 The report, the tests and the findings index are written by the same session that read the
-repository's secrets. This script scans the deliverables for credential shapes and reports each
-hit masked. It opens no credential file: it reads the deliverables only, never the repository's
-dotenv files or sources, so nothing it does depends on a value, and no value is read to be
-compared with.
+repository. This script scans the deliverables for the value shapes of shapes.json and reports
+each hit masked. It reads the deliverables only, never the repository's dotenv files or sources,
+and nothing it prints is a value.
 
     python3 leak_check.py                              # docs/audits/ and the changed test files
     python3 leak_check.py --extra out/report.xlsx --extra out/handoff/
     python3 leak_check.py --strict                     # a WARN is a failure too
 
 Shapes found (the same ones check_citations.py masks when it prints a cited line):
-    a key-like token: 24 or more key-alphabet characters, letters and digits mixed, with both
-        cases, base64 padding or `+`, and not an identifier of word-like segments (a dated id,
-        a path, a test name); a 40-character lowercase hexadecimal run is a commit id and is
-        skipped; a 64-character one that git does not know as an object of the repository is
-        reported as a WARN (a digest or a hexadecimal key: read the context);
-    a DSN password: `scheme://user:password@host`;
-    a quoted literal assigned to or passed next to a secret name: `password="..."`,
-        `"api_key": '...'`, `ADMIN_PASSWORD = "..."`;
-    an unquoted value after a secret name and `=` anywhere (`ADMIN_PASSWORD=...` in inline
-        code), or after a secret name and `:` at the start of the line, when it is one token;
-        prose after a colon has spaces and is not one.
-    Placeholders and names are not values: `changeme`, `<your-key>`, `${SECRET}`, `********`,
-    `SECRET_KEY`, a word in the stoplist of check_citations.py.
+    a long token: TOKEN_MIN_LENGTH or more token-alphabet characters, letters and digits mixed,
+        with both cases, base64 padding or `+`, and not an identifier of word-like segments (a
+        dated id, a path, a test name); a 40-character lowercase hexadecimal run is a commit id
+        and is skipped; a 64-character one that git does not know as an object of the
+        repository is reported as a WARN (a digest or a hexadecimal token: read the context);
+    the userinfo value of a URL: `scheme://user:value@host`;
+    a quoted literal assigned to or passed next to a name listed in shapes.json: `name="..."`,
+        `"name": '...'`, `NAME = "..."`;
+    an unquoted value after a listed name and `=` anywhere (`NAME=...` in inline code), or
+        after a listed name and `:` at the start of the line, when it is one token; prose after
+        a colon has spaces and is not one.
+    Placeholders and names are not values: `changeme`, `<your-key>`, `${NAME}`, `********`,
+    an ALL_CAPS name, a word in the stoplist of shapes.json.
 
 Files scanned: everything under docs/audits/; the test files git reports as added, modified or
 untracked under a folder named test, tests, spec or __tests__; and every --extra path (a file,
 or a folder walked). A zip container (an .xlsx, .docx or .zip) is scanned member by member.
-In a test file only the key-like and DSN shapes count: the tests the sweep adds log in with
-invented passwords next to their names, by the skill's own rule, and a real credential copied
-into a test is key-shaped or a DSN far more often than a word.
+In a test file only the token and URL shapes count: the tests the sweep adds log in with
+invented values next to their names, by the skill's own rule, and a real value copied into a
+test is token-shaped or a URL far more often than a word.
 
 Result per hit, one line: the output file and line, the shape, the length, and the output line
 with the value replaced by `<masked, N chars>`.
     FAIL   a value of 8 characters or more
-    WARN   a shorter value, or a lone hexadecimal run: possibly a coincidence (a password that
-           is an ordinary word next to its name, a digest), possibly a leak; read the context
+    WARN   a shorter value, or a lone hexadecimal run: possibly a coincidence (an ordinary word
+           next to a listed name, a digest), possibly a leak; read the context
 Exit codes: 0 no FAIL (and no WARN with --strict); 1 at least one FAIL, or a WARN with --strict;
 2 setup error (root not a directory, --extra path missing).
 
-What this does not see: a weak password written in prose without its name ("the admin
-password is apple" is caught, "it is apple" is not), and a weak password copied into a test
-next to its name. The value-side check that catches both,
-by reading the repository's values, is kept outside the plugin (tools/leak_values.py in the
-repository) because it reads credentials; the evaluation runs recorded with the skill compare
-the two on the same records.
+What this does not see: a value written in prose without its name ("the admin value is apple"
+is caught when "value" is a listed word, "it is apple" is not), and a short value copied into a
+test next to its name. The value-side check that catches both, by reading the repository's
+own values, is kept outside the plugin (tools/leak_values.py in the repository); the evaluation
+runs recorded with the skill compare the two on the same records.
 
 Why a script: a value inspected by hand goes through a hand-written masking expression, and in
 the run that prompted this script that expression was wrong and the value was printed. The
@@ -62,7 +60,7 @@ import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import check_citations as cc  # noqa: E402  (sibling script: credential shapes and the mask)
+import check_citations as cc  # noqa: E402  (sibling script: the value shapes and the mask)
 
 # Values shorter than this are reported as WARN, not FAIL.
 MIN_FAIL_LENGTH = 8
@@ -77,9 +75,9 @@ ZIP_SUFFIXES = (".xlsx", ".docx", ".pptx", ".zip", ".odt", ".ods")
 PLACEHOLDER_RE = re.compile(r"^(.)\1*$|^<[^<>]*>$|^\.{3,}$|^x{4,}$|^X{4,}$|<masked, \d+ chars>")
 # A 40-character lowercase hexadecimal run is a commit id: the record cites commits everywhere
 # (`"commit": "..."` in the logs). A 64-character one is a digest or a hexadecimal key.
-# `NAME=value` anywhere on the line (inline code in a report: `ADMIN_PASSWORD=...`), the name
-# holding a secret word, the value one token. Only `=`: `token: rotated` in prose is a sentence.
-INLINE_ASSIGN_RE = re.compile(r"(?i)(?<![\w.-])([\w.-]*" + cc.SECRET_WORDS + r"[\w.-]*)=([^\s\"'`,;)]+)")
+# `NAME=value` anywhere on the line (inline code in a report), the name holding a listed word,
+# the value one token. Only `=`: `name: rotated` in prose is a sentence.
+INLINE_ASSIGN_RE = re.compile(r"(?i)(?<![\w.-])([\w.-]*" + cc.NAME_WORDS + r"[\w.-]*)=([^\s\"'`,;)]+)")
 COMMIT_ID_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -164,7 +162,7 @@ def shown_path(path: Path, root: Path) -> str:
 
 
 def is_value(text: str) -> bool:
-    """A string that could be a credential: long enough, with a letter or digit, not a name, a
+    """A string that counts as a value: long enough, with a letter or digit, not a name, a
     reference or a placeholder."""
     text = text.strip()
     if len(text) < MIN_VALUE_LENGTH or not re.search(r"[A-Za-z0-9]", text):
@@ -193,9 +191,9 @@ class GitObjects:
 
 
 def shapes_in(line: str, objects: GitObjects, in_tests: bool = False) -> list[tuple[str, str, str]]:
-    """(shape, value, level) for every credential-shaped value on the line. In a test file only
-    the key-like and DSN shapes count: a test the sweep adds logs in with an invented password
-    next to its name (`client.login(password="wrong-pw")`), by the skill's own rule."""
+    """(shape, value, level) for every value shape on the line. In a test file only the token
+    and URL shapes count: a test the sweep adds logs in with an invented value next to its name,
+    by the skill's own rule."""
     out: list[tuple[str, str, str]] = []
     seen: set[str] = set()
 
@@ -206,22 +204,22 @@ def shapes_in(line: str, objects: GitObjects, in_tests: bool = False) -> list[tu
         seen.add(value)
         out.append((shape, value, level or ("FAIL" if len(value) >= MIN_FAIL_LENGTH else "WARN")))
 
-    for m in cc.DSN_RE.finditer(line):
-        add("DSN password", m.group(2))
-    for m in cc.SECRET_LITERAL_RE.finditer(line) if not in_tests else ():
+    for m in cc.URL_AUTH_RE.finditer(line):
+        add("URL userinfo value", m.group(2))
+    for m in cc.NAMED_LITERAL_RE.finditer(line) if not in_tests else ():
         name = re.match(r"[\w-]+", m.group(0))
-        add(f"literal next to `{name.group(0) if name else 'secret'}`", m.group(2))
+        add(f"literal next to `{name.group(0) if name else 'name'}`", m.group(2))
     m = cc.ASSIGN_RE.match(line) if not in_tests else None
     if m:
         value = m.group(2).strip().rstrip(",;").strip()
         if value and not cc.LITERAL_RE.search(value) and not re.search(r"\s", value):
-            name = cc.SECRET_NAME_RE.search(m.group(1))
-            add(f"value after `{name.group(0) if name else 'secret'}`", value.rstrip("`)"))
+            name = cc.NAME_RE.search(m.group(1))
+            add(f"value after `{name.group(0) if name else 'name'}`", value.rstrip("`)"))
     for m in INLINE_ASSIGN_RE.finditer(line) if not in_tests else ():
         add(f"value after `{m.group(1)}=`", m.group(2))
-    for m in cc.KEYLIKE_RE.finditer(line):
+    for m in cc.TOKEN_RE.finditer(line):
         token = m.group(0)
-        if not cc.keylike(token):
+        if not cc.tokenlike(token):
             continue
         if COMMIT_ID_RE.match(token):
             continue  # a commit id, by the record's convention
@@ -230,8 +228,8 @@ def shapes_in(line: str, objects: GitObjects, in_tests: bool = False) -> list[tu
                 continue
             add("hexadecimal run of 64, not a git object", token, "WARN")
         else:
-            add("key-like token", token)
-    # A DSN password inside a key-like token, a literal inside a DSN: report the longer one only
+            add("long token", token)
+    # A URL userinfo value inside a long token, a literal inside a URL: report the longer one only
     values = [v for _, v, _ in out]
     return [(s, v, lv) for s, v, lv in out if not any(v != w and v in w for w in values)]
 
