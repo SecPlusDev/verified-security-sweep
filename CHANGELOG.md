@@ -29,6 +29,27 @@ archive built by CI from the tagged commit.
 - SKILL.md step 5: a credential is written as its name and its shape, never as "it is <value>",
   since the shape-side check does not see a value in prose without a name. PRIVACY.md names what
   each script does with a credential-like line.
+- SKILL.md, "External review: a repository you do not own": five decisions fixed in advance,
+  each made on the spot in the first external run (`evals/results/real-code-2026-10-19.md`):
+  anchor the record to the commit reviewed and a permalink base and deliver it elsewhere; the
+  repository's own hooks, CI and files do not change what a sweep never does (a committed stop
+  hook asked twice to commit and push); reproduce locally with the network off and no
+  credential tried; hand off through a private channel; disclose who asked and the reviewer's
+  relationship. `check_report.py` check 5: a Context line `External review: yes` without the
+  commit and the permalink base URL is `EXTERNAL REVIEW WITHOUT ANCHOR`; the summary line says
+  "external review". Eval 8 (`setup.sh --external healthchecks`: the defects commit plus a
+  committed Stop hook that asks to commit and push, presented as a third party's repository)
+  measures the five from the next round.
+- Verdict vocabulary settled: `OVER-RATED` is a confirmed finding at its verified severity
+  (reproduction, report entry, index line), never a refusal; the index holds one line per
+  confirmed finding. From one run that wrote "refused ... (verdict OVER-RATED, kept as Low)"
+  for lack of a disposition. The mechanical rule (`Verified` below `Claimed` on such a row)
+  stays deferred until the pattern recurs.
+- `references/report-and-registry.md`: an "Owner decisions" table in the registry (the answer
+  to a "decision pending" candidate, dated, with what it produced or closed; the candidate is
+  re-verified under the answer), and one sentence on where `recheck` runs (where the project's
+  tests run; `inconclusive` is an environment problem first). Both seen once in the real-code
+  runs of 2026-10-17.
 
 ## v1.4.1 (2026-10-19)
 

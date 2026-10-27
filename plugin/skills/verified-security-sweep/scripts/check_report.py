@@ -23,6 +23,11 @@ What it checks, in order:
    first version of this check accepted "cited anywhere earlier", and a run answered it by
    adding a sentence elsewhere instead of a verdict. Otherwise it is a lead of this zone that
    never got a verdict, and the report fails.
+5. An external review is anchored. A Context line `External review: yes` (a repository the
+   reviewer does not own, SKILL.md "External review") must come with the commit reviewed (a
+   hexadecimal id of 7 to 40 characters) and the permalink base the citations resolve against
+   (an `http(s)://` URL) in the same section; without both, a `file:line` in the delivered
+   record points at nothing the maintainer can open.
 
 Exit codes: 0 no problem; 1 at least one problem (each printed with its line number); 2 the
 report could not be read.
@@ -65,6 +70,11 @@ DISPOSITIONS = ("refused", "needs deeper review", "closed earlier", "out of zone
 # missed scope entry can only make the hand-off check more lenient, never stricter.
 BACKTICK_RE = re.compile(r"`([^`\s]+)`")
 PATH_LIKE_RE = re.compile(r"^(?:[a-z0-9_.-]+/)+[\w.-]*$|^[a-z0-9_-]+\.[a-z0-9]{1,6}$")
+
+# The Context line that declares a review of someone else's repository, and its two anchors.
+EXTERNAL_RE = re.compile(r"(?i)^\s*(?:[-*]\s*)?\**external review\**\s*:\s*\**\s*yes\b")
+COMMIT_RE = re.compile(r"(?<![0-9a-fA-F])[0-9a-f]{7,40}(?![0-9a-zA-Z])")
+URL_RE = re.compile(r"https?://\S+")
 
 # A finding id as the Verification table writes it in its first column: F1, R12, AC-2, P4.
 FINDING_ID_RE = re.compile(r"^\s*\**`?([A-Z]{1,4}-?\d{1,3})\b")
@@ -184,11 +194,25 @@ def check(report: Path) -> tuple[list[tuple[int, str]], dict]:
     lines = report.read_text(encoding="utf-8").splitlines()
     problems: list[tuple[int, str]] = []
     sections = split_sections(lines)
-    summary = {"verified_real": 0, "rows": 0, "refused_entries": 0, "handoff_citations": 0}
+    summary = {"verified_real": 0, "rows": 0, "refused_entries": 0, "handoff_citations": 0, "external": False}
 
     for key, name in REQUIRED_SECTIONS:
         if key not in sections:
             problems.append((0, f"MISSING SECTION: no '## {name}' heading"))
+
+    # 5. An external review names its anchors
+    if "context" in sections:
+        s, e = sections["context"]
+        for i in range(s, e):
+            if EXTERNAL_RE.match(lines[i]):
+                summary["external"] = True
+                text = "\n".join(lines[s:e])
+                missing = [what for what, rx in (("the commit reviewed", COMMIT_RE), ("the permalink base URL", URL_RE))
+                           if not rx.search(text)]
+                if missing:
+                    problems.append((i + 1, "EXTERNAL REVIEW WITHOUT ANCHOR: 'External review: yes' needs "
+                                            + " and ".join(missing) + " in Context"))
+                break
 
     # 2. Verdicts
     finding_ids: set[str] = set()
@@ -285,7 +309,7 @@ def main() -> int:
     if not args.quiet:
         print(f"{summary['rows']} verification rows ({summary['verified_real']} VERIFIED REAL), "
               f"{summary['refused_entries']} refused entries, {summary['handoff_citations']} hand-off citations, "
-              f"{len(problems)} problem(s)")
+              f"{'external review, ' if summary['external'] else ''}{len(problems)} problem(s)")
     return 1 if problems else 0
 
 

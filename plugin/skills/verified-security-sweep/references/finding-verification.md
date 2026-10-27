@@ -23,7 +23,9 @@ the route file the reviewer did not open.
 - `VERIFIED REAL`: all three lenses hold. Write the reproduction, then the report entry.
 - `FALSE POSITIVE`: the claim-correctness lens fails. Record what the code does instead.
 - `OVER-RATED`: real, lower severity. Typical causes: requires an already-privileged actor,
-  display-only effect, window of milliseconds between two actions of the same owner.
+  display-only effect, window of milliseconds between two actions of the same owner. It is
+  confirmed at the lower severity: reproduction, report entry and index line like any real
+  finding, with `Claimed` above `Verified` in the table; it is not a refusal.
 - `NEEDS DEEPER REVIEW`: cannot be resolved from the handler and its route. Trace the data flow
   end to end before deciding; do not report it as real to be safe.
 
