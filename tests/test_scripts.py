@@ -1125,10 +1125,11 @@ def test_check_report_exit_2_when_missing():
 
 
 # --------------------------------------------------------------------------------------
-# leak_check.py
+# leak_check.py (shapes in the deliverables) and tools/leak_values.py (the repository's values)
 # --------------------------------------------------------------------------------------
 
 LEAK_CHECK = SCRIPTS / "leak_check.py"
+LEAK_VALUES_TOOL = ROOT / "tools" / "leak_values.py"
 LEAK_VALUES = {
     "admin_password": "apple",                      # an ordinary word, 5 characters: WARN territory
     "app_password": "abcd efgh ijkl mnop",           # an app password: four lowercase groups
@@ -1169,46 +1170,84 @@ def run_leak(root: Path, *args: str) -> subprocess.CompletedProcess:
     return run_script(LEAK_CHECK, "--root", str(root), *args)
 
 
+def run_values(root: Path, *args: str) -> subprocess.CompletedProcess:
+    return run_script(LEAK_VALUES_TOOL, "--root", str(root), *args)
+
+
 def assert_no_value(stdout: str) -> None:
     for value in LEAK_VALUES.values():
         assert value not in stdout
 
 
+def write_audit(root: Path, text: str) -> Path:
+    report = root / "docs" / "audits" / "2026-01-15-auth.md"
+    report.write_text(text, encoding="utf-8")
+    return report
+
+
+# The same report, the four values each cited as the skill cites a line ("the line reads:")
+# and each written in prose without its name. Measured on both checks in the same test, so the
+# gap between them is a number in the test file, not a sentence in the docs.
+LABELED = (
+    f"L1 the line reads: `ADMIN_PASSWORD={LEAK_VALUES['admin_password']}`\n"
+    f"L2 the line reads: `password=\"{LEAK_VALUES['app_password']}\"`\n"
+    f"L3 the line reads: `SECRET_KEY = os.getenv(\"SECRET_KEY\", \"{LEAK_VALUES['jwt_default']}\")`\n"
+    f"L4 the line reads: `API_KEY = \"{LEAK_VALUES['api_key']}\"`\n"
+)
+UNLABELED = (
+    f"U1 the admin logs in with {LEAK_VALUES['admin_password']} on every environment.\n"
+    f"U2 the mailer uses {LEAK_VALUES['app_password']} as its app password.\n"
+    f"U3 the fallback DSN is {LEAK_VALUES['jwt_default']}.\n"
+    f"U4 the key {LEAK_VALUES['api_key']} is committed.\n"
+)
+
+
 def test_leak_check_passes_a_report_that_names_variables_only(leak_repo: Path):
-    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
+    write_audit(
+        leak_repo,
         "F1 `ADMIN_PASSWORD` in `app/.env:2` is a literal; F2 `SECRET_KEY` default at `app/config.py:1`;\n"
-        "F3 the SMTP seed at `app/seeds/smtp_seed.py:1` holds an app password (format checked as a boolean).\n",
-        encoding="utf-8",
+        "F3 the SMTP seed at `app/seeds/smtp_seed.py:1` holds an app password (format checked as a boolean).\n"
+        f"Recorded at commit {bytes(range(20)).hex()}; id 2026-01-15-auth/F1; token: rotated on login.\n"
+        "| secret | `${SECRET_KEY}` | `<your-key>` | ******** | changeme |\n",
     )
     r = run_leak(leak_repo)
     assert r.returncode == 0, r.stdout
-    assert_no_value(r.stdout)
+    assert "0 FAIL, 0 WARN" in r.stdout
+    r = run_values(leak_repo)
+    assert r.returncode == 0, r.stdout
     assert "0 FAIL, 0 WARN" in r.stdout
     assert "5 value(s) collected" in r.stdout   # the username on the seed line is not one of them
 
 
-def test_leak_check_fails_a_report_that_quotes_a_value(leak_repo: Path):
-    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
-        f"F3 the seed sets password=\"{LEAK_VALUES['app_password']}\" at `app/seeds/smtp_seed.py:1`.\n",
-        encoding="utf-8",
-    )
+def test_leak_check_finds_every_labeled_value_and_the_shaped_unlabeled_ones(leak_repo: Path):
+    write_audit(leak_repo, LABELED + UNLABELED)
     r = run_leak(leak_repo)
     assert r.returncode == 1
     assert_no_value(r.stdout)
-    assert "FAIL" in r.stdout
+    lines = r.stdout.splitlines()
+    assert "5 FAIL, 1 WARN" in lines[-1]
+    assert any("auth.md:1 " in ln and "value after `ADMIN_PASSWORD=` (len 5)" in ln and ln.startswith("WARN") for ln in lines)
+    assert any("auth.md:2 " in ln and "literal next to `password` (len 19)" in ln for ln in lines)
+    assert any("auth.md:3 " in ln and "literal next to `SECRET_KEY` (len 33)" in ln for ln in lines)
+    assert any("auth.md:4 " in ln and "literal next to `API_KEY` (len 40)" in ln for ln in lines)
+    assert any("auth.md:7 " in ln and "DSN password (len 9)" in ln for ln in lines)
+    assert any("auth.md:8 " in ln and "key-like token (len 40)" in ln for ln in lines)
+    assert "<masked, 40 chars>" in r.stdout and "<masked, 19 chars>" in r.stdout
+    # The two it does not see: a weak password and an app password in prose, without a name
+    assert not any("auth.md:5 " in ln or "auth.md:6 " in ln for ln in lines)
+    # The value-side tool sees all eight, the 5-character one as a WARN
+    r = run_values(leak_repo)
+    assert r.returncode == 1
+    assert_no_value(r.stdout)
+    assert "6 FAIL, 2 WARN" in r.stdout
+    assert "value from app/.env:ADMIN_PASSWORD (len 5)" in r.stdout
     assert "value from app/seeds/smtp_seed.py:1 (len 19)" in r.stdout
-    assert "<masked, 19 chars>" in r.stdout
-    assert "1 FAIL, 0 WARN" in r.stdout
 
 
-def test_leak_check_warns_on_a_short_value_that_may_be_a_coincidence(leak_repo: Path):
-    (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
-        "The seeded admin password is an ordinary word (an apple a day); pineapple is not it.\n", encoding="utf-8"
-    )
+def test_leak_check_warns_and_strict_fails(leak_repo: Path):
+    write_audit(leak_repo, "the line reads: `ADMIN_PASSWORD=apple`\n")
     r = run_leak(leak_repo)
     assert r.returncode == 0, r.stdout
-    assert "WARN" in r.stdout
-    assert "value from app/.env:ADMIN_PASSWORD (len 5)" in r.stdout
     assert "0 FAIL, 1 WARN" in r.stdout
     r = run_leak(leak_repo, "--strict")
     assert r.returncode == 1
@@ -1226,28 +1265,43 @@ def test_leak_check_scans_changed_test_files_and_zip_containers(leak_repo: Path,
     assert_no_value(r.stdout)
     assert "tests/test_sweep_auth.py:1" in r.stdout.replace("\\", "/")
     assert "report.xlsx!xl/sharedStrings.xml:1" in r.stdout
-    assert "value from app/config.py:1 (len 33)" in r.stdout
+    assert "key-like token (len 40)" in r.stdout and "DSN password (len 9)" in r.stdout
     assert "2 FAIL, 0 WARN" in r.stdout
 
 
-def test_leak_check_from_cited_limits_the_collection(leak_repo: Path):
-    report = leak_repo / "docs" / "audits" / "2026-01-15-auth.md"
-    report.write_text(f"Only `app/config.py:1` is cited; the seed password is {LEAK_VALUES['app_password']}.\n",
-                      encoding="utf-8")
-    r = run_leak(leak_repo, "--from-cited", str(report))
-    # The seed is not cited, so its value is not collected; the dotenv file always is
-    assert "0 FAIL, 0 WARN" in r.stdout
-    assert "4 value(s) collected" in r.stdout
-    r = run_leak(leak_repo)
-    assert r.returncode == 1
-    assert "1 FAIL, 0 WARN" in r.stdout
+def test_leak_check_reads_no_file_outside_the_deliverables(leak_repo: Path, monkeypatch):
+    # The plugin's check opens the deliverables only: with the repository's sources and dotenv
+    # files unreadable, it still runs and still finds the shaped values
+    for rel in ("app/.env", "app/config.py", "app/seeds/smtp_seed.py"):
+        (leak_repo / rel).chmod(0)
+    try:
+        write_audit(leak_repo, LABELED)
+        r = run_leak(leak_repo)
+    finally:
+        for rel in ("app/.env", "app/config.py", "app/seeds/smtp_seed.py"):
+            (leak_repo / rel).chmod(0o644)
+    assert r.returncode == 1, r.stdout + r.stderr
+    assert "3 FAIL, 1 WARN" in r.stdout
 
 
 def test_leak_check_setup_errors(tmp_path: Path, leak_repo: Path):
     r = run_leak(leak_repo, "--extra", str(tmp_path / "missing.xlsx"))
     assert r.returncode == 2
-    r = run_leak(leak_repo, "--from-cited", str(tmp_path / "missing.md"))
+    r = run_values(leak_repo, "--from-cited", str(tmp_path / "missing.md"))
     assert r.returncode == 2
+
+
+def test_leak_values_from_cited_limits_the_collection(leak_repo: Path):
+    report = write_audit(
+        leak_repo, f"Only `app/config.py:1` is cited; the seed password is {LEAK_VALUES['app_password']}.\n"
+    )
+    r = run_values(leak_repo, "--from-cited", str(report))
+    # The seed is not cited, so its value is not collected; the dotenv file always is
+    assert "0 FAIL, 0 WARN" in r.stdout
+    assert "4 value(s) collected" in r.stdout
+    r = run_values(leak_repo)
+    assert r.returncode == 1
+    assert "1 FAIL, 0 WARN" in r.stdout
 
 
 def test_keylike_is_a_key_shape_not_an_identifier():
@@ -1261,6 +1315,12 @@ def test_keylike_is_a_key_shape_not_an_identifier():
     assert not cc.keylike("docs/audits/2026-10-17-reports.md")      # a dated path
     assert not cc.keylike("/api/v1/cases/9/members/active")         # an API path
     assert not cc.keylike("2026-10-19-authentication")
+    # From the shape-side scan of a real record: a finding id with both cases, an assignment
+    # with `=` inside; base64 padding is `=` at the end only
+    assert not cc.keylike("2026-01-15-audit-chain/AC6")
+    assert not cc.keylike("sensor_case_max_armed=50")
+    assert cc.identifier_like("tests/test_sweep_auth.py::test_f1")
+    assert not cc.identifier_like("sk_live_" + "Zz9yY8xX" * 4)
 
 
 def test_name_like_covers_words_that_stand_next_to_secret_names():
@@ -1276,7 +1336,7 @@ def test_name_like_covers_words_that_stand_next_to_secret_names():
     assert cc.sensitive("config.py", "postgres_password: str = 'hunter2pw'")
 
 
-def test_leak_check_never_collects_from_the_deliverables_or_test_fixtures(leak_repo: Path):
+def test_leak_values_never_collects_from_the_deliverables_or_test_fixtures(leak_repo: Path):
     # A report quoting a test name, and a test fixture holding an invented password, are not leaks
     (leak_repo / "tests" / "test_sweep_auth.py").write_text(
         'def test_f1():\n    client.login(password="invented-fixture-pw-2026")\n', encoding="utf-8"
@@ -1286,12 +1346,14 @@ def test_leak_check_never_collects_from_the_deliverables_or_test_fixtures(leak_r
         "Reproduction: `tests/test_sweep_auth.py::test_f1` uses the fixture password invented-fixture-pw-2026.\n",
         encoding="utf-8",
     )
-    r = run_leak(leak_repo)
+    r = run_values(leak_repo)
     assert r.returncode == 0, r.stdout
     assert "0 FAIL, 0 WARN" in r.stdout
+    r = run_leak(leak_repo)
+    assert r.returncode == 0, r.stdout
 
 
-def test_leak_check_skips_sample_dotenv_files_and_tiny_values(leak_repo: Path):
+def test_leak_values_skips_sample_dotenv_files_and_tiny_values(leak_repo: Path):
     # From a confirmation run: `---` in docker/.env.example and `pass` from a test URL matched
     # table rules and prose everywhere, 13 WARN on a clean record
     (leak_repo / "docker").mkdir()
@@ -1301,6 +1363,7 @@ def test_leak_check_skips_sample_dotenv_files_and_tiny_values(leak_repo: Path):
     (leak_repo / "docs" / "audits" / "2026-01-15-auth.md").write_text(
         "| a | b |\n|---|---|\nread handlers are expected to pass readonly; change-me-now is the sample.\n", encoding="utf-8"
     )
-    r = run_leak(leak_repo)
-    assert r.returncode == 0, r.stdout
-    assert "0 FAIL, 0 WARN" in r.stdout
+    for run in (run_values, run_leak):
+        r = run(leak_repo)
+        assert r.returncode == 0, r.stdout
+        assert "0 FAIL, 0 WARN" in r.stdout

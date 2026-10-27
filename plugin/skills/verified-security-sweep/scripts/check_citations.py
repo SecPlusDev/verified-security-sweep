@@ -68,7 +68,8 @@ SKIPPED_DIRS = (".git", "node_modules", ".venv", "venv", "__pycache__", ".tox", 
 # A key-like token: 24 or more characters of the alphabets keys are written in; keylike() then
 # requires the shape of a key and not of an identifier (see there). 24 is below the shortest
 # common API key.
-KEYLIKE_RE = re.compile(r"[A-Za-z0-9+/_=-]{24,}")
+# `=` only as trailing padding: an `=` inside is an assignment (`SECRET_KEY=abc...`), two tokens.
+KEYLIKE_RE = re.compile(r"[A-Za-z0-9+/_-]{22,}={0,2}")
 # Words that stand next to secret names without being secrets: schemes, formats, placeholders.
 NOT_SECRET_WORDS = frozenset(
     "bearer basic digest oauth oauth2 jwt hmac oidc sha1 sha256 sha512 md5 utf-8 utf8 none null nil "
@@ -108,15 +109,30 @@ def keylike(text: str) -> bool:
     (`test_sweep_access_20260119`), a dated file name or an API path has digits but one case
     only."""
     for m in KEYLIKE_RE.findall(text):
-        if not (re.search(r"[A-Za-z]", m) and re.search(r"\d", m)):
+        if len(m) < 24 or not (re.search(r"[A-Za-z]", m) and re.search(r"\d", m)):
+            continue
+        if identifier_like(m):
             continue
         if re.search(r"[A-Z]", m) and re.search(r"[a-z]", m):
             return True
-        # One case only: a hexadecimal run, or base64 padding or `+`. A slash alone is a path
+        # One case only: a hexadecimal run, or `+`, or base64 padding. A slash alone is a path
         # (`/api/v1/items/9`), not base64: base64 output of 24+ characters has both cases.
-        if re.fullmatch(r"[0-9a-fA-F]{32,}", m) or re.search(r"[+=]", m):
+        if re.fullmatch(r"[0-9a-fA-F]{32,}", m) or "+" in m or m.endswith("="):
             return True
     return False
+
+
+def identifier_like(token: str) -> bool:
+    """A token made of word-like segments joined by `-`, `_`, `/`, `.` or `:`: a dated id
+    (`2026-01-15-audit-chain/AC6`), a path, a test name. Every segment is letters only, digits
+    only, or letters of one case with up to three digits at the end; a key's segments mix cases
+    and digits freely. A token with a date in it is an identifier whatever its segments."""
+    if re.search(r"\d{4}-\d{2}-\d{2}", token):
+        return True
+    segments = [s for s in re.split(r"[-_/.:]", token) if s]
+    if len(segments) < 2:
+        return False
+    return all(re.fullmatch(r"[A-Za-z]+|\d+|[A-Z]+\d{1,3}|[a-z]+\d{1,3}", s) for s in segments)
 
 
 def name_like(value: str) -> bool:

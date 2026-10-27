@@ -128,7 +128,7 @@ jobs:
         run: |
           set -euo pipefail
           s=plugin/skills/verified-security-sweep/scripts
-          python -W error -m py_compile "$s/sweep_status.py" "$s/fresh_code.py" "$s/check_citations.py" "$s/findings.py" "$s/check_report.py" "$s/leak_check.py"
+          python -W error -m py_compile "$s/sweep_status.py" "$s/fresh_code.py" "$s/check_citations.py" "$s/findings.py" "$s/check_report.py" "$s/leak_check.py" tools/leak_values.py
           python "$s/sweep_status.py" --help > /dev/null
           python "$s/fresh_code.py" --help > /dev/null
           python "$s/check_citations.py" --help > /dev/null
@@ -152,8 +152,10 @@ jobs:
           mkdir src && echo 'x = 1' > src/a.py && git add -A && git -c user.name=ci -c user.email=ci@example.invalid commit -q -m a
           mkdir -p docs/audits && printf 'SECRET_KEY=abcdefgh12345678\n' > .env && printf 'report names SECRET_KEY only\n' > docs/audits/2026-01-15-money.md
           python "$GITHUB_WORKSPACE/$s/leak_check.py" --root "$r"
-          printf 'leaked abcdefgh12345678\n' > docs/audits/2026-01-15-money.md
+          printf 'the line reads: `SECRET_KEY=abcdefgh12345678`\n' > docs/audits/2026-01-15-money.md
           if python "$GITHUB_WORKSPACE/$s/leak_check.py" --root "$r"; then echo "leak_check did not fail on a copied value" >&2; exit 1; fi
+          python "$GITHUB_WORKSPACE/tools/leak_values.py" --help > /dev/null
+          if python "$GITHUB_WORKSPACE/tools/leak_values.py" --root "$r"; then echo "leak_values did not fail on a copied value" >&2; exit 1; fi
           python "$GITHUB_WORKSPACE/$s/fresh_code.py" --json | python -c 'import json,sys; d=json.load(sys.stdin); assert d["files"][0]["file"]=="src/a.py"'
 
   package:

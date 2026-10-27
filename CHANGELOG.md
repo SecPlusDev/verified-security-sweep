@@ -3,6 +3,33 @@
 All notable changes to this skill. Versions follow semver; each release attaches the `.skill`
 archive built by CI from the tagged commit.
 
+## Unreleased
+
+- `leak_check.py` scans the deliverables for credential shapes and reads no file of the
+  repository: a literal or a value next to a secret name (`password="..."`, `ADMIN_PASSWORD=...`
+  in inline code, `token: ...` at the start of a line), a DSN password, a key-like token. Same
+  output lines, `FAIL`/`WARN`, `--extra`, `--strict` and exit codes; the source column becomes
+  the shape; `--from-cited` is gone with the collection. In a test file only the key-like and
+  DSN shapes count, because the tests the sweep adds log in with invented passwords next to
+  their names. Reason: v1.4.1 is held by the plugin directory's policy check for reading a
+  credential from the user's machine, and the check's text offers no exemption for a script that
+  reads and never sends. Measured against the value-side check on the same report
+  (`evals/results/leak-check-shapes-2026-10-27.md`): 6 of 8 planted leaks against 8 of 8, the
+  two missed being a weak password and an app password written in prose without a name; on the
+  13-report real record, 0 FAIL and 0 WARN in both, after three calibration rules below. The
+  value-side check moves to `tools/leak_values.py` in the repository, outside the plugin, for
+  the evaluation runs.
+- `check_citations.py`, the shared shapes: a key-like token is no longer an identifier of
+  word-like segments (`2026-10-19-audit-chain/AC6`, `tests/test_sweep_auth.py::test_f1`), and
+  `=` counts as base64 padding only at the end (`sensor_case_max_armed=50` is an assignment, two
+  tokens). Both from the first shape-side scan of the real record: 533 FAIL and 331 WARN, all
+  commit ids, finding ids and one assignment, to 0 and 0. A 40-character lowercase hexadecimal
+  run is a commit id in a record and is skipped by `leak_check.py`; a 64-character one that git
+  does not know is a WARN.
+- SKILL.md step 5: a credential is written as its name and its shape, never as "it is <value>",
+  since the shape-side check does not see a value in prose without a name. PRIVACY.md names what
+  each script does with a credential-like line.
+
 ## v1.4.1 (2026-10-19)
 
 Privacy of the record. From an external review run on 2026-10-19 (a first sweep of a third-party
