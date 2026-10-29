@@ -8,6 +8,15 @@ the report ships.
     python3 check_citations.py docs/audits/2026-01-15-money.md
     python3 check_citations.py docs/audits/2026-01-15-money.md --root path/to/repo
     python3 check_citations.py docs/audits/2026-01-15-money.md --quiet   # problems only
+    python3 check_citations.py docs/audits/2026-01-15-money.md --rev <commit>  # at that commit
+
+Which code: the commit the report was written against, when the report names it, otherwise the
+working tree. A report names its commit in Context, as `Commit: <id>` or, for an external
+review, `at <id>`; `--rev` overrides both. Once the code moves, a citation checked against the
+working tree can pass while pointing at unrelated code, so when the commit is known the lines
+are read from it (`git show`), and the first output line says which code was read and whether
+the working tree's HEAD differs. A commit the clone does not have falls back to the working
+tree, with a warning.
 
 A citation is a path with a file extension followed by `:line`, `:start-end` or a comma list of
 those (`src/billing/invoice.ts:42`, `app/routes/session.js:25-34,116`). Paths are relative to
@@ -268,11 +277,82 @@ def read_lines(path: Path) -> list[str]:
     return path.read_text(encoding="utf-8", errors="replace").splitlines()
 
 
-def check(report: Path, root: Path) -> list[dict]:
-    files = index_files(root)
+# The commit a report was written against, named in its Context: `Commit: <id>` on its own, or
+# `at <id>` in the external-review line. Seven to forty hexadecimal characters.
+REPORT_COMMIT_RE = re.compile(r"(?i)(?:^\s*(?:[-*]\s*)?\**commit\**\s*:\s*`?|\bat\s+`?)([0-9a-f]{7,40})\b")
+
+
+def report_commit(lines: list[str]) -> str:
+    """The commit named in the report's Context section, or '' when it names none."""
+    in_context = False
+    for line in lines:
+        if line.startswith("## "):
+            in_context = line[3:].strip().lower().startswith("context")
+            continue
+        if in_context:
+            m = REPORT_COMMIT_RE.search(line)
+            if m:
+                return m.group(1)
+    return ""
+
+
+def git_out(root: Path, *args: str) -> str | None:
+    try:
+        return subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True, text=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
+class Source:
+    """Where cited lines are read from: a commit of the repository, or the working tree."""
+
+    def __init__(self, root: Path, rev: str = ""):
+        self.root = root
+        self.rev = ""
+        self.note = ""
+        if rev:
+            full = git_out(root, "rev-parse", "--verify", f"{rev}^{{commit}}")
+            if full is None:
+                self.note = f"commit {rev} is not in this clone; lines read from the working tree"
+            else:
+                self.rev = full.strip()
+                head = (git_out(root, "rev-parse", "HEAD") or "").strip()
+                if head and head != self.rev:
+                    self.note = f"lines read at {self.rev[:12]}; the working tree is at {head[:12]}"
+                else:
+                    self.note = f"lines read at {self.rev[:12]}"
+        if self.rev:
+            out = git_out(root, "ls-tree", "-r", "--name-only", self.rev) or ""
+            self.files = out.splitlines()
+        else:
+            self.files = index_files(root)
+
+    def exists(self, path: str) -> bool:
+        if self.rev:
+            return path in self.files
+        return (self.root / path).is_file()
+
+    def resolve(self, path: str) -> tuple[str, list[str]]:
+        if self.exists(path):
+            return "direct", [path]
+        bare = path[2:] if path.startswith("./") else path
+        return "suffix", [f for f in self.files if f == bare or f.endswith("/" + bare)]
+
+    def lines(self, path: str) -> list[str]:
+        if self.rev:
+            out = git_out(self.root, "show", f"{self.rev}:{path}")
+            return out.splitlines() if out is not None else []
+        return read_lines(self.root / path)
+
+
+def check(report: Path, root: Path, rev: str | None = None) -> tuple[list[dict], Source]:
+    """(one result per citation, the source the lines were read from). `rev` None means the
+    commit the report names, '' means the working tree."""
+    report_lines = read_lines(report)
+    source = Source(root, report_commit(report_lines) if rev is None else rev)
     cache: dict[str, list[str]] = {}
     results = []
-    for n, line in enumerate(read_lines(report), 1):
+    for n, line in enumerate(report_lines, 1):
         for m in CITATION_RE.finditer(line):
             path, approx, spec = m.group(1), m.group(2), m.group(3)
             item = {"report_line": n, "citation": m.group(0), "resolved": "", "status": "OK", "text": ""}
@@ -280,7 +360,7 @@ def check(report: Path, root: Path) -> list[dict]:
             if approx:
                 item["status"] = "APPROXIMATE"
                 continue
-            how, matches = resolve(path, root, files)
+            how, matches = source.resolve(path)
             if not matches:
                 item["status"] = "MISSING"
                 continue
@@ -292,7 +372,7 @@ def check(report: Path, root: Path) -> list[dict]:
             if how == "suffix":
                 item["resolved"] = target
             if target not in cache:
-                cache[target] = read_lines(root / target)
+                cache[target] = source.lines(target)
             content = cache[target]
             spans = parse_lines(spec)
             bad = [(a, b) for a, b in spans if a < 1 or b < a or b > len(content)]
@@ -304,7 +384,7 @@ def check(report: Path, root: Path) -> list[dict]:
             item["text"] = text
             if masked:
                 item["status"] = "OK (masked)"
-    return results
+    return results, source
 
 
 def main() -> int:
@@ -316,6 +396,7 @@ def main() -> int:
     ap.add_argument("report", help="the report to check, for example docs/audits/2026-01-15-money.md")
     ap.add_argument("--root", help="repository root (default: git top level of the current directory)")
     ap.add_argument("--quiet", action="store_true", help="print only the citations that are not OK")
+    ap.add_argument("--rev", metavar="COMMIT", help="read the cited lines at this commit (default: the commit the report names in Context, else the working tree); --rev '' forces the working tree")
     args = ap.parse_args()
 
     report = Path(args.report)
@@ -327,7 +408,9 @@ def main() -> int:
         print(f"root is not a directory: {root}", file=sys.stderr)
         return 2
 
-    results = check(report, root)
+    results, source = check(report, root, args.rev)
+    if source.note:
+        print(source.note)
     if not results:
         print(f"{report}: no file:line citations found")
         return 0

@@ -41,6 +41,7 @@ import re
 import sys
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # no __pycache__ inside the installed plugin folder
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_citations as cc  # noqa: E402  (sibling script: the citation pattern and line spans)
 

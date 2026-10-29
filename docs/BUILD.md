@@ -297,6 +297,26 @@ Versions and digests remain verifiable; the cited development commits do not res
 
 ## 7. Deferred
 
+- From the field report of 2026-10-28 (`evals/results/field-report-2026-10-28.md`, section 4),
+  not yet adopted; each is one occurrence from a real run with v1.4.0 and goes in when the
+  text or the script is written with its test:
+  - `references/verify-fix.md` for a fix that needs several rounds: a fresh verifier each round,
+    given the earlier verification reports and the round's diff; the stop rule (`BROKEN` needs
+    at least one High or Medium, `RISK` is Low items for the owner); experiments in a throwaway
+    copy allowed, each claim marked run or read; coupled fixes verified on the combined diff
+    with a verdict per group. The run invented all four and five rounds held (items 4 to 7).
+  - A recheck report shape in `references/report-and-registry.md`: the recheck results from the
+    log in Context, the Verification table for residual candidates only; and the statement that
+    the recheck log, not the index `status`, says a finding is fixed (items 8 and 9).
+  - `sweep_status.py` deriving each report's yield from `findings.jsonl` by verified severity
+    and comparing it with the registry row: the run wrote claimed severities and nothing
+    noticed (item 11).
+  - The Reservations column split into conditions to exploit and real-but-smaller, with the
+    calibration heuristic computed on the second only: 13 of 13 rows carried a reservation
+    while 1 of 13 was lowered (item 12).
+  - The reviewer's own "examined and not confirmed" list: every item is a candidate of the zone
+    and gets a disposition; a `check_report.py` rule that compares the count with the list when
+    it is pasted in Delegation. The run dropped 5 without a trace (item 13).
 - `leak_check.py` by values again, in the plugin, if the directory waives the credential-reading
   hold (ticket of 2026-10-21): `tools/leak_values.py` is the script, and the gap it closes is
   measured in `evals/results/leak-check-shapes-2026-10-27.md`.

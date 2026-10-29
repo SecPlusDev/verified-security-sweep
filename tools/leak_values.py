@@ -51,6 +51,7 @@ import zipfile
 from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "plugin" / "skills" / "verified-security-sweep" / "scripts"
+sys.dont_write_bytecode = True
 sys.path.insert(0, str(SCRIPTS))
 import check_citations as cc  # noqa: E402  (plugin script: credential shapes and the mask)
 
