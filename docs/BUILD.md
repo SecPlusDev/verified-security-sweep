@@ -300,14 +300,12 @@ Versions and digests remain verifiable; the cited development commits do not res
 - From the field report of 2026-10-28 (`evals/results/field-report-2026-10-28.md`, section 4),
   not yet adopted; each is one occurrence from a real run with v1.4.0 and goes in when the
   text or the script is written with its test:
-  - `references/verify-fix.md` for a fix that needs several rounds: a fresh verifier each round,
-    given the earlier verification reports and the round's diff; the stop rule (`BROKEN` needs
-    at least one High or Medium, `RISK` is Low items for the owner); experiments in a throwaway
-    copy allowed, each claim marked run or read; coupled fixes verified on the combined diff
-    with a verdict per group. The run invented all four and five rounds held (items 4 to 7).
-  - A recheck report shape in `references/report-and-registry.md`: the recheck results from the
-    log in Context, the Verification table for residual candidates only; and the statement that
-    the recheck log, not the index `status`, says a finding is fixed (items 8 and 9).
+  - Adopted as text in the version after v1.4.3, each on the one occurrence, because the run
+    invented them and five rounds held: the multi-round method, the verdict calibration,
+    running in a copy and coupled fixes in `references/verify-fix.md` (items 4 to 7); the
+    recheck report shape and the log as the source of "fixed" in
+    `references/report-and-registry.md` (items 8 and 9). Measured from the next fix round on
+    real code.
   - `sweep_status.py` deriving each report's yield from `findings.jsonl` by verified severity
     and comparing it with the registry row: the run wrote claimed severities and nothing
     noticed (item 11).

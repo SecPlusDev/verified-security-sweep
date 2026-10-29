@@ -12,6 +12,16 @@ column of the registry from it, so the slug must contain the registry's zone nam
 the same zone on the same day adds `-2`, `-3` to the slug; never overwrite an earlier report. A
 recheck of earlier findings is a run of the zone, named the same way; "recheck" is not a zone.
 
+A recheck report has the same sections. Its Context holds the results table from
+`findings.jsonl` and the recheck log (one row per earlier finding: id, result `fixed`, `open`
+or `inconclusive`, and where the code is now), its Verification table holds only the new
+candidates of the run (residual trade-offs of the fixes, usually refused with their lens; keep
+the table header when there are none, `check_report.py` wants the table), its Confirmed
+defects and the index gain only new findings, and the earlier findings are cited by id, not
+re-reported. "Fixed" is what the recheck log says; the index entry's `status` stays `open`
+until the owner sets `accepted`, and the log, not `status`, is read for whether a finding is
+closed.
+
 ```markdown
 # Verified security sweep: <zone>, YYYY-MM-DD
 
@@ -202,7 +212,7 @@ owner's decision). `scripts/findings.py check` validates it.
 | `snippet` | code that appears on that line, copied exactly; `findings.py check` fails if the line at `commit` does not hold it. Never a key or other secret: quote the non-secret part of the line |
 | `reproduce` | a test-runner command, run from the repository root without a shell, that fails while the defect is present |
 | `guard` | a test-runner command that must pass: the legitimate path of the same flow. Required, because it is what tells a fixed defect from a broken setup |
-| `status` | `open`, or `accepted` when the owner decides to keep the behavior |
+| `status` | `open`, or `accepted` when the owner decides to keep the behavior; never `fixed`: the recheck log is the source of truth for that, and an entry stays `open` after its fix so the log keeps proving it |
 
 One entry, as written by a sweep of an `exports` zone whose report row F2 confirmed that any
 signed-in user could download another organization's export:
