@@ -40,6 +40,19 @@ the rest are triaged in `docs/BUILD.md`, section 7.
   Verification for residual candidates only, earlier findings cited by id) and the statement
   that the recheck log, not the index `status`, says a finding is fixed; SKILL.md step 2
   points to it.
+- From the second session of the same field report (2026-10-29, section 6, three zones on
+  `main` after the two changes above): `findings.py recheck` reads a runner that reports
+  running zero tests (`running 0 tests`, `Ran 0 tests`, `no tests ran`, `collected 0 items`,
+  `Tests run: 0`, `0 tests completed`, `0 passing`, `No tests found`) as `inconclusive`, never
+  as `fixed`, for the guard and for the reproduction; an ignored attack test read as fixed in
+  the field. The index gains `observed` and the value `manual` for `reproduce` and `guard`:
+  a finding seen on a device the runner cannot reach is recorded with where and how, listed by
+  `recheck` as `manual` and never run. `findings.py check` counts `OVER-RATED` rows with
+  `VERIFIED REAL` ones against the index. `leak_check.py` takes extra paths positionally as well
+  as with `--extra`. The reference says how to keep a suite green between the sweep commit and
+  the fix (ignore the attack test with the finding id as the reason, record the command that
+  runs it anyway). The same session confirmed `check_citations.py` at `Commit:` on code that
+  had moved.
 
 ## v1.4.3 (2026-10-27)
 

@@ -96,3 +96,29 @@ What went wrong on the first attempts, and was caught:
 - **No sixth verification round.** I applied round 5's three one-line fixes, already tested by that verifier in a copy against all guards, then re-ran the full suite, the original reproductions and the long simulations myself.
 - **Report format.** I added a "Fix verification" section to the recheck report and a correction note about fresh_code.py, instead of editing the original report.
 - **One unverified binary left out of the commits.** A build-tool wrapper whose checksum I could not verify against its publisher was not committed.
+
+Section 6 was added by the same session on 2026-10-29, with the plugin loaded from the clone at
+the merge of pull request #20 (v1.4.3 plus the first two changes toward v1.4.4).
+
+## 6. Second session: three zones, one of them on Android (skill 1.4.3 plus unreleased changes)
+
+Same repository a day later: the library gained state persistence and a native bridge, and an Android app (radio transport, encrypted storage, enrollment by QR) was added. Three zones, three reviewers in parallel, before the push.
+
+| Zone | Candidates | Confirmed | Refused | Needs deeper review |
+|---|---|---|---|---|
+| library, second run (fresh code) | 10 | 8 (1 Medium, 7 Low) | 2 | 0 |
+| radio transport (Android) | 12 | 3 (3 Medium) | 3 | 6 |
+| app storage and enrollment (Android) | 13 | 6 (1 High, 3 Medium, 2 Low) | 4 | 3 |
+
+- Three transport findings were confirmed by the owner on two phones (lock screen, identifier across a restart, radio toggle); the needs-deeper-review items need a third radio device.
+- Severity lowered during verification: 1 (High to Medium: needs the phone in hand).
+
+Observations about the plugin:
+
+1. `findings.py recheck` treats exit 0 as fixed, and a test runner that runs zero tests exits 0. A reproduction marked ignored (to keep CI green while the finding is open) or a name that no longer matches reads as "fixed". Here it was avoided with `--exact --include-ignored`; JUnit has no equivalent, so ignored Kotlin attack tests would read as fixed. Suggest: in the docs, require the reproduce command to fail when the test is skipped or missing, or parse the runner's count.
+2. Open findings whose attack tests fail by design collide with a pre-push hook that runs the full test suite. The skill does not say how to keep CI green between the sweep commit and the fix commit; `#[ignore]` with the reason and `--include-ignored` in the index worked.
+3. Device-observed findings: the index requires a runnable `reproduce`, while the strongest evidence was an observation on a phone. Instrumented tests were written but could not run (no runner in the project), so those entries will recheck as inconclusive. A field for "observed on device, how" would record it honestly.
+4. `findings.py check` counts only VERIFIED REAL rows, while the reference says OVER-RATED findings get entries too.
+5. `fresh_code.py` flagged a source file as tested because a test name contained the file's base name (name collision).
+6. `check_citations.py` reading at the `Commit:` recorded in Context worked: the tree moved on (formatting) and citations stayed valid.
+7. `leak_check.py` takes extra files only as repeated `--extra PATH`; a positional list was the first thing tried.

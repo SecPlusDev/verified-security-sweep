@@ -843,6 +843,19 @@ def test_findings_check_masks_the_line_it_reads_when_it_looks_like_a_credential(
     assert 'the line reads: PASSWORD = "<masked, 9 chars>"' in r.stdout
 
 
+def test_an_over_rated_row_takes_an_index_entry(findings_repo: Path):
+    # Since v1.4.2 an OVER-RATED finding is confirmed at its verified severity and gets an index
+    # line; the row count compared the index with VERIFIED REAL rows only (field report, 2026-10-29)
+    report = findings_repo / "docs" / "audits" / "2026-01-15-money.md"
+    report.write_text(report.read_text(encoding="utf-8").replace(
+        "| F1 invoice read across tenants | money | VERIFIED REAL |\n",
+        "| F1 invoice read across tenants | money | VERIFIED REAL |\n| F2 export without owner | money | OVER-RATED |\n"),
+        encoding="utf-8")
+    write_index(findings_repo, [finding_entry(), finding_entry(id="2026-01-15-money/F2", severity="Low")])
+    r = run_script(FINDINGS, "check", "--root", str(findings_repo))
+    assert r.returncode == 0, r.stdout
+
+
 def test_findings_check_reports_bad_fields_duplicates_and_count_mismatch(findings_repo: Path):
     write_index(findings_repo, [finding_entry(), finding_entry(severity="Urgent"), {"id": "x"}])
     (findings_repo / "docs" / "audits" / "findings.jsonl").open("a").write("{not json\n")
@@ -852,7 +865,7 @@ def test_findings_check_reports_bad_fields_duplicates_and_count_mismatch(finding
     assert "duplicate id" in r.stdout
     assert "missing field 'report'" in r.stdout
     assert "not valid JSON" in r.stdout
-    assert "1 VERIFIED REAL row(s) in the report, 2 entr(y/ies) in the index" in r.stdout
+    assert "1 confirmed row(s) (VERIFIED REAL or OVER-RATED) in the report, 2 entr(y/ies) in the index" in r.stdout
 
 
 def test_findings_check_needs_the_report_to_cite_the_location(findings_repo: Path):
@@ -971,6 +984,42 @@ def test_citations_are_checked_at_the_commit_the_report_names(pinned_repo, tmp_p
     report.write_text(report.read_text(encoding="utf-8").replace(f"Commit: `{sha}`", f"External review: yes, at {sha}, permalinks https://github.com/healthchecks/healthchecks/blob/{sha}/"), encoding="utf-8")
     r = run_script(CHECK_CITATIONS, str(report), "--root", str(root), env=env)
     assert f"app.py:5  | {cited}" in r.stdout
+
+
+def test_recheck_never_reads_a_runner_that_ran_no_test_as_fixed(pinned_repo):
+    # From the field report (2026-10-29, section 6): an ignored attack test, or a name that no
+    # longer matches, makes the runner exit 0 with zero tests, and that read as "fixed".
+    root, env, sha = pinned_repo
+    (root / "t_none.py").write_text("print('running 0 tests')\n", encoding="utf-8")
+    write_index(root, [finding_entry(commit=sha, reproduce=f"{PY} t_none.py")])
+    r = run_script(FINDINGS, "recheck", "--run", "--write", "--root", str(root), env=env)
+    assert "INCONCLUSIVE" in r.stdout and "the runner ran no test" in r.stdout
+    assert "0 fixed" in r.stdout
+    log = json.loads((root / "docs" / "audits" / "recheck-log.jsonl").read_text().splitlines()[-1])
+    assert log["result"] == "inconclusive" and log["reproduce_exit"] is None
+    # the same phrase in the guard's output makes the guard inconclusive too
+    (root / "t_none.py").write_text("import sys\nprint('Ran 0 tests', file=sys.stderr)\n", encoding="utf-8")
+    write_index(root, [finding_entry(commit=sha, guard=f"{PY} t_none.py")])
+    r = run_script(FINDINGS, "recheck", "--run", "--root", str(root), env=env)
+    assert "INCONCLUSIVE" in r.stdout and "guard the runner ran no test" in r.stdout
+
+
+def test_manual_findings_need_an_observation_and_are_never_run(pinned_repo):
+    # From the field report (2026-10-29, section 6): three findings observed on two phones had
+    # no runnable reproduction; the index now records where and how they were seen.
+    root, env, sha = pinned_repo
+    write_index(root, [finding_entry(commit=sha, reproduce="manual", guard="manual")])
+    r = run_script(FINDINGS, "check", "--root", str(root), env=env)
+    assert r.returncode == 1 and "'observed' is empty" in r.stdout
+    write_index(root, [finding_entry(commit=sha, reproduce="manual", guard="manual",
+                                     observed="2026-01-15, two phones: the identifier survives a restart with the radio off")])
+    r = run_script(FINDINGS, "check", "--root", str(root), env=env)
+    assert r.returncode == 0, r.stdout
+    r = run_script(FINDINGS, "recheck", "--run", "--write", "--root", str(root), env=env)
+    assert r.stdout.startswith("MANUAL") and "observed, not run: 2026-01-15, two phones" in r.stdout
+    assert "1 manual" in r.stdout and "0 fixed" in r.stdout
+    log = json.loads((root / "docs" / "audits" / "recheck-log.jsonl").read_text().splitlines()[-1])
+    assert log["result"] == "manual"
 
 
 def test_recheck_reports_changed_code_once_the_fix_lands(pinned_repo):
@@ -1363,6 +1412,14 @@ def test_leak_check_scans_changed_test_files_and_zip_containers(leak_repo: Path,
     assert "report.xlsx!xl/sharedStrings.xml:1" in r.stdout
     assert "long token (len 40)" in r.stdout and "URL userinfo value (len 9)" in r.stdout
     assert "2 FAIL, 0 WARN" in r.stdout
+
+
+def test_leak_check_takes_extra_paths_positionally(leak_repo: Path, tmp_path: Path):
+    # From the field report (2026-10-29): a positional list was the first thing tried
+    extra = tmp_path / "handoff.md"
+    extra.write_text(f"the key {LEAK_VALUES['api_key']} is committed\n", encoding="utf-8")
+    r = run_leak(leak_repo, str(extra))
+    assert r.returncode == 1 and "handoff.md:1" in r.stdout and "1 FAIL" in r.stdout
 
 
 def test_leak_check_reads_no_file_outside_the_deliverables(leak_repo: Path, monkeypatch):

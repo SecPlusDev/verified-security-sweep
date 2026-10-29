@@ -69,6 +69,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_citations as cc  # noqa: E402  (sibling script: path resolution and file reading)
 
 REQUIRED = ("id", "report", "zone", "title", "severity", "location", "snippet", "reproduce", "guard", "status")
+# A finding observed on a device or a system the runner cannot reach writes `manual` in both
+# command fields and says in `observed` where and how it was seen; recheck lists it and runs
+# nothing, and the result is `manual`, never `fixed` or `open`.
+MANUAL = "manual"
 SEVERITIES = ("Critical", "High", "Medium", "Low")
 # "accepted": the owner decided to keep the behavior; recheck skips it and SARIF marks it suppressed.
 STATUSES = ("open", "accepted")
@@ -173,7 +177,10 @@ def load_index(index: Path) -> list[tuple[int, dict | None, str]]:
 
 
 def verified_real_rows(report: Path) -> int:
-    return sum(1 for line in cc.read_lines(report) if line.lstrip().startswith("|") and "VERIFIED REAL" in line)
+    """Confirmed rows of the report's tables: VERIFIED REAL, or OVER-RATED (real at a lower
+    severity; it takes an index entry too, report-and-registry.md section 1)."""
+    return sum(1 for line in cc.read_lines(report)
+               if line.lstrip().startswith("|") and ("VERIFIED REAL" in line or "OVER-RATED" in line))
 
 
 def refused(command: str) -> str:
@@ -215,7 +222,12 @@ def check_entry(entry: dict, audits: Path, snap: Snapshot, strict: bool = False)
     problems = [f"missing field '{f}'" for f in REQUIRED if not str(entry.get(f, "")).strip()]
     if problems:
         return problems, ""
+    manual = [f for f in ("reproduce", "guard") if str(entry[f]).strip() == MANUAL]
+    if manual and not str(entry.get("observed", "")).strip():
+        problems.append("reproduce or guard is 'manual' but 'observed' is empty: say where and how the finding was seen")
     for field in ("reproduce", "guard"):
+        if field in manual:
+            continue
         why = refused(str(entry[field]))
         if why:
             problems.append(f"{field} {why}; write the reproduction as a test the project's runner executes")
@@ -294,13 +306,25 @@ def cmd_check(entries, audits: Path, root: Path, strict: bool = False) -> int:
         if report.is_file():
             rows = verified_real_rows(report)
             if rows != count:
-                print(f"FAIL  {name}: {rows} VERIFIED REAL row(s) in the report, {count} entr(y/ies) in the index")
+                print(f"FAIL  {name}: {rows} confirmed row(s) (VERIFIED REAL or OVER-RATED) in the report, {count} entr(y/ies) in the index")
                 bad += 1
     print(f"{len(entries)} entr(y/ies), {bad} problem(s), {skipped} not verifiable here")
     return 1 if bad else 0
 
 
+# A runner that ran no test exits 0 like a runner whose tests passed: an ignored or skipped test,
+# a name that no longer matches. These are the ways the common runners say it (cargo test,
+# unittest and Django, pytest, JUnit and Maven, Gradle, Mocha, Jest, Go test).
+ZERO_TESTS_RE = re.compile(
+    r"(?i)\brunning 0 tests\b|\bran 0 tests\b|\bno tests ran\b|\bcollected 0 items\b|\btests run: 0\b"
+    r"|\b0 tests completed\b|^\s*0 passing\b|\bno tests found\b|\bno test files\b|\bno tests to run\b"
+    r"|\btestsuite ran 0 tests\b", re.M,
+)
+
+
 def run_command(command: str, root: Path, timeout: int) -> tuple[int | None, str]:
+    """(exit code, note). The exit code is None when the command did not run; the note says why,
+    or that the runner reported running no test, which never counts as a result."""
     try:
         r = subprocess.run(shlex.split(command), cwd=root, capture_output=True, text=True, timeout=timeout)
     except FileNotFoundError:
@@ -309,6 +333,8 @@ def run_command(command: str, root: Path, timeout: int) -> tuple[int | None, str
         return None, f"timed out after {timeout} s"
     except ValueError as e:
         return None, f"cannot parse command: {e}"
+    if ZERO_TESTS_RE.search(r.stdout + "\n" + r.stderr):
+        return None, "the runner ran no test (ignored, skipped or missing); the recorded command must run it"
     return r.returncode, ""
 
 
@@ -347,6 +373,13 @@ def cmd_recheck(entries, audits: Path, root: Path, args) -> int:
     results = []
     for e in open_entries:
         guard_exit, note = None, ""
+        if MANUAL in (str(e.get("reproduce", "")).strip(), str(e.get("guard", "")).strip()):
+            where, _ = relocate(e, snap)
+            note = f"observed, not run: {str(e.get('observed', '')).strip()[:120]}"
+            print(f"{'MANUAL':<13} {e['id']}  {e.get('location')}  | {note}; {where}")
+            results.append({"date": today, "commit": commit, "dirty": dirty, "id": e["id"], "result": "manual",
+                            "reproduce_exit": None, "guard_exit": None, "where": where})
+            continue
         if not str(e.get("guard", "")).strip():
             why = "no guard recorded"
         else:
@@ -362,11 +395,12 @@ def cmd_recheck(entries, audits: Path, root: Path, args) -> int:
         guard_exit, note = run_command(e["guard"], root, args.timeout)
         if guard_exit != 0:
             result, repro_exit = "inconclusive", None
-            note = note or f"guard failed (exit {guard_exit}): legitimate path or test setup broken"
+            note = ("guard " + note) if note else f"guard failed (exit {guard_exit}): legitimate path or test setup broken"
         else:
             repro_exit, note = run_command(e["reproduce"], root, args.timeout)
             if repro_exit is None:
                 result = "inconclusive"
+                note = "reproduce " + note
             elif repro_exit == 0:
                 result, note = "fixed", "reproduction passes"
             else:
@@ -380,8 +414,9 @@ def cmd_recheck(entries, audits: Path, root: Path, args) -> int:
             for r in results:
                 fh.write(json.dumps(r) + "\n")
         print(f"appended {len(results)} result(s) to {audits / 'recheck-log.jsonl'}")
-    counts = {k: sum(1 for r in results if r["result"] == k) for k in ("open", "fixed", "inconclusive")}
-    print(f"{counts['open']} open, {counts['fixed']} fixed, {counts['inconclusive']} inconclusive")
+    counts = {k: sum(1 for r in results if r["result"] == k) for k in ("open", "fixed", "inconclusive", "manual")}
+    print(f"{counts['open']} open, {counts['fixed']} fixed, {counts['inconclusive']} inconclusive"
+          + (f", {counts['manual']} manual" if counts["manual"] else ""))
     return 1 if args.fail_on_open and counts["open"] else 0
 
 
