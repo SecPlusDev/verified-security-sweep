@@ -3,6 +3,32 @@
 All notable changes to this skill. Versions follow semver; each release attaches the `.skill`
 archive built by CI from the tagged commit.
 
+## Unreleased
+
+From a field report of 2026-10-28 (`evals/results/field-report-2026-10-28.md`): a first sweep,
+the fixes and five verify-fix rounds on a Rust protocol library, with v1.4.0, written by the
+session that ran it. Fourteen observations; the four below are the script defects among them,
+the rest are triaged in `docs/BUILD.md`, section 7.
+
+- `check_citations.py` reads the cited lines at the commit the report names in Context
+  (`Commit: <id>`, or `at <id>` in the external-review line), with `--rev` to override and
+  `--rev ''` for the working tree; the first output line says which code was read and whether
+  the working tree's HEAD differs; a commit the clone lacks falls back to the working tree with
+  a warning. The report template's Context gains the `Commit:` line. From the field report:
+  after the fixes, the sweep report still passed with 55 OK while every cited line showed
+  unrelated code, because the script read the working tree.
+- `fresh_code.py`: the extension list covers Rust, C, C++, Swift, Dart, Zig, Scala, Elixir,
+  Haskell and others, `--ext` adds more, an empty list caused by the extension filter says how
+  many paths were filtered and which extensions they had, a window that holds every commit of
+  the repository ranks by size with untested files first instead of a meaningless churn, and
+  test files are found anywhere in the repository through `git ls-files` (a workspace with
+  tests under each crate had none of them read). From the field report: 0 files on a Rust
+  workspace, blamed on the single commit.
+- `findings.py recheck`: a run is dirty when a tracked file differs from the commit, not when an
+  untracked file exists, and the paths that made it dirty are printed.
+- The scripts write no bytecode (`sys.dont_write_bytecode`), so no `__pycache__` appears in the
+  installed plugin folder.
+
 ## v1.4.3 (2026-10-27)
 
 Same behaviour as v1.4.2; the plugin directory's policy check accepts it. v1.4.1 and v1.4.2

@@ -64,6 +64,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
+sys.dont_write_bytecode = True  # no __pycache__ inside the installed plugin folder
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_citations as cc  # noqa: E402  (sibling script: path resolution and file reading)
 
@@ -335,8 +336,14 @@ def cmd_recheck(entries, audits: Path, root: Path, args) -> int:
         print(f"{len(open_entries)} open finding(s); nothing was run (add --run)")
         return 0
     today, commit = date.today().isoformat(), head_commit(root)
-    changes = git_out(root, "status", "--porcelain", "--", ".", f":(exclude){args.audits}")
+    # Dirty means a tracked file differs from the commit the result is recorded against; an
+    # untracked file (a log, a build artifact) changes nothing the commands run on. The paths are
+    # printed so the reader sees what made the run dirty.
+    changes = git_out(root, "status", "--porcelain", "--untracked-files=no", "--", ".", f":(exclude){args.audits}")
     dirty = None if changes is None else bool(changes.strip())
+    if dirty:
+        paths = [ln[3:].strip() for ln in changes.splitlines() if len(ln) > 3]
+        print(f"working tree dirty against {commit[:12]}: {', '.join(paths[:8])}{', ...' if len(paths) > 8 else ''}")
     results = []
     for e in open_entries:
         guard_exit, note = None, ""

@@ -17,8 +17,10 @@ recheck of earlier findings is a run of the zone, named the same way; "recheck" 
 
 ## Context
 Scope (zone, files or modules). Trigger (owner request, fresh code, registry age, pre-launch).
-What changed in the zone since the last run. On a repository the reviewer does not own, one
-line: `External review: yes, at <commit>, permalinks <repository URL>/blob/<commit>/`, then who
+What changed in the zone since the last run. `Commit: <git rev-parse HEAD>`, the code the
+citations were read at: `scripts/check_citations.py` reads them at that commit once the code
+moves on. On a repository the reviewer does not own, one line instead:
+`External review: yes, at <commit>, permalinks <repository URL>/blob/<commit>/`, then who
 asked and the reviewer's relationship to the project.
 
 ## Delegation

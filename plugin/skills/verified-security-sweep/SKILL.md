@@ -199,8 +199,8 @@ For every `VERIFIED REAL`, write the reproduction: a test that fails on the curr
 would pass once the defect is fixed, at the lowest layer that runs here with the project's own
 test runner (a unit or integration test before an end-to-end tool that is not installed), and
 run it. Run tests so that they leave no build output in the tree (for Python,
-`PYTHONDONTWRITEBYTECODE=1`); the only files a sweep leaves behind are under `docs/audits/` and in
-test folders. If it cannot run here, write `written, not run:
+`PYTHONDONTWRITEBYTECODE=1`; the skill's own scripts write no bytecode); the only files a sweep
+leaves behind are under `docs/audits/` and in test folders. If it cannot run here, write `written, not run:
 <reason>` wherever it is cited and name what was observed instead; never present an unrun test as
 proof. The mutant is the defect itself. Concurrency findings are
 reproduced with an interleaving test, not with reasoning; a fix "verified by reading" has been

@@ -510,6 +510,45 @@ def test_scripts_use_only_the_standard_library(script: Path):
         assert Path(origin).resolve().is_relative_to(stdlib), f"{script.name} imports {name} from {origin}, outside the standard library"
 
 
+def test_fresh_code_reads_rust_and_explains_an_empty_list(tmp_path: Path):
+    # From a field report (2026-10-28): a Rust workspace, single commit; the script listed 0 files
+    # and said nothing, and the run blamed the single commit. Two causes, two answers: `.rs` is a
+    # listed extension now, and a list emptied by the extension filter says what it filtered.
+    repo = tmp_path / "rs"
+    repo.mkdir()
+    env = git_env(tmp_path, "Reviewer One")
+    git(repo, env, "init", "-q")
+    write(repo, "core/src/packet.rs", "pub fn parse() {}\n" * 40)
+    write(repo, "core/src/lib.rs", "mod packet;\n")
+    write(repo, "core/tests/packet_test.rs", "#[test] fn packet() {}\n")
+    write(repo, "notes.proto", "message A {}\n")
+    git(repo, env, "add", "-A")
+    git(repo, env, "commit", "-q", "-m", "import")
+    d = json.loads(run_script(FRESH_CODE, "--json", cwd=repo, env=env).stdout)
+    files = [r["file"] for r in d["files"]]
+    assert files == ["core/src/lib.rs", "core/src/packet.rs"] or files == ["core/src/packet.rs", "core/src/lib.rs"]
+    # every commit inside the window: size ranks, untested first; lib.rs is untested and small,
+    # packet.rs is mentioned by the test and large
+    assert files[0] == "core/src/lib.rs"
+    assert "every commit of the repository (1) is inside the window" in d["note"]
+    r = run_script(FRESH_CODE, cwd=repo, env=env)
+    assert "ranked by size" in r.stdout and "note:" in r.stdout
+    # the same tree with only an unlisted extension changed: the empty list is explained
+    d = json.loads(run_script(FRESH_CODE, "--json", "--src", "nowhere", cwd=repo, env=env).stdout)
+    assert d["files"] == []
+    repo2 = tmp_path / "proto"
+    repo2.mkdir()
+    git(repo2, env, "init", "-q")
+    write(repo2, "schema/a.proto", "message A {}\n")
+    git(repo2, env, "add", "-A")
+    git(repo2, env, "commit", "-q", "-m", "schema")
+    r = run_script(FRESH_CODE, cwd=repo2, env=env)
+    assert r.returncode == 0
+    assert "filtered out by extension: .proto (1)" in r.stdout
+    d = json.loads(run_script(FRESH_CODE, "--json", "--ext", ".proto", cwd=repo2, env=env).stdout)
+    assert [x["file"] for x in d["files"]] == ["schema/a.proto"]
+
+
 # --------------------------------------------------------------------------------------
 # check_citations.py
 # --------------------------------------------------------------------------------------
@@ -906,6 +945,34 @@ def test_check_holds_after_the_code_moves_because_it_reads_the_entry_commit(pinn
     assert "now at app.py:7" in r.stdout
 
 
+def test_citations_are_checked_at_the_commit_the_report_names(pinned_repo, tmp_path: Path):
+    # From a field report (2026-10-28): after the fixes, check_citations.py still returned
+    # 55 OK on the sweep report while every cited line showed unrelated code, because it read
+    # the working tree. A report that names its commit in Context is checked at that commit.
+    root, env, sha = pinned_repo
+    app = root / "app.py"
+    cited = app.read_text(encoding="utf-8").splitlines()[4].strip()
+    report = root / "docs" / "audits" / "2026-01-15-money.md"
+    report.write_text(f"# Verified security sweep: money, 2026-01-15\n\n## Context\nCommit: `{sha}`\n\n"
+                      f"## Confirmed defects\nF1 at `app.py:5`\n", encoding="utf-8")
+    app.write_text("# header\n# moved two lines down\n" + app.read_text(encoding="utf-8"), encoding="utf-8")
+    commit_all(root, env, "unrelated edit above the finding")
+    r = run_script(CHECK_CITATIONS, str(report), "--root", str(root), env=env)
+    assert r.returncode == 0, r.stdout
+    assert r.stdout.startswith(f"lines read at {sha[:12]}; the working tree is at ")
+    assert f"app.py:5  | {cited}" in r.stdout
+    # the working tree, forced, shows the moved line instead
+    r = run_script(CHECK_CITATIONS, str(report), "--root", str(root), "--rev", "", env=env)
+    assert f"app.py:5  | {cited}" not in r.stdout
+    # a commit the clone does not have: warning, working tree
+    r = run_script(CHECK_CITATIONS, str(report), "--root", str(root), "--rev", "0" * 40, env=env)
+    assert "is not in this clone; lines read from the working tree" in r.stdout
+    # the external-review form names the commit too
+    report.write_text(report.read_text(encoding="utf-8").replace(f"Commit: `{sha}`", f"External review: yes, at {sha}, permalinks https://github.com/healthchecks/healthchecks/blob/{sha}/"), encoding="utf-8")
+    r = run_script(CHECK_CITATIONS, str(report), "--root", str(root), env=env)
+    assert f"app.py:5  | {cited}" in r.stdout
+
+
 def test_recheck_reports_changed_code_once_the_fix_lands(pinned_repo):
     root, env, _ = pinned_repo
     app = root / "app.py"
@@ -968,13 +1035,20 @@ def test_keylike_snippet_is_refused(findings_repo: Path):
     assert r.returncode == 1 and "holds a long token" in r.stdout
 
 
-def test_recheck_log_records_uncommitted_changes(pinned_repo):
+def test_recheck_log_records_uncommitted_changes_to_tracked_files_only(pinned_repo):
+    # From a field report (2026-10-28): an untracked log outside the zone marked a run dirty.
+    # Dirty is a tracked file that differs from the commit; untracked files change nothing the
+    # recorded commands run on. The paths are printed.
     root, env, _ = pinned_repo
     run_script(FINDINGS, "recheck", "--run", "--write", "--root", str(root), env=env)
     (root / "scratch.txt").write_text("local edit\n", encoding="utf-8")
     run_script(FINDINGS, "recheck", "--run", "--write", "--root", str(root), env=env)
+    tracked = next(p for p in root.rglob("*.py") if "docs" not in p.parts and "tests" not in p.parts)
+    tracked.write_text(tracked.read_text(encoding="utf-8") + "# local edit\n", encoding="utf-8")
+    r = run_script(FINDINGS, "recheck", "--run", "--write", "--root", str(root), env=env)
+    assert "working tree dirty against" in r.stdout and tracked.name in r.stdout
     log = [json.loads(x) for x in (root / "docs" / "audits" / "recheck-log.jsonl").read_text().splitlines()]
-    assert [x["dirty"] for x in log] == [False, True]
+    assert [x["dirty"] for x in log] == [False, False, True]
 
 
 def test_sarif_points_at_the_current_line_with_a_stable_fingerprint(pinned_repo):
