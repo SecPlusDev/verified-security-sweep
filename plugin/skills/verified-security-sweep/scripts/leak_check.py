@@ -6,7 +6,7 @@ each hit masked. It reads the deliverables only, never the repository's dotenv f
 and nothing it prints is a value.
 
     python3 leak_check.py                              # docs/audits/ and the changed test files
-    python3 leak_check.py --extra out/report.xlsx --extra out/handoff/
+    python3 leak_check.py out/report.xlsx out/handoff/     # more files or folders, or --extra
     python3 leak_check.py --strict                     # a WARN is a failure too
 
 Shapes found (the same ones check_citations.py masks when it prints a cited line):
@@ -263,9 +263,11 @@ def main() -> int:
     )
     ap.add_argument("--root", help="repository root (default: git top level of the current directory)")
     ap.add_argument("--audits", default="docs/audits", help="audits folder, relative to the root (default: docs/audits)")
+    ap.add_argument("paths", nargs="*", metavar="PATH", help="more files or folders to scan (same as --extra)")
     ap.add_argument("--extra", action="append", default=[], metavar="PATH", help="another file or folder to scan; repeatable")
     ap.add_argument("--strict", action="store_true", help="a WARN is a failure too")
     args = ap.parse_args()
+    args.extra = list(args.extra) + list(args.paths)
 
     root = cc.repo_root(args.root)
     if not root.is_dir():

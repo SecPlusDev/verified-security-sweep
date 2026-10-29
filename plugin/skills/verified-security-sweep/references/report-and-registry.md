@@ -210,8 +210,9 @@ owner's decision). `scripts/findings.py check` validates it.
 | `cwe` | optional, for example `CWE-639` |
 | `location` | `path:line` from the repository root, the line a fix would change; the report cites it too |
 | `snippet` | code that appears on that line, copied exactly; `findings.py check` fails if the line at `commit` does not hold it. Never a key or other secret: quote the non-secret part of the line |
-| `reproduce` | a test-runner command, run from the repository root without a shell, that fails while the defect is present |
-| `guard` | a test-runner command that must pass: the legitimate path of the same flow. Required, because it is what tells a fixed defect from a broken setup |
+| `reproduce` | a test-runner command, run from the repository root without a shell, that fails while the defect is present, and that runs the test even when the test is marked ignored or expected-to-fail (see below); or `manual`, with `observed` |
+| `guard` | a test-runner command that must pass: the legitimate path of the same flow. Required, because it is what tells a fixed defect from a broken setup; or `manual`, with `observed` |
+| `observed` | required when `reproduce` or `guard` is `manual`: where and how the defect was seen when no runner can reach it (a phone, a radio, a second device), with the date. `recheck` lists such an entry as `manual` and runs nothing; it is never `fixed` or `open` by the script |
 | `status` | `open`, or `accepted` when the owner decides to keep the behavior; never `fixed`: the recheck log is the source of truth for that, and an entry stays `open` after its fix so the log keeps proving it |
 
 One entry, as written by a sweep of an `exports` zone whose report row F2 confirmed that any
@@ -231,7 +232,14 @@ The report's verification table has a `VERIFIED REAL` row for F2 citing `app/exp
 and `CrossOrgDownload` fails on that commit while `OwnOrgDownload` passes.
 
 `scripts/findings.py check` verifies each entry against the code at its `commit`, so entries stay
-valid after the code changes. An entry whose commit is not in the clone (a squash merge, a
+valid after the code changes.
+
+Between the sweep commit and the fix, an attack test fails by design, and a hook or a CI job
+that runs the whole suite goes red. Mark the test as ignored or expected-to-fail with the
+finding id as the reason, and record in `reproduce` the command that runs it anyway (`cargo
+test --include-ignored`, `pytest --runxfail`, the runner's equivalent); a runner that reports
+running zero tests exits 0 like a pass, and `recheck` reads that as `inconclusive`, never as
+`fixed`. An entry whose commit is not in the clone (a squash merge, a
 rebase, a shallow clone) is reported as not verifiable here, not as wrong.
 
 `scripts/findings.py recheck --run --write` runs `guard` and then `reproduce` for every open
