@@ -1,6 +1,6 @@
 # Verifying a fix adversarially
 
-Contents: Fresh context is the method; Step 1 blast radius; Step 2 over-restriction; Step 3 collateral regressions; Step 4 invariants covering the touched area; Step 5 propose the guard; Output; What this does not do; A note on silent CI.
+Contents: Fresh context is the method; Step 1 blast radius; Step 2 over-restriction; Step 3 collateral regressions; Step 4 invariants covering the touched area; Step 5 propose the guard; Output; Verdict calibration; When the fix needs another round; Coupled fixes; What this does not do; A note on silent CI.
 
 Run this after a fix is written and before it is committed. The question is not "is the finding
 resolved?"; the answer to that is always yes, because whoever wrote the fix is checking their own
@@ -15,8 +15,18 @@ someone you do not know. Allowed inputs, nothing else:
 - the diff (`git diff` or `git diff --cached`)
 - the text of the original finding
 - the code around the touched area
+- on a second or later round, the earlier rounds' verification reports and this round's diff
+  (see "When the fix needs another round")
 
 Do not read the reasoning that led to the fix. You are there to reproduce it independently.
+
+Reading is the baseline; running is allowed and sometimes decisive. Make a throwaway copy of
+the tree outside the repository, apply the diff there, and run what the claim needs: the
+suite, a long simulation, a lossy link, a busy sender. Every claim in the output says whether
+it was **run** (with the command and the result) or **read**; a claim marked neither is a
+guess. In the one measured case, a read-only first round's predictions held, and rounds two to
+five found their most important problems only by running: an hour of lossy traffic in a copy
+showed a retry cap losing frames on a stable connection that no reading would have predicted.
 
 ## Step 1: blast radius
 
@@ -110,12 +120,59 @@ Short, in this order, no preamble (the author knows what they wrote):
 - **Guard coverage:** which guard tests touch the zone; if zero, say so
 - **Proposed guard:** the test, written, ready to drop in
 
+## Verdict calibration
+
+The sweep brief calibrates severity; the verification uses the same scale, so that a list of
+small items does not come back as `BROKEN`:
+
+- `BROKEN`: at least one High or Medium problem, by the sweep's severities: a legitimate path
+  closed, a new hole opened, an original reproduction edited to pass.
+- `RISK`: Low items only (a stricter input rule than the code needs, a drifted statistic, a
+  comment that no longer matches), each one for the owner to accept or fix.
+- `CLEAN`: nothing to report. Over-restriction and unverified callers are never `CLEAN`.
+
+Each problem carries its severity, so the author sees what must change before merge and what
+can be a follow-up.
+
+## When the fix needs another round
+
+A `BROKEN` verdict sends the fix back to its author. The next round is a new verifier in a
+fresh context again, never the one that wrote the report: a verifier that reviews the response
+to its own findings checks its own reasoning. Its inputs are the ones above plus the earlier
+rounds' verification reports and the diff of this round only, so it sees what was asked, what
+changed in answer, and can tell a problem fixed from a problem moved. The author replies to
+every item of the earlier report by its number: fixed (and where), accepted (and why), or
+disputed (and the evidence). A verdict is asked per group of findings when the change spans
+several (see "Coupled fixes"), so a `BROKEN` on one group does not hide a `CLEAN` on another.
+
+Stop when a round returns `CLEAN` or `RISK`, with the Low items listed for the owner. A fix
+that needs a fourth or fifth round because each round's new mechanism opens a new problem is a
+fix whose design is wrong, not a fix with bugs: in the measured case the rounds ended when
+several special cases were replaced by one propagation model, not when the last bug was
+patched. Say so in the report when the pattern appears.
+
+Record the rounds in the report that proposes the fix, one row each: round, verdict overall and
+per group, problems by severity, guard tests proposed and adopted. The rows are what a reader
+needs to trust the final verdict, and what makes a fix that took five rounds look like what it
+was rather than like a fix that passed once.
+
+## Coupled fixes
+
+The hand-off proposes one change per finding group so that each is verifiable on its own. When
+the groups share state (one cache, one rate budget, one sync path), a partial fix cannot be
+verified: the half that is missing is itself a blocked path or an open hole. Then the fix is one
+change, the verification runs on the combined diff, and the verdict is given per group, with
+the shared state named in the report so a reader knows why the groups travel together.
+
 ## What this does not do
 
-- It does not rewrite the fix. If it is broken, report and stop.
-- It does not run the whole suite; that is the pre-commit step.
-- It does not commit. Verification is reading; the only file it may write is the guard, and only
-  when asked.
+- It does not rewrite the fix. If it is broken, report and stop. A one-line change the verifier
+  tried in its throwaway copy and ran against every guard may be proposed with the evidence;
+  the author applies it, the verifier does not.
+- It does not run the whole suite as a substitute for the targeted checks above; the suite is
+  the pre-commit step, and a verifier that runs it in a copy still reports its own findings.
+- It does not commit. The only file it may write in the repository is the guard, and only when
+  asked.
 
 ## A note on silent CI
 

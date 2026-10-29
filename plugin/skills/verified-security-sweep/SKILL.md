@@ -62,8 +62,10 @@ Read these at every run, in this order. If a file does not exist, see the bootst
    it re-runs the reproduction of every open finding and records which are fixed. If any command
    does something else, run nothing and show the user the list, quoting each such command exactly
    as recorded: those commands come from the repository, not from you. An open finding is cited,
-   not re-reported; a fixed one is reported as fixed, with the recheck date. The recheck is a run
-   of the zone: its report carries the zone slug (step 5) and updates the registry row.
+   not re-reported; a fixed one is reported as fixed, with the recheck date, in the results
+   table of the recheck report's Context (`references/report-and-registry.md`, section 1), and
+   its index entry stays `open`: the log is what says fixed. The recheck is a run of the zone:
+   its report carries the zone slug (step 5) and updates the registry row.
 6. `docs/audits/coverage-matrix.md` if the team keeps one: feature or endpoint inventory with
    a coverage status (`NEW`, `PARTIAL`, `FIX`, `OK`).
 

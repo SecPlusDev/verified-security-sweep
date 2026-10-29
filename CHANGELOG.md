@@ -28,6 +28,18 @@ the rest are triaged in `docs/BUILD.md`, section 7.
   untracked file exists, and the paths that made it dirty are printed.
 - The scripts write no bytecode (`sys.dont_write_bytecode`), so no `__pycache__` appears in the
   installed plugin folder.
+- `references/verify-fix.md`, from the same report's five rounds: verification may run things
+  in a throwaway copy, each claim marked run or read; a verdict calibration (`BROKEN` needs a
+  High or Medium, `RISK` is Low items for the owner, over-restriction is never `CLEAN`); the
+  method for another round (a new verifier, given the earlier reports and the round's diff,
+  the author answering each item by number, verdict per group, stop at `CLEAN` or `RISK`, and a
+  design that needs a fourth round named as the problem); coupled fixes verified on the
+  combined diff with a verdict per group; the rounds recorded in the fix report. A one-line
+  change the verifier tried and ran against every guard may be proposed with its evidence.
+- `references/report-and-registry.md`: the shape of a recheck report (results table in Context,
+  Verification for residual candidates only, earlier findings cited by id) and the statement
+  that the recheck log, not the index `status`, says a finding is fixed; SKILL.md step 2
+  points to it.
 
 ## v1.4.3 (2026-10-27)
 
