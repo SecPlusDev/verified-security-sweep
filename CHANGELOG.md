@@ -5,6 +5,13 @@ archive built by CI from the tagged commit.
 
 ## Unreleased
 
+- Severity anchors and the candidate gate adopted from Cloudflare's `security-audit-skill`
+  (MIT), credited in SKILL.md step 5 and step 4: Critical, High, Medium and Low defined by the
+  demonstrated result with the high/medium discriminator, and a candidate that cannot name its
+  lower-trust principal, input, control, boundary, affected principal and result is a hardening
+  suggestion, not a finding. The README's "Where it fits" names that skill for a broad one-time
+  audit; `docs/BUILD.md` records what the two share and where they differ.
+
 From a field report of 2026-10-28 (`evals/results/field-report-2026-10-28.md`): a first sweep,
 the fixes and five verify-fix rounds on a Rust protocol library, with v1.4.0, written by the
 session that ran it. Fourteen observations; the four below are the script defects among them,

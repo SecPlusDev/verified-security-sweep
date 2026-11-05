@@ -27,6 +27,8 @@ host:claude.ai
 github-owner:SecPlusDev
 github-owner:OWASP
 github-owner:healthchecks
+# Related work linked from the README
+github-owner:cloudflare
 github-owner:acme
 # The skill collection installed next to this one in the co-installation trigger evaluation (B7)
 github-owner:addyosmani
