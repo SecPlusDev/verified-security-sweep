@@ -149,14 +149,22 @@ report. Name the reports explicitly and say what each one closed.
   member of org A", "a cron that runs while a user is mid-request").
 - Fix approach in one or two sentences, citing an existing pattern in the same codebase.
 
-**Severity calibration:**
-- Critical: unauthenticated code execution, full tenant breach, authentication bypass, with
-  proof that untrusted input reaches the sink.
-- High: authenticated cross-tenant access, second-factor bypass, privilege escalation inside a
-  tenant, persistent XSS in a privileged context, money moved or counted wrong.
-- Medium: low-exploitability disclosure, missing defense in depth on a high-value flow, a race
-  with a real but narrow window, a legitimate path blocked.
-- Low: kept in a separate section, never in the headline count.
+**Severity calibration** (the anchors follow Cloudflare's security-audit skill, which states
+them well; the discriminator is theirs):
+- Critical: an unauthenticated actor gains code execution, full data-store access, or takeover
+  of arbitrary accounts, with proof that untrusted input reaches the sink.
+- High: an explicit security control fully defeated with real consequences: authentication or
+  second-factor bypass, cross-tenant read or write, privilege escalation inside a tenant,
+  stored script execution affecting other users, authenticated code execution, money moved or
+  counted wrong, an unauthenticated remote stop of a shared service.
+- Medium: a real boundary violation with limited blast radius, uncommon preconditions or a
+  narrow resource set: a race with a real but narrow window, low-exploitability disclosure, a
+  legitimate path blocked, missing defense in depth on a high-value flow.
+- Low: disclosure of non-secret internals, or an effect that needs sustained effort for
+  minimal gain; kept in a separate section, never in the headline count.
+- The high/medium question: does the demonstrated result fully defeat an explicit control for
+  an action with real consequences, or only weaken it? If the concrete damage cannot be
+  stated, the severity is lower than it feels. Severity never exceeds the demonstrated impact.
 
 **Disqualifications, do not report:**
 - Anything a documented baseline control already neutralizes, unless a concrete bypass is shown.
@@ -189,7 +197,11 @@ every cited line, the evidence chain included, never the reviewer's paraphrase. 
 not exist or does not hold the cited code is corrected before the finding goes further; if the
 code is not where the claim puts it, the claim fails the claim-correctness lens. Apply the three
 lenses in `references/finding-verification.md` (exploitability, claim correctness, existing
-mitigation) and assign one verdict: `VERIFIED REAL`, `FALSE POSITIVE`, `OVER-RATED`,
+mitigation). Before the lenses, the gate: a candidate names the lower-trust principal, the
+input or action it controls, the control meant to stop it, the boundary crossed, the principal
+or resource affected and the concrete result; a candidate that cannot fill those six is a
+hardening suggestion for the hand-off, not a finding (the gate is Cloudflare's "boundary and
+result" principle, adopted as written). Then assign one verdict: `VERIFIED REAL`, `FALSE POSITIVE`, `OVER-RATED`,
 `NEEDS DEEPER REVIEW`. Default to refusing when uncertain. Every candidate inside the zone gets
 one of these four verdicts; "no verdict" is not one of them, and a candidate you examined live
 is inside the zone. Only a defect of another zone (a different registry zone, not a different

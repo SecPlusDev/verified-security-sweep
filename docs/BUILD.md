@@ -295,6 +295,21 @@ Versions and digests remain verifiable; the cited development commits do not res
 | v1.4.2 | `d29921e6c8ee3be4d00a13145549ac1cda48342dafd75fd5be3c343c1a5b55c7` |
 | v1.4.3 | `327eeaa3fa1e5a0103f115f6120872a585b7c261a0c785473130ba311265cdd5` |
 
+### Related work, read
+
+Cloudflare's `security-audit-skill` (MIT, read on 2026-11-05 at its 2026-09-14 commit: a
+192-line SKILL.md, fifteen references, two Node validators with tests, a findings schema). The
+two reached several rules separately: a fresh verifier per candidate, no severity on an
+unresolved lead, the reviewed commit recorded, prior runs read before planning, the report
+derived from structured records. Where it is stronger: breadth (twelve domain references), a
+coverage ledger validated mechanically, run profiles and an agent budget, an OS-enforced
+sandbox with no network. Where this skill differs by design: the record lives in the
+repository (registry, index, tests, recheck, verify-fix, owner decisions), the evidence is a
+failing test the project's runner executes, and the fix is verified before merge. Adopted from
+it, credited in SKILL.md: the severity anchors with the high/medium discriminator, and the
+"boundary and result" gate for candidates. Candidate for later: `findings.py import` from its
+`findings.json`, so an audit done with it becomes index entries with tests and rechecks here.
+
 ## 7. Deferred
 
 - From the field report of 2026-10-28 (`evals/results/field-report-2026-10-28.md`, section 4),

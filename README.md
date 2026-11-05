@@ -121,10 +121,15 @@ lose.
 |---|---|
 | A one-time security pass on your branch | `/security-review` |
 | A deep multi-agent scan with verified findings and suggested patches | the Claude Security plugin |
+| A broad one-time audit of any stack, from memory safety to supply chain, with a coverage ledger and reports written outside the repository | [Cloudflare's security-audit skill](https://github.com/cloudflare/security-audit-skill) |
 | A security review you can hand over and resume: exact lines, reproduction tests, dismissed candidates with reasons, a registry of what was reviewed when, a re-check of earlier findings, and a check that a fix does not break legitimate paths | this skill |
 
-They are not alternatives. A scan tells you what may be wrong today; this skill keeps the
-verified record across reviews.
+They are not alternatives. A scan or an audit tells you what may be wrong today; this skill
+keeps the verified record in the repository across reviews, with the failing test as the
+evidence and the fix verified before it merges. Cloudflare's skill and this one reached several
+of the same rules separately (a fresh verifier per candidate, an unresolved lead carries no
+severity, the commit reviewed is recorded, prior runs are read first); this skill adopts its
+severity anchors and its boundary-and-result gate, with credit in the skill text.
 
 ## Why this exists
 
