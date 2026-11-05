@@ -209,6 +209,18 @@ the listed version, not this repository's `main`; the installed copy of v1.4.0 w
 the release file by file and by archive digest
 (`evals/results/install-directory-2026-10-16.md`).
 
+The directory can lag behind the releases: each version passes an automatic scan and a policy
+check, then waits for a reviewer. As of 5 November 2026 the directory serves v1.4.0 (published
+16 October); v1.4.3 passed both checks on 27 October and has been waiting for a reviewer since
+(`docs/BUILD.md`, "Directory policy, measured", says what held v1.4.1 and v1.4.2). The
+[releases](https://github.com/SecPlusDev/verified-security-sweep/releases) and this repository
+carry the current version; the changelog says what each one changed. To run the current
+version in Claude Code without installing it, from a clone:
+
+```bash
+claude --plugin-dir path/to/verified-security-sweep/plugin
+```
+
 **From a release, for the Claude apps.** Download `verified-security-sweep.skill` from the
 [latest release](https://github.com/SecPlusDev/verified-security-sweep/releases/latest) and upload it as a
 skill. Compare the file's SHA-256 with the digest shown on the release page; the archive is
