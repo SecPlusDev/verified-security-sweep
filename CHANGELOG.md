@@ -5,6 +5,20 @@ archive built by CI from the tagged commit.
 
 ## Unreleased
 
+- Two editions from one text. Since November 2026 the Claude plugin directory refuses script
+  files from an organization that is not verified, and "verified" is decided by Anthropic about
+  the organization, with no application. The plugin folder without `scripts/` is the directory
+  edition, built and checked against the directory's file rule by
+  `.github/scripts/build_directory_edition.py` (CI runs it on every push) and published on the
+  `directory` branch. SKILL.md checks whether `scripts/` exists next to it; when it does not,
+  every step that names a script is done by hand as the new `references/without-scripts.md`
+  says (fresh code, registry state, citations at the report's commit, report shape, findings
+  index, recheck with the same refusal of commands that are not the test runner, leak check),
+  the report's Context states `Checks: by hand (edition without scripts)`, and nothing is
+  fetched or written to stand in for a script. The plugin README describes both editions. What
+  the directory edition loses is the exit code: a check done by hand can be skipped without
+  anything failing. The measured difference is recorded with the release.
+
 - Severity anchors and the candidate gate adopted from Cloudflare's `security-audit-skill`
   (MIT), credited in SKILL.md step 5 and step 4: Critical, High, Medium and Low defined by the
   demonstrated result with the high/medium discriminator, and a candidate that cannot name its

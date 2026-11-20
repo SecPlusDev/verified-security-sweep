@@ -40,6 +40,12 @@ jobs:
       - name: Frontmatter, line limits, em dash
         run: python3 .github/scripts/check_skill.py plugin/skills/verified-security-sweep --markdown-root . --plugin-root plugin --max-lines 500
 
+      # The Claude plugin directory accepts script files only from verified organizations. The
+      # edition it is given is the plugin folder without the skill's scripts/; this step proves
+      # that main can always produce one that meets the directory's file rule.
+      - name: Directory edition (no script files) builds and meets the file rule
+        run: python3 .github/scripts/build_directory_edition.py --check
+
       # The official validator, from the Linux x64 native build of Claude Code on npm. The
       # tarball is pinned by version and SHA-256 and holds only the binary: no install script,
       # no Node.js. It needs no login; the home directory is a fresh temporary one.
