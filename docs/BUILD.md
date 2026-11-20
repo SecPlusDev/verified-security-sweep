@@ -174,7 +174,19 @@ pointing the directory's tracked ref at a branch, each a few minutes; none was p
 | `a4ff2ba` | v1.4.2 without `leak_check.py`, masking kept | held |
 | `72b0ad3` | v1.4.2 with the patterns in `shapes.json` and the scripts described by mechanics | passed (v1.4.3) |
 
-Reading: the rule reacts to code that visibly identifies passwords, keys and tokens, whether or
+After these probes the directory changed its rules. On 6 November a scheduled re-check left
+v1.4.3 "not fully checked", and a manual re-check the same day passed it again. By 20 November
+the same version, with no change, was refused by a rule that did not exist in October: "Files
+outside the allowed list accepted only from Verified organizations" (other publishers met it
+from about 12 November). Every script file is refused from an organization that is not
+verified; the portal says verification is about the organization being a known company, and
+the documentation offers no application for it. v1.4.0, published before the rule, with five
+scripts, stays served. The answer is the directory edition: the plugin folder without
+`scripts/`, the checks done by hand (`references/without-scripts.md`), built and checked by
+`.github/scripts/build_directory_edition.py`, published on the `directory` branch, which holds
+nothing but that folder. The full edition stays on `main` and in the releases.
+
+Reading of the October probes: the rule reacts to code that visibly identifies passwords, keys and tokens, whether or
 not it reads any; vocabulary in comments alone does not clear it, moving the vocabulary into a
 data file and describing the code by what it does mechanically does. The behaviour is the same
 in every row that holds the masking. The ticket stays open so the rule's owners can say whether

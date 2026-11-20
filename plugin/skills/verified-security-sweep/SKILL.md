@@ -36,10 +36,18 @@ team's normal change process (branch, PR, review); never fix-and-commit from ins
 | Choosing the next zone to sweep | `references/lenses.md` (zones and their observed yield) |
 | Setting up `docs/audits/` for the first time | the bootstrap section below |
 | Quick probes for a specific stack | `references/stack-probes.md` |
+| `scripts/` is not next to this file | `references/without-scripts.md` (every check, by hand) |
 
 Requirements: `git` on the path and Python 3.9 or newer for the six scripts in `scripts/`
 (standard library only); a reviewer agent or the ability to open a fresh session for delegated
 reading; permission to start the application under review locally for reproduction.
+
+Two editions carry this same text. The repository edition has the scripts. The edition the
+Claude plugin directory serves has none, because the directory accepts script files only from
+verified organizations. Before the first step, check whether `${CLAUDE_SKILL_DIR}/scripts/`
+exists. If it does not, every step below that names a script is done by hand as
+`references/without-scripts.md` says, the report's Context states `Checks: by hand (edition
+without scripts)`, and nothing is fetched or written to stand in for a script.
 
 ## Ground truth lives in the repo, not in this skill
 

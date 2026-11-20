@@ -209,13 +209,16 @@ the listed version, not this repository's `main`; the installed copy of v1.4.0 w
 the release file by file and by archive digest
 (`evals/results/install-directory-2026-10-16.md`).
 
-The directory can lag behind the releases: each version passes an automatic scan and a policy
-check, then waits for a reviewer. As of 5 November 2026 the directory serves v1.4.0 (published
-16 October); v1.4.3 passed both checks on 27 October and has been waiting for a reviewer since
-(`docs/BUILD.md`, "Directory policy, measured", says what held v1.4.1 and v1.4.2). The
+The directory serves a different edition from the releases. Since November 2026 it accepts
+script files only from verified organizations, and this publisher is not one, so the edition
+built for it is the same skill text and references with no script (the `directory` branch, built
+by `.github/scripts/build_directory_edition.py`): Claude does every check by hand, following
+`references/without-scripts.md`, and the report says so. The
 [releases](https://github.com/SecPlusDev/verified-security-sweep/releases) and this repository
-carry the current version; the changelog says what each one changed. To run the current
-version in Claude Code without installing it, from a clone:
+carry the full edition, with the six scripts that make those checks mechanical. As of 20
+November 2026 the directory still serves v1.4.0 (published 16 October, with five scripts,
+from before the rule); v1.4.1 to v1.4.3 never went live (`docs/BUILD.md`, "Directory policy,
+measured"). To run the full current version in Claude Code without installing it, from a clone:
 
 ```bash
 claude --plugin-dir path/to/verified-security-sweep/plugin

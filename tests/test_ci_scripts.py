@@ -26,6 +26,7 @@ LEAKAGE_SH = SCRIPTS / "leakage_grep.sh"
 CHECK_SKILL = SCRIPTS / "check_skill.py"
 PACKAGE = SCRIPTS / "package_skill.py"
 HYGIENE = SCRIPTS / "public_hygiene_check.py"
+DIRECTORY_EDITION = SCRIPTS / "build_directory_edition.py"
 
 
 def run(script: Path, *args: str, cwd=None, env=None) -> subprocess.CompletedProcess:
@@ -378,3 +379,69 @@ def test_hygiene_outside_a_repository_is_a_setup_error(tmp_path: Path):
     plain.mkdir()
     r = run(HYGIENE, cwd=plain, env=git_env(tmp_path))
     assert r.returncode == 2
+
+
+# --------------------------------------------------------------------------------------
+# build_directory_edition.py: the edition the Claude plugin directory accepts
+# --------------------------------------------------------------------------------------
+
+def make_plugin(root: Path) -> Path:
+    plugin = root / "plugin"
+    skill = plugin / "skills" / "sample-skill"
+    (plugin / ".claude-plugin").mkdir(parents=True)
+    (skill / "references").mkdir(parents=True)
+    (skill / "scripts" / "__pycache__").mkdir(parents=True)
+    (plugin / ".claude-plugin" / "plugin.json").write_text('{"name": "sample", "version": "1.0.0"}\n', encoding="utf-8")
+    (plugin / ".claude-plugin" / "icon.png").write_bytes(b"\x89PNG\r\n\x1a\n" + b"0" * 32)
+    (plugin / "README.md").write_text("# Sample\n", encoding="utf-8")
+    (plugin / "LICENSE").write_text("MIT\n", encoding="utf-8")
+    (skill / "SKILL.md").write_text("---\nname: sample-skill\ndescription: a sample\n---\n# Sample\n", encoding="utf-8")
+    (skill / "references" / "notes.md").write_text("notes\n", encoding="utf-8")
+    (skill / "scripts" / "check.py").write_text("print('ok')\n", encoding="utf-8")
+    (skill / "scripts" / "shapes.json").write_text("{}\n", encoding="utf-8")
+    (skill / "scripts" / "__pycache__" / "check.cpython-313.pyc").write_bytes(b"\0\0")
+    return plugin
+
+
+def test_directory_edition_drops_the_scripts_and_passes(tmp_path: Path):
+    # The directory refuses script files from an organization that is not verified (2026-11-06);
+    # the edition is the plugin folder without the skill's scripts/ folder, nothing else changed
+    plugin = make_plugin(tmp_path)
+    out = tmp_path / "edition"
+    r = run(DIRECTORY_EDITION, "--plugin", str(plugin), "--out", str(out))
+    assert r.returncode == 0, r.stdout + r.stderr
+    files = sorted(p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file())
+    assert files == [".claude-plugin/icon.png", ".claude-plugin/plugin.json", "LICENSE", "README.md",
+                     "skills/sample-skill/SKILL.md", "skills/sample-skill/references/notes.md"]
+    assert "6 file(s) in the directory edition, 0 problem(s)" in r.stdout
+    # the source folder is untouched
+    assert (plugin / "skills" / "sample-skill" / "scripts" / "check.py").is_file()
+    # a second build into the same folder is a setup error, not a silent merge
+    assert run(DIRECTORY_EDITION, "--plugin", str(plugin), "--out", str(out)).returncode == 2
+
+
+@pytest.mark.parametrize("rel, content, why", [
+    ("skills/sample-skill/helper.sh", b"echo hi\n", "not Markdown, text, JSON, YAML or an allowed image"),
+    ("skills/sample-skill/references/run.md", b"#!/bin/sh\necho hi\n", "starts with #!"),
+    ("requirements.txt", b"requests==2.0\n", "a package manager's file"),
+    ("hooks/hooks.json", b"{}\n", "hooks.json is not accepted"),
+    (".claude-plugin/extra.md", b"x\n", "only plugin.json, marketplace.json and images"),
+    ("skills/sample-skill/references/latin1.md", b"caf\xe9\n", "not UTF-8"),
+    ("skills/sample-skill/references/diagram.svg", b"<svg/>\n", "not Markdown, text, JSON, YAML or an allowed image"),
+    ("skills/sample-skill/references/picture.png", b"\x89PNG\r\n\x1a\nPK\x03\x04", "an image that holds a zip archive"),
+])
+def test_directory_edition_refuses_what_the_directory_refuses(tmp_path: Path, rel: str, content: bytes, why: str):
+    plugin = make_plugin(tmp_path)
+    target = plugin / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(content)
+    r = run(DIRECTORY_EDITION, "--plugin", str(plugin), "--check")
+    assert r.returncode == 1, r.stdout
+    assert f"REFUSED  {rel}: {why}" in r.stdout
+
+
+def test_the_real_plugin_builds_a_directory_edition_with_every_reference():
+    r = run(DIRECTORY_EDITION, "--plugin", str(ROOT / "plugin"), "--check")
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "skills/verified-security-sweep/references/without-scripts.md" in r.stdout
+    assert "scripts/" not in r.stdout

@@ -42,7 +42,22 @@ it reliably when it did; per-model figures are in the repository's `evals/result
 - One line per confirmed finding in `docs/audits/findings.jsonl` (location, the exact code on
   that line, the reproduction command), which a later run re-checks and can write as SARIF.
 
+## Two editions
+
+The Claude plugin directory accepts script files only from verified organizations, so the
+edition it serves contains no script: the skill text, its references and nothing executable. In
+that edition Claude does every check by hand, following `references/without-scripts.md`, and
+the report says so in its Context. The repository edition adds six standard-library Python
+scripts that make the same checks mechanical: a wrong citation, a missing verdict or an index
+entry that does not match the code fails with an exit code instead of depending on a careful
+read. The method, the report and the record are the same in both; the difference is how hard a
+check is to skip. The repository edition, its releases and the measured difference between the
+two are at https://github.com/SecPlusDev/verified-security-sweep.
+
 ## What this plugin runs and reads
+
+The **Runs** `python3 scripts/...` lines below apply to the repository edition. In the
+directory edition those checks are reading plus read-only `git` commands, and no script exists.
 
 - **Reads** the source code of the target repository, its rules file, and any previous reports in
   `docs/audits/`.
